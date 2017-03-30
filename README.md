@@ -25,3 +25,4 @@ Build infrastructure for Weenhanceit projects
 * Travis can deploy to AWS via CodeDeploy
 * Puppet plays with CodeDeploy, too
 * Do the off-the-shelf deploy systems allow deploying multiple applications to the same server?
+* An advantage of rolling our own is that we can test on local machines, e.g. my basement server
