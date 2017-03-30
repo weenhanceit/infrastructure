@@ -20,3 +20,6 @@ Build infrastructure for Weenhanceit projects
 
 ## Notes
 * There's a nice summary of what you need to do to set up a server and deploy a Rails app to it here: https://gorails.com/deploy/ubuntu/16.04
+* AWS has a deployment facility: https://aws.amazon.com/codedeploy/
+* Travis can deploy to AWS via CodeDeploy
+* Puppet plays with CodeDeploy, too
