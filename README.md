@@ -16,3 +16,6 @@ Build infrastructure for Weenhanceit projects
 * Postgres because it's full featured and more reliably open source
 * People seem to use `nginx` to proxy to different sites, but then something behind it?
 * Heroku uses Puma. Is Puma all we need to serve Rails apps at our scale?
+
+## Notes
+* There's a nice summary of what you need to do to set up a server and deploy a Rails app to it here: https://gorails.com/deploy/ubuntu/16.04
