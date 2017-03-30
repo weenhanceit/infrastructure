@@ -12,6 +12,7 @@ Build infrastructure for Weenhanceit projects
   * There is a Canadian zone
   * We don't want to experiment with small providers at this time
   * Lots of options for sizing and scaling
+* What's the storage model? On the one I had, I just deployed everything to the server, but a lot of what I read seems to assume you have your application sitting on S3 somewhere
 * `nginx` because it's light weight
 * Postgres because it's full featured and more reliably open source
 * People seem to use `nginx` to proxy to different sites, but then something behind it?
@@ -23,3 +24,4 @@ Build infrastructure for Weenhanceit projects
 * AWS has a deployment facility: https://aws.amazon.com/codedeploy/
 * Travis can deploy to AWS via CodeDeploy
 * Puppet plays with CodeDeploy, too
+* Do the off-the-shelf deploy systems allow deploying multiple applications to the same server?
