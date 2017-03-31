@@ -40,6 +40,15 @@ An Amazon EC2 server and an Amazon RDS instance. Use Elastic Beanstalk to deploy
 
 ## Costs
 * You can buy "Convertible Reserved Instances" for three-year periods, and you can upgrade them by paying the difference to the bigger platform
+ * Not available for Postgres RDS in Canada at the moment, at least
+
+## Access and Security
+* Everyone who has access has to use two-factor authentication with Amazon. This can be enforced 
+* Setting up different user accounts for different application installations?
+ * Account itself
+ * Environment variables (e.g. the secrets)
+* Certificates via Amazon are free: https://aws.amazon.com/certificate-manager/?hp=tile&so-exp=below
+* Need to make sure the path between the app server and the database is secure
 
 ## Implementation Notes
 * Each application should have its own deployment user and group
@@ -47,5 +56,4 @@ An Amazon EC2 server and an Amazon RDS instance. Use Elastic Beanstalk to deploy
 * Puppet maintains nginx and Postgres installs, and any other binary installs (e.g. PDFtk)
 * Puppet maintains users?
 * It's nice to say that the "roll your own" approach allows us to test locally, but it also means we have to set up the local as if it were an AWS instance, meaning public key logons, etc.
-
-
+* You can use Amazon spot instances to test, so roll your own may not have much of an advantage
