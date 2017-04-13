@@ -1,0 +1,26 @@
+# Thanks to: http://sfviapgh.com/blog/2016/2/18/how-to-deploy-rails-with-aws-codedeploy
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /var/www/DOMAIN/html
+permissions:
+  - object: /var/www/DOMAIN/html
+    owner: ubuntu
+    group: www-data
+    mode: 640
+    type:
+      - file
+  - object: /var/www/DOMAIN/html
+    owner: ubuntu
+    group: www-data
+    mode: 750
+    type:
+      - directory
+hooks:
+  AfterInstall:
+    - location: scripts/AfterInstall.sh
+      runas: root
+  ApplicationStart:
+    - location: scripts/ApplicationStart.sh
+      runas: root
