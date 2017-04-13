@@ -43,6 +43,7 @@ Environment=DATABASE_PASSWORD=
 # You can alternatively use bundle exec --keep-file-descriptors puma
 # NOTE: TLS would be handled by Nginx
 # TODO: Check/fix this for sockets
+# TODO: Use the puma installed with the instance
 ExecStart=/usr/local/bin/puma -b tcp://127.0.0.1:9292
 
 # Alternatively with a config file (in WorkingDirectory) and
