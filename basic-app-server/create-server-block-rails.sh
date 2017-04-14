@@ -1,6 +1,6 @@
 #!/bin/bash
 # Create a server block for nginx.
-# Mostly from: https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-server-blocks-virtual-hosts-on-ubuntu-14-04-lts
+# Started from: https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-server-blocks-virtual-hosts-on-ubuntu-14-04-lts
 
 if [[ $# -lt 1 ]]; then
   echo usage: $0 domain_name [user]
