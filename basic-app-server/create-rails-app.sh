@@ -87,7 +87,9 @@ Environment=DATABASE_PASSWORD=${DATABASE_PASSWORD:?"Plese set DATABASE_PASSWORD=
 # The command to start Puma
 # NOTE: TLS would be handled by Nginx
 # TODO: Check/fix this for sockets
-ExecStart=$root_directory/bin/puma -b $puma_uri
+ExecStart=$root_directory/bin/puma -b $puma_uri \
+  --redirect-stdout=$root_directory//log/puma-production.stdout.log \
+  --redirect-stderr=$root_directory//log/puma-production.stderr.log
 # ExecStart=/usr/local/bin/puma -b tcp://$puma_uri
 
 Restart=always
@@ -100,3 +102,19 @@ chmod 600 $service_file
 
 # This works because you still have to start the service.
 systemctl enable $domain_name.service
+
+# # Puma Configuration File Setup
+#
+# puma_config_directory=$root_directory/config/puma
+# puma_config_file=$puma_config_directory/production.rb
+#
+# mkdir -p $puma_config_directory
+#
+# cat >$puma_config_file <<EOF
+# stdout_redirect "#{application_path}/log/puma-#{railsenv}.stdout.log",
+#   "#{application_path}/log/puma-#{railsenv}.stderr.log",
+#   true
+# EOF
+#
+# chown $user:www-data $puma_config_file
+# chmod 640 $puma_config_file
