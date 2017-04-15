@@ -76,17 +76,14 @@ WorkingDirectory=$root_directory
 
 # Helpful for debugging socket activation, etc.
 # Environment=PUMA_DEBUG=1
-# TODO: The following means we need to set up a Puma config file
-# on the server in $root_directory/
 Environment=RACK_ENV=production
 Environment=RAILS_ENV=production
-Environment=SECRET_KEY_BASE=${SECRET_KEY_BASE:?"Plese set SECRET_KEY_BASE=secret-key-base"}
-Environment=DATABASE_USERNAME=${DATABASE_USERNAME:?"Plese set DATABASE_USERNAME=username"}
-Environment=DATABASE_PASSWORD=${DATABASE_PASSWORD:?"Plese set DATABASE_PASSWORD=password"}
+Environment=SECRET_KEY_BASE=${SECRET_KEY_BASE:?"Please set SECRET_KEY_BASE=secret-key-base"}
+Environment=DATABASE_USERNAME=${DATABASE_USERNAME:?"Please set DATABASE_USERNAME=username"}
+Environment=DATABASE_PASSWORD=${DATABASE_PASSWORD:?"Please set DATABASE_PASSWORD=password"}
 
 # The command to start Puma
 # NOTE: TLS would be handled by Nginx
-# TODO: Check/fix this for sockets
 ExecStart=$root_directory/bin/puma -b $puma_uri \
   --redirect-stdout=$root_directory//log/puma-production.stdout.log \
   --redirect-stderr=$root_directory//log/puma-production.stderr.log
