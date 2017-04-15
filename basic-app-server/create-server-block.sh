@@ -3,13 +3,13 @@
 # Mostly from: https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-server-blocks-virtual-hosts-on-ubuntu-14-04-lts
 
 if [[ $# -lt 1 ]]; then
-  echo usage: $0 domain_name
+  echo usage: $0 domain_name [site_owner]
   exit 1
 fi
 
 domain_name=$1
 root_directory=/var/www/$domain_name/html
-user=ubuntu # TODO: Get the right user here
+user=${2:-ubuntu}
 
 mkdir -p $root_directory
 

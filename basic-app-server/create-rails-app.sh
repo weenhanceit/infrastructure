@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $# -lt 1 ]]; then
-  echo usage: $0 domain_name [user]
+  echo usage: $0 domain_name [site_owner]
   exit 1
 fi
 
