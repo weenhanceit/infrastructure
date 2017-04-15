@@ -76,8 +76,14 @@ The last step above will ask you for the password for the `root` user in the Pos
 Don't forget the `-E` to `sudo`. It allows the environment variables to be passed to the script.
 
 Now you can deploy the Rails app. [TODO: How to deploy.]
+NOTE: Currently the first deploy will fail,
+since the database doesn't exist.
+You have to manually do `rails db:setup`
+after getting the application code to the server.
 
-Once deployed, remember to reload the Nginx configuration:
+Once deployed, remember to reload the Nginx configuration,
+and start (restart) the Puma service:
 ```
 sudo nginx -s reload
+sudo systemctl restart *domain-name*
 ```
