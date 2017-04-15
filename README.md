@@ -46,9 +46,14 @@ It installs additional software needed on the server.
 This sets up an Nginx server block for a given domain name.
 The root directory of the static web site files is `/var/www/*domain-name*/html`.
 ```
-./create-server-block.sh *domain-name*
+sudo ./create-server-block.sh *domain-name*
 ```
 Now you can deploy the static web site. [TODO: How to deploy.]
+
+Once deployed, remember to reload the Nginx configuration:
+```
+sudo nginx -s reload
+```
 
 ## Creating a Rails Application
 This sets up:
@@ -62,11 +67,23 @@ The root directory of the Rails application is `/var/www/*domain-name*/html`.
 export SECRET_KEY_BASE=*secret-key-base*
 export DATABASE_USERNAME=*database-username*
 export DATABASE_PASSWORD=*database-password*
-./create-rails-app.sh *domain-name*
+sudo -E ./create-rails-app.sh *domain-name*
 export DATABASE=*database*
 ./create-db-user.sh
 ```
 The last step above will ask you for the password for the `root` user in the Postgres database.
 
-Now you can deploy the Rails app. [TODO: How to deploy.]
+Don't forget the `-E` to `sudo`. It allows the environment variables to be passed to the script.
 
+Now you can deploy the Rails app. [TODO: How to deploy.]
+NOTE: Currently the first deploy will fail,
+since the database doesn't exist.
+You have to manually do `rails db:setup`
+after getting the application code to the server.
+
+Once deployed, remember to reload the Nginx configuration,
+and start (restart) the Puma service:
+```
+sudo nginx -s reload
+sudo systemctl restart *domain-name*
+```

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 psql -U root \
+  -d postgres \
   -h weit-rds-a.cwfow80ezu1x.ca-central-1.rds.amazonaws.com <<EOF
 create role ${DATABASE_USERNAME:?"Please set DATABASE_USERNAME=username"}
   with createdb
