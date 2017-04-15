@@ -46,7 +46,7 @@ It installs additional software needed on the server.
 This sets up an Nginx server block for a given domain name.
 The root directory of the static web site files is `/var/www/*domain-name*/html`.
 ```
-./create-server-block.sh *domain-name*
+sudo ./create-server-block.sh *domain-name*
 ```
 Now you can deploy the static web site. [TODO: How to deploy.]
 
@@ -62,7 +62,7 @@ The root directory of the Rails application is `/var/www/*domain-name*/html`.
 export SECRET_KEY_BASE=*secret-key-base*
 export DATABASE_USERNAME=*database-username*
 export DATABASE_PASSWORD=*database-password*
-./create-rails-app.sh *domain-name*
+sudo ./create-rails-app.sh *domain-name*
 export DATABASE=*database*
 ./create-db-user.sh
 ```
