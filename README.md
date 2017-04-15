@@ -67,11 +67,13 @@ The root directory of the Rails application is `/var/www/*domain-name*/html`.
 export SECRET_KEY_BASE=*secret-key-base*
 export DATABASE_USERNAME=*database-username*
 export DATABASE_PASSWORD=*database-password*
-sudo ./create-rails-app.sh *domain-name*
+sudo -E ./create-rails-app.sh *domain-name*
 export DATABASE=*database*
 ./create-db-user.sh
 ```
 The last step above will ask you for the password for the `root` user in the Postgres database.
+
+Don't forget the `-E` to `sudo`. It allows the environment variables to be passed to the script.
 
 Now you can deploy the Rails app. [TODO: How to deploy.]
 
