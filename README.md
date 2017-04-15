@@ -1,59 +1,61 @@
-# infrastructure
-Build infrastructure for Weenhanceit projects
-
-## Goals
-* Host multiple sites easily on one VPS
-* Replicable, so when we need to move an app to its own server, it's easy
-* Easy deploys of apps
-* Good notification of problems
-* Sort out what to do about e-mail
+# Infrastructure
+Set up infrastructure for Weenhanceit projects.
 
 ## Architecture
-An Amazon EC2 server and an Amazon RDS instance. Use Elastic Beanstalk to deploy (TBC).
+One Amazon EC2 server with multiple static sites and/or Rails applications,
+and one Amazon RDS instance.
+Use Amazon CodeDeploy to deploy the application or static web site.
 
-## Research
-* Confirm that Elastic Beanstalk will work to deploy multiple applications to the same EC2 server. It seems like Elastic Beanstalk for Ruby includes Puma and Nginx, so they might be restricting the configuration options
+On the application server,
+Nginx proxies the requests through to the appropriate Rails application,
+or serves up the pages of the appropriate static web site.
+There is an instance of Puma for each of the Rails applications.
 
-## Overview
-* Amazon EC2 server
-  * There is a Canadian zone
-  * We don't want to experiment with small providers at this time
-  * Lots of options for sizing and scaling
-* What's the storage model? On the one I had, I just deployed everything to the server, but a lot of what I read seems to assume you have your application sitting on S3 somewhere
-* `nginx` because it's light weight
-* Postgres because it's full featured and more reliably open source
-* People seem to use `nginx` to proxy to different sites, but then something behind it?
-* Heroku uses Puma. Is Puma all we need to serve Rails apps at our scale?
-* Between Puppet, Chef, and Ansible, I'm still inclined to Puppet. Which should we use?
+## Prerequisites
+This document assumes you've already set up an EC2 instance,
+that CodeDeploy can deploy to the EC2 instance,
+and you've set up an RDS Postgres instance.
 
-## Notes
-* There's a nice summary of what you need to do to set up a server and deploy a Rails app to it here: https://gorails.com/deploy/ubuntu/16.04
-* There's a nice summary of nginx configuration for multiple sites/domains (they call them "server blocks", like Apache's "virtual hosts"): https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-server-blocks-virtual-hosts-on-ubuntu-14-04-lts
-* AWS has a deployment facility: https://aws.amazon.com/codedeploy/
-* Travis can deploy to AWS via CodeDeploy
-* Puppet plays with CodeDeploy, too
-* Amazon Elastic Beanstalk seems to be almost Heroku-like. A little hard to spec pricing, since it seems to scale automatically for you
-* Do the off-the-shelf deploy systems allow deploying multiple applications to the same server?
-* An advantage of rolling our own is that we can test on local machines, e.g. my basement server
-* Consider Amazon RDS for the database. Price is reasonable, and they do all the work
- * This takes us away from the "roll your own" model, or perhaps makes another way that "roll your own" has to track Amazon
+## Common First Steps
+These steps are necessary whether you want to deploy
+a static web site
+or a Rails application.
 
-## Costs
-* You can buy "Convertible Reserved Instances" for three-year periods, and you can upgrade them by paying the difference to the bigger platform
- * Not available for Postgres RDS in Canada at the moment, at least
+1. Log in to the EC2 instance via SSH
+```
+    ssh -i ~/.ssh/weita.pem ubuntu@URL-of-ec2-instance
+```
+2. Get the set-up scripts:
+```
+    wget https://github.com/weenhanceit/infrastructure/archive/master.zip
+```
+3. Unzip it:
+```
+    unzip master.zip
+```
+4. `cd infrastructure-master/basic-app-server`
 
-## Access and Security
-* Everyone who has access has to use two-factor authentication with Amazon. This can be enforced 
-* Setting up different user accounts for different application installations?
- * Account itself
- * Environment variables (e.g. the secrets)
-* Certificates via Amazon are free: https://aws.amazon.com/certificate-manager/?hp=tile&so-exp=below
-* Need to make sure the path between the app server and the database is secure
+## One-Time Server Set-Up
+```
+./build.sh
+```
 
-## Implementation Notes
-* Each application should have its own deployment user and group
-* Each application should have its own run user, distinct from the deploy user if that makes sense
-* Puppet maintains nginx and Postgres installs, and any other binary installs (e.g. PDFtk)
-* Puppet maintains users?
-* It's nice to say that the "roll your own" approach allows us to test locally, but it also means we have to set up the local as if it were an AWS instance, meaning public key logons, etc.
-* You can use Amazon spot instances to test, so roll your own may not have much of an advantage
+## Creating a Static Web Site
+```
+./create-server-block.sh *domain-name*
+```
+Now you can deploy the static web site. [TODO: How to deploy.]
+
+## Creating a Rails Application
+```
+export SECRET_KEY_BASE=*secret-key-base*
+export DATABASE_USERNAME=*database-username*
+export DATABASE_PASSWORD=*database-password*
+./create-rails-app.sh *domain-name*
+export DATABASE=*database*
+./create-db-user.sh
+```
+The last step above will ask you for the password for the `root` user in the Postgres database.
+
+Now you can deploy the Rails app. [TODO: How to deploy.]
+
