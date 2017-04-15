@@ -50,6 +50,11 @@ sudo ./create-server-block.sh *domain-name*
 ```
 Now you can deploy the static web site. [TODO: How to deploy.]
 
+Once deployed, remember to reload the Nginx configuration:
+```
+sudo nginx -s reload
+```
+
 ## Creating a Rails Application
 This sets up:
 
@@ -70,3 +75,7 @@ The last step above will ask you for the password for the `root` user in the Pos
 
 Now you can deploy the Rails app. [TODO: How to deploy.]
 
+Once deployed, remember to reload the Nginx configuration:
+```
+sudo nginx -s reload
+```
