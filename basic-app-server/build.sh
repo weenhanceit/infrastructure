@@ -13,8 +13,9 @@ sudo apt-get install -y -q patch zlib1g-dev liblzma-dev
 # Need this for at least one of our apps
 sudo apt-get install -y -q pdftk
 
+sudo apt-get install -y -q postgresql-client libpq-dev
 sudo apt-get install -y -q sqlite3 libsqlite3-dev
-
+sudo apt-get install -y -q nodejs
 sudo apt-get -y -q install nginx
 
 # For CodeDeploy in Canada
@@ -27,3 +28,5 @@ sudo service codedeploy-agent start
 
 sudo apt-get dist-upgrade -y -qq
 sudo apt-get autoremove -y -qq
+
+sudo gem install rails -v 5.0.1 --no-document
