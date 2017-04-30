@@ -2,16 +2,49 @@
 # Create a server block for nginx.
 # Mostly from: https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-server-blocks-virtual-hosts-on-ubuntu-14-04-lts
 
+usage() {
+  echo usage: `basename $0` [-u user -hd] domain_name...
+  cat <<EOF
+  -d        Debug.
+  -u  user  Make created files and directories owned by user.
+  -h        This help.
+EOF
+}
+
+while getopts dhu: x ; do
+  case $x in
+    d) debug=1;;
+    u) user=$OPTARG;;
+    h) usage; exit 0;;
+    \?) echo Invalid option: -$OPTARG
+        usage
+        exit 1;;
+  esac
+done
+shift $((OPTIND-1))
+
 if [[ $# -lt 1 ]]; then
-  echo usage: $0 domain_name [site_owner]
+  usage
   exit 1
 fi
 
 domain_name=$1
+domain_names=""
+for d in "$@"; do
+  domain_names="${domain_names} $d www.$d"
+done
 root_directory=/var/www/$domain_name/html
-user=${2:-ubuntu}
+user=${user:-ubuntu}
+
+if [[ $debug ]]; then
+  echo Domain Names: $domain_names
+  echo Root Directory: $root_directory
+  echo User: $user
+  exit 0
+fi
 
 mkdir -p $root_directory
+chown -R $user:www-data $root_directory
 
 cat >$root_directory/index.html <<-EOF
 <!doctype html>
@@ -22,8 +55,6 @@ cat >$root_directory/index.html <<-EOF
   <h1>Under Construction</h1>
 </body>
 EOF
-
-chown -R $user:www-data $root_directory
 
 server_block_definition=/etc/nginx/sites-available/$domain_name
 

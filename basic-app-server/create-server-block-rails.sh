@@ -44,28 +44,17 @@ if [[ $debug ]]; then
 fi
 
 mkdir -p $root_directory
-
-# cat >$root_directory/index.html <<-EOF
-# <!doctype html>
-# <head>
-#   <title>Under Construction</title>
-# </head>
-# <body>
-#   <h1>Under Construction</h1>
-# </body>
-# EOF
-#
 chown -R $user:www-data $root_directory
 
 server_block_definition=/etc/nginx/sites-available/$domain_name
 
 # Path to Puma SOCK file, as defined in the Puma config
 # TODO: Check that the following is right
-puma_uri=127.0.0.1:9292
-# puma_uri=unix:/tmp/$domain_name.sock
+# puma_uri=127.0.0.1:9292
+puma_uri=unix:/tmp/$domain_name.sock
 
 cat >$server_block_definition <<-EOF
-upstream app {
+upstream $domain_name {
     server $puma_uri;
     # server $puma_uri fail_timeout=0;
 }
@@ -80,7 +69,7 @@ server {
   root $root_directory/public;
   try_files \$uri/index.html \$uri @$domain_name;
 
-  location @app {
+  location @$domain_name {
     proxy_pass http://app;
     proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
     proxy_set_header Host \$http_host;
