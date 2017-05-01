@@ -102,6 +102,7 @@ cat >>$server_block_definition <<-EOF
 
   location @$domain_name {
     proxy_pass http://$domain_name;
+    proxy_set_header X-Forwarded-Proto https;
     proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
     proxy_set_header Host \$http_host;
     proxy_redirect off;
@@ -112,6 +113,18 @@ cat >>$server_block_definition <<-EOF
   keepalive_timeout 10;
 }
 EOF
+
+# if [[ $use_port == 443 ]]; then
+#   cat >>$server_block_definition <<-EOF
+#
+# server {
+#   server_name $domain_names;
+# 	listen 80;
+# 	listen [::]:80;
+# 	return 301 https://$server_name/$request_uri;
+# }
+# EOF
+# fi
 
 ln -fs $server_block_definition /etc/nginx/sites-enabled/
 
