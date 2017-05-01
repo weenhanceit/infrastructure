@@ -101,8 +101,14 @@ cat >>$server_block_definition <<-EOF
   try_files \$uri/index.html \$uri @$domain_name;
 
   location @$domain_name {
+    # A Rails app should force "SSL" so that it generates redirects to HTTPS,
+    # among other things.
+    # However, you want Nginx to handle the load of TLS.
+    # The trick to proxying to a Rails app, therefore, is to proxy pass to HTTP,
+    # but set the header to HTTPS
+    # Next two lines.
     proxy_pass http://$domain_name;
-    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header X-Forwarded-Proto \$scheme; # \$scheme says http or https
     proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
     proxy_set_header Host \$http_host;
     proxy_redirect off;
