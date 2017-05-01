@@ -60,18 +60,29 @@ server_block_definition=/etc/nginx/sites-available/$domain_name
 
 cat >$server_block_definition <<-EOF
 server {
-    listen 80;
-    listen [::]:80;
+  listen 80;
+  listen [::]:80;
 
-    root $root_directory;
-    index index.html index.htm;
+  root $root_directory;
+  index index.html index.htm;
 
-    server_name $domain_name www.$domain_name;
+  server_name $domain_names;
 
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
+  location / {
+    try_files \$uri \$uri/ =404;
+  }
 }
 EOF
 
 ln -fs $server_block_definition /etc/nginx/sites-enabled/
+
+cat <<EOF
+You have to obtain a certificate and enable TLS for the site.
+To do so, run the following command:
+
+sudo certbot certonly --webroot -w $root_directory $certbot_domain_names
+
+And test renewal with:
+
+certbot renew --dry-run
+EOF

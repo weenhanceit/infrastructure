@@ -26,6 +26,16 @@ sudo ./install auto
 sudo service codedeploy-agent start
 # end CodeDeploy
 
+# Set up for TLS (SSL) by installing certbot
+# https://certbot.eff.org/#ubuntuxenial-nginx
+# Uses Let's Encrypt certificates
+# https://letsencrypt.org/
+sudo add-apt-repository ppa:certbot/certbot -y
+sudo apt-get update -y -qq
+sudo apt-get install certbot -y -qq
+# End set-up for TLS
+
+sudo apt-get upgrade -y -qq
 sudo apt-get dist-upgrade -y -qq
 sudo apt-get autoremove -y -qq
 

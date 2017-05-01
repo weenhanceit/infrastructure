@@ -3,17 +3,19 @@
 usage() {
   echo usage: `basename $0` [-u user -hd] domain_name...
   cat <<EOF
-  -d        Debug.
-  -u  user  Make created files and directories owned by user.
-  -h        This help.
+  -d            Debug.
+  -h            This help.
+  -p  [80|443]  Use HTTP or HTTPS (can't use both). Default based on presence of certificate files.
+  -u  user      Make created files and directories owned by user.
 EOF
 }
 
-while getopts dhu: x ; do
+while getopts dhp:u: x ; do
   case $x in
     d) debug=1;;
-    u) user=$OPTARG;;
     h) usage; exit 0;;
+    p) use_port=$OPTARG;;
+    u) user=$OPTARG;;
     \?) echo Invalid option: -$OPTARG
         usage
         exit 1;;
@@ -28,8 +30,10 @@ fi
 
 domain_name=$1
 domain_names=""
+certbot_domain_names=""
 for d in "$@"; do
-  domain_names="${domain_names} $d www.$d"
+  domain_names="${domain_names}$d www.$d "
+  certbot_domain_names="${certbot_domain_names}-d $d -d www.$d "
 done
 root_directory=/var/www/$domain_name/html
 user=${user:-ubuntu}
@@ -53,6 +57,15 @@ puma_uri=unix:///tmp/$domain_name.sock
 
 # Nginx Server Block Definition
 
+if [[ -z ${use_port+x} ]]; then
+  if [[ ! -f /etc/letsencrypt/live/autism-funding.com/privkey.pem ||
+        ! -f /etc/letsencrypt/live/autism-funding.com/fullchain.pem ]]; then
+    use_port=80
+  else
+    use_port=443
+  fi
+fi
+
 cat >$server_block_definition <<-EOF
 upstream $domain_name {
   # server $puma_uri;
@@ -60,9 +73,27 @@ upstream $domain_name {
 }
 
 server {
+  server_name $domain_names;
+
+EOF
+
+if [[ $use_port == 443 ]]; then
+  cat >>$server_block_definition <<-EOF
+  # TLS config from: http://nginx.org/en/docs/http/configuring_https_servers.html
+  # Let's Encrypt file names and locations from: https://certbot.eff.org/docs/using.html#where-are-my-certificates
+  listen 443 ssl;
+  listen [::]:443 ssl;
+  ssl_certificate_key /etc/letsencrypt/live/$domain_name/privkey.pem;
+  ssl_certificate     /etc/letsencrypt/live/$domain_name/fullchain.pem;
+EOF
+else
+  cat >>$server_block_definition <<-EOF
   listen 80;
   listen [::]:80;
-  server_name $domain_names;
+EOF
+fi
+
+cat >>$server_block_definition <<-EOF
 
   # http://stackoverflow.com/a/11313241/3109926 said the following
   # is what serves from public directly without hitting Puma
@@ -129,9 +160,6 @@ EOF
 
 chmod 600 $service_file
 
-# This works because you still have to start the service.
-systemctl enable $domain_name.service
-
 # # Puma Configuration File Setup
 #
 # puma_config_directory=$root_directory/config/puma
@@ -147,3 +175,23 @@ systemctl enable $domain_name.service
 #
 # chown $user:www-data $puma_config_file
 # chmod 640 $puma_config_file
+
+# This works because you still have to start the service.
+systemctl enable $domain_name.service
+
+if [[ $use_port == 80 ]]; then
+  cat <<EOF
+You have to obtain a certificate and enable TLS for the site.
+To do so, reload the Nginx configuration:
+
+sudo nginx -s reload
+
+Then run the following command:
+
+sudo certbot certonly --webroot -w $root_directory/public $certbot_domain_names
+
+You can test renewal with:
+
+sudo certbot renew --dry-run
+EOF
+fi

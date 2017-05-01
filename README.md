@@ -104,3 +104,39 @@ If it's not running, try to restart it with:
 ```
 sudo systemctl restart domain-name
 ```
+
+## TLS (formerly SSL)
+All Internet traffic should be encrypted.
+To be good citizens,
+we get certificates from [Let's Encrypt](https://letsencrypt.org),
+using the [EFF's Certbot](https://certbot.eff.org).
+You should read the documentation for both of those
+before you run these scripts.
+
+Certbot needs a running web server,
+and these scripts require that the web server be responding to port 80.
+So you have to do the above installation steps
+before proceeding with the rest of this section.
+
+[Currently TLS is scripted for Rails sites only.]
+
+Run this command and answer its questions to obtain and install certificates:
+
+```
+sudo certbot certonly --webroot -w /var/www/domain_name/html/public -d domain_name [-d domain_name]...
+```
+
+Then, re-run the site set-up script.
+It will detect the key files,
+and configure the site for TLS (only) access.
+
+```
+sudo -E ./create-rails-app.sh domain_name...
+sudo nginx -s reload
+```
+
+Test renewal with:
+
+```
+sudo certbot renew --dry-run
+```
