@@ -120,17 +120,17 @@ cat >>$server_block_definition <<-EOF
 }
 EOF
 
-# if [[ $use_port == 443 ]]; then
-#   cat >>$server_block_definition <<-EOF
-#
-# server {
-#   server_name $domain_names;
-# 	listen 80;
-# 	listen [::]:80;
-# 	return 301 https://$server_name/$request_uri;
-# }
-# EOF
-# fi
+if [[ $use_port == 443 ]]; then
+  cat >>$server_block_definition <<-EOF
+
+server {
+  server_name $domain_names;
+	listen 80;
+	listen [::]:80;
+	return 301 https://\$server_name/\$request_uri;
+}
+EOF
+fi
 
 ln -fs $server_block_definition /etc/nginx/sites-enabled/
 
