@@ -106,16 +106,17 @@ sudo systemctl restart domain-name
 ```
 
 ## TLS (formerly SSL)
-All Internet traffic should be encrypted.
-To be good citizens,
-we get certificates from [Let's Encrypt](https://letsencrypt.org),
+All Internet traffic should be encrypted,
+if you want to be a good citizen.
+We get certificates from [Let's Encrypt](https://letsencrypt.org),
 using the [EFF's Certbot](https://certbot.eff.org).
 You should read the documentation for both of those
-before you run these scripts.
+before you run the scripts to create HTTPS sites.
 
 Certbot needs a running web server,
 and these scripts require that the web server be responding to port 80.
 So you have to do the above installation steps
+to create the site for HTTP
 before proceeding with the rest of this section.
 
 [Currently TLS is scripted for Rails sites only.]
@@ -128,7 +129,8 @@ sudo certbot certonly --webroot -w /var/www/domain_name/html/public -d domain_na
 
 Then, re-run the site set-up script.
 It will detect the key files,
-and configure the site for TLS (only) access.
+and configure the site for TLS/HTTPS access,
+including redirecting HTTP requests to HTTPS.
 
 ```
 sudo -E ./create-rails-app.sh domain_name...
@@ -140,3 +142,8 @@ Test renewal with:
 ```
 sudo certbot renew --dry-run
 ```
+
+## Testing TLS
+Go to the [SSL test page](https://www.ssllabs.com/ssltest/)
+to test that the TLS implementation is working.
+You should get an A+ with the above set-up.

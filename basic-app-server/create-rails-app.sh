@@ -57,6 +57,8 @@ puma_uri=unix:///tmp/$domain_name.sock
 
 # Nginx Server Block Definition
 
+# TODO: This should fall back to port 80 if the keys haven't been downloaded
+# yet, even if the user specifies 443.
 if [[ -z ${use_port+x} ]]; then
   if [[ ! -f /etc/letsencrypt/live/autism-funding.com/privkey.pem ||
         ! -f /etc/letsencrypt/live/autism-funding.com/fullchain.pem ]]; then
@@ -78,6 +80,10 @@ server {
 EOF
 
 if [[ $use_port == 443 ]]; then
+  if [[ ! -f /etc/letsencrypt/live/$domain_name/dhparam.pem ]]; then
+    openssl dhparam 2048 -out /etc/letsencrypt/live/$domain_name/dhparam.pem
+  fi
+
   cat >>$server_block_definition <<-EOF
   # TLS config from: http://nginx.org/en/docs/http/configuring_https_servers.html
   # HTTP2 doesn't require encryption, but at last reading, no browsers support
@@ -88,12 +94,20 @@ if [[ $use_port == 443 ]]; then
   ssl_certificate_key /etc/letsencrypt/live/$domain_name/privkey.pem;
   ssl_certificate     /etc/letsencrypt/live/$domain_name/fullchain.pem;
 
+  # Test the site using: https://www.ssllabs.com/ssltest/index.html
   # Optimize TLS, from: https://www.bjornjohansen.no/optimizing-https-nginx, steps 1-3
   ssl_session_cache shared:SSL:1m; # Enough for 4,000 sessions.
   ssl_session_timeout 180m;
   ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
   ssl_prefer_server_ciphers on;
   ssl_ciphers ECDH+AESGCM:ECDH+AES256:ECDH+AES128:DH+3DES:!ADH:!AECDH:!MD5;
+  # Step 4
+  ssl_dhparam /etc/letsencrypt/live/$domain_name/dhparam.pem;
+  # Step 5
+  ssl_stapling on;
+  ssl_stapling_verify on;
+  ssl_trusted_certificate /etc/letsencrypt/live/$domain_name/chain.pem;
+  resolver 8.8.8.8 8.8.4.4;
   # Other steps TBD
 EOF
 else
