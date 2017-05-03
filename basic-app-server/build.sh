@@ -18,6 +18,9 @@ sudo apt-get install -y -q sqlite3 libsqlite3-dev
 sudo apt-get install -y -q nodejs
 sudo apt-get -y -q install nginx
 
+# Sendmail
+sudo apt-get install -y -q sendmail
+
 # For CodeDeploy in Canada
 sudo apt-get install -y -q python-pip
 wget https://aws-codedeploy-ca-central-1.s3.amazonaws.com/latest/install
