@@ -45,6 +45,34 @@ It installs additional software needed on the server.
 ./build.sh
 ```
 
+### Creating Users
+Here's how to create named users with sudo privileges on the server.
+These instructions work if your desktop is running Ubuntu.
+
+1. Create a key pair if you don't already have one. Accept the defaults,
+and don't enter a pass phrase:
+```
+    mkdir ~/.ssh
+  chmod 700 ~/.ssh  
+  ssh-keygen -t rsa
+```
+  This leaves a key pair in `~/.ssh/id_rsa` (the private key)
+  and `~/.ssh/id_rsa.pub` (the public key).
+
+2. Obtain a copy of the user creation script:
+```
+    wget https://github.com/weenhanceit/infrastructure/raw/master/basic-app-server/create-user.sh
+```
+3. Run the user creation script:
+```
+    ./create-user -k existing-user-key-file username ~/.ssh/id_rsa.pub ubuntu@ec2-server-address
+```
+  It's important to understand which key file is which.
+  `existing-user-key-file` is the private key that you obtained
+  from Amazon when you created the instance.
+  `~/.ssh/id_rsa.pub` is the *public* key file
+  from the key pair you just generated.
+
 ## Creating a Static Web Site
 This sets up an Nginx server block for a given domain name.
 In all the examples that follow,
