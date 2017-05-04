@@ -40,7 +40,7 @@ fi
 # The variable expansion expands to nothing if there is no ssh_command.
 rsync ${ssh_command:+-e "$ssh_command"} $2 $3:
 
-$ssh_command $3 <<EOF
+${ssh_command:-ssh} $3 <<EOF
 sudo adduser --disabled-password --gecos ,,,, $1
 
 if [[ ! -d /home/$1/.ssh ]]; then
