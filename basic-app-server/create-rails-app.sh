@@ -13,7 +13,8 @@ EOF
 
 while getopts dhp:r:u: x ; do
   case $x in
-    d)  debug=1;;
+    d)  debug=1
+        fake_root=${fake_root:-.};;
     h)  usage; exit 0;;
     p)  use_port=$OPTARG;;
     r)  fake_root=$OPTARG;;
@@ -37,7 +38,7 @@ for d in "$@"; do
   domain_names="${domain_names}$d www.$d "
   certbot_domain_names="${certbot_domain_names}-d $d -d www.$d "
 done
-root_directory=${fake_root:=.}/var/www/$domain_name/html
+root_directory=$fake_root/var/www/$domain_name/html
 certificate_directory=$fake_root/etc/letsencrypt/live/$domain_name
 user=${user:-ubuntu}
 
