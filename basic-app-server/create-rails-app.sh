@@ -166,9 +166,7 @@ server {
 EOF
 fi
 
-# TODO: The following gives unexpected behaviour when using fake_root
-# Relative symlinks are relative to the parent directory of the symlink.
-ln -fs $server_block_definition $fake_root/etc/nginx/sites-enabled/
+ln -fs ../sites-available/$domain_name $fake_root/etc/nginx/sites-enabled/
 
 # Puma Service
 
