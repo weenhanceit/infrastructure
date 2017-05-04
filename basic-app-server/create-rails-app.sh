@@ -6,16 +6,18 @@ usage() {
   -d            Debug.
   -h            This help.
   -p  [80|443]  Use HTTP or HTTPS (can't use both). Default based on presence of certificate files.
+  -r directory  Install to fake root directory (for testing).
   -u  user      Make created files and directories owned by user.
 EOF
 }
 
-while getopts dhp:u: x ; do
+while getopts dhp:r:u: x ; do
   case $x in
-    d) debug=1;;
-    h) usage; exit 0;;
-    p) use_port=$OPTARG;;
-    u) user=$OPTARG;;
+    d)  debug=1;;
+    h)  usage; exit 0;;
+    p)  use_port=$OPTARG;;
+    r)  fake_root=$OPTARG;;
+    u)  user=$OPTARG;;
     \?) echo Invalid option: -$OPTARG
         usage
         exit 1;;
@@ -35,20 +37,29 @@ for d in "$@"; do
   domain_names="${domain_names}$d www.$d "
   certbot_domain_names="${certbot_domain_names}-d $d -d www.$d "
 done
-root_directory=/var/www/$domain_name/html
+root_directory=${fake_root:=.}/var/www/$domain_name/html
+certificate_directory=$fake_root/etc/letsencrypt/live/$domain_name
 user=${user:-ubuntu}
+
+server_block_definition=$fake_root/etc/nginx/sites-available/$domain_name
+service_file=$fake_root/lib/systemd/system/$domain_name.service
 
 if [[ $debug ]]; then
   echo Domain Names: $domain_names
   echo Root Directory: $root_directory
+  echo Certificate Directory: $certificate_directory
   echo User: $user
-  exit 0
+fi
+
+if [[ $debug || $fake_root ]]; then
+  mkdir -p $certificate_directory
+  mkdir -p `dirname $server_block_definition`
+  mkdir -p `dirname $service_file`
+  mkdir -p $fake_root/etc/nginx/sites-enabled
 fi
 
 mkdir -p $root_directory
 chown -R $user:www-data $root_directory
-
-server_block_definition=/etc/nginx/sites-available/$domain_name
 
 # Path to Puma SOCK file, as defined in the Puma config
 # TODO: Check that the following is right
@@ -57,11 +68,9 @@ puma_uri=unix:///tmp/$domain_name.sock
 
 # Nginx Server Block Definition
 
-# TODO: This should fall back to port 80 if the keys haven't been downloaded
-# yet, even if the user specifies 443.
 if [[ -z ${use_port+x} ]]; then
-  if [[ ! -f /etc/letsencrypt/live/autism-funding.com/privkey.pem ||
-        ! -f /etc/letsencrypt/live/autism-funding.com/fullchain.pem ]]; then
+  if [[ ! -f $certificate_directory/privkey.pem ||
+        ! -f $certificate_directory/fullchain.pem ]]; then
     use_port=80
   else
     use_port=443
@@ -80,8 +89,8 @@ server {
 EOF
 
 if [[ $use_port == 443 ]]; then
-  if [[ ! -f /etc/letsencrypt/live/$domain_name/dhparam.pem ]]; then
-    openssl dhparam 2048 -out /etc/letsencrypt/live/$domain_name/dhparam.pem
+  if [[ ! -f $certificate_directory/dhparam.pem ]]; then
+    openssl dhparam 2048 -out $certificate_directory/dhparam.pem
   fi
 
   cat >>$server_block_definition <<-EOF
@@ -91,8 +100,8 @@ if [[ $use_port == 443 ]]; then
   listen 443 ssl http2;
   listen [::]:443 ssl http2;
   # Let's Encrypt file names and locations from: https://certbot.eff.org/docs/using.html#where-are-my-certificates
-  ssl_certificate_key /etc/letsencrypt/live/$domain_name/privkey.pem;
-  ssl_certificate     /etc/letsencrypt/live/$domain_name/fullchain.pem;
+  ssl_certificate_key $certificate_directory/privkey.pem;
+  ssl_certificate     $certificate_directory/fullchain.pem;
 
   # Test the site using: https://www.ssllabs.com/ssltest/index.html
   # Optimize TLS, from: https://www.bjornjohansen.no/optimizing-https-nginx, steps 1-3
@@ -102,11 +111,11 @@ if [[ $use_port == 443 ]]; then
   ssl_prefer_server_ciphers on;
   ssl_ciphers ECDH+AESGCM:ECDH+AES256:ECDH+AES128:DH+3DES:!ADH:!AECDH:!MD5;
   # Step 4
-  ssl_dhparam /etc/letsencrypt/live/$domain_name/dhparam.pem;
+  ssl_dhparam $certificate_directory/dhparam.pem;
   # Step 5
   ssl_stapling on;
   ssl_stapling_verify on;
-  ssl_trusted_certificate /etc/letsencrypt/live/$domain_name/chain.pem;
+  ssl_trusted_certificate $certificate_directory/chain.pem;
   resolver 8.8.8.8 8.8.4.4;
   # Other steps TBD
 EOF
@@ -156,11 +165,11 @@ server {
 EOF
 fi
 
-ln -fs $server_block_definition /etc/nginx/sites-enabled/
+# TODO: The following gives unexpected behaviour when using fake_root
+# Relative symlinks are relative to the parent directory of the symlink.
+ln -fs $server_block_definition $fake_root/etc/nginx/sites-enabled/
 
 # Puma Service
-
-service_file=/lib/systemd/system/$domain_name.service
 
 cat >$service_file <<EOF
 [Unit]
@@ -220,7 +229,7 @@ chmod 600 $service_file
 # chmod 640 $puma_config_file
 
 # This works because you still have to start the service.
-systemctl enable $domain_name.service
+[[ $debug ]] || systemctl enable $domain_name.service
 
 if [[ $use_port == 80 ]]; then
   cat <<EOF
