@@ -62,15 +62,15 @@ fi
 mkdir -p $root_directory
 chown -R $user:www-data $root_directory
 
-cat >$root_directory/index.html <<-EOF
-<!doctype html>
-<head>
-  <title>Under Construction</title>
-</head>
-<body>
-  <h1>Under Construction</h1>
-</body>
-EOF
+# cat >$root_directory/index.html <<-EOF
+# <!doctype html>
+# <head>
+#   <title>Under Construction</title>
+# </head>
+# <body>
+#   <h1>Under Construction</h1>
+# </body>
+# EOF
 
 if [[ -z ${use_port+x} ]]; then
   if [[ ! -f $certificate_directory/privkey.pem ||
