@@ -145,23 +145,41 @@ Certbot needs a running web server,
 and these scripts require that the web server be responding to port 80.
 So you have to do the above installation steps
 to create the site for HTTP
-before proceeding with the rest of this section.
+before proceeding with the rest of this section,
+which configures the site for HTTPS.
 
-[Currently TLS is scripted for Rails sites only.]
-
-Run this command and answer its questions to obtain and install certificates:
+For Rails apps,
+run this command and answer its questions to obtain and install certificates:
 
 ```
 sudo certbot certonly --webroot -w /var/www/domain_name/html/public -d domain_name [-d domain_name]...
 ```
 
-Then, re-run the site set-up script.
+For statis sites,
+run this command and answer its questions to obtain and install certificates:
+
+```
+sudo certbot certonly --webroot -w /var/www/domain_name/html -d domain_name [-d domain_name]...
+```
+
+(The difference is the path after the `-w` argument.)
+
+For either type of site, re-run the site set-up script.
 It will detect the key files,
 and configure the site for TLS/HTTPS access,
 including redirecting HTTP requests to HTTPS.
 
+Rails:
+
 ```
 sudo -E ./create-rails-app.sh domain_name...
+sudo nginx -s reload
+```
+
+Static site:
+
+```
+sudo -E ./create-server-block.sh domain_name...
 sudo nginx -s reload
 ```
 

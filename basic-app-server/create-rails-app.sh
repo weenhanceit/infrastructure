@@ -118,6 +118,8 @@ if [[ $use_port == 443 ]]; then
   ssl_stapling_verify on;
   ssl_trusted_certificate $certificate_directory/chain.pem;
   resolver 8.8.8.8 8.8.4.4;
+  # Step 6 (Rails does this for us anyway) pin for a fortnight
+  add_header Strict-Transport-Security "max-age=1209600" always;
   # Other steps TBD
 EOF
 else

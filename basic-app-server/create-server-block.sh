@@ -119,6 +119,8 @@ if [[ $use_port == 443 ]]; then
   ssl_stapling_verify on;
   ssl_trusted_certificate /etc/letsencrypt/live/$domain_name/chain.pem;
   resolver 8.8.8.8 8.8.4.4;
+  # Step 6 pin for a fortnight
+  add_header Strict-Transport-Security "max-age=1209600" always;
   # Other steps TBD
 EOF
 else
@@ -150,7 +152,8 @@ fi
 
 ln -fs ../sites-available/$domain_name $fake_root/etc/nginx/sites-enabled/
 
-cat <<EOF
+if [[ $use_port == 80 ]]; then
+  cat <<EOF
 You have to obtain a certificate and enable TLS for the site.
 To do so, run the following command:
 
@@ -160,3 +163,4 @@ And test renewal with:
 
 certbot renew --dry-run
 EOF
+fi
