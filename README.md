@@ -155,7 +155,7 @@ run this command and answer its questions to obtain and install certificates:
 sudo certbot certonly --webroot -w /var/www/domain_name/html/public -d domain_name [-d domain_name]...
 ```
 
-For statis sites,
+For static sites,
 run this command and answer its questions to obtain and install certificates:
 
 ```
