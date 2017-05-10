@@ -193,3 +193,14 @@ sudo certbot renew --dry-run
 Go to the [SSL test page](https://www.ssllabs.com/ssltest/)
 to test that the TLS implementation is working.
 You should get an A+ with the above set-up.
+
+## Default Site
+We redirect anything asking for the IP address of the server
+to our home page.
+To set that up,
+go to the directory with all the scripts and run:
+```
+sudo ./create-default-server.sh
+sudo nginx -s reload
+
+```
