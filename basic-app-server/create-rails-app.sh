@@ -197,6 +197,7 @@ Environment=RAILS_ENV=production
 Environment=SECRET_KEY_BASE=${SECRET_KEY_BASE:?"Please set SECRET_KEY_BASE=secret-key-base"}
 Environment=DATABASE_USERNAME=${DATABASE_USERNAME:?"Please set DATABASE_USERNAME=username"}
 Environment=DATABASE_PASSWORD=${DATABASE_PASSWORD:?"Please set DATABASE_PASSWORD=password"}
+Environment=EMAIL_PASSWORD=${EMAIL_PASSWORD:?"Please set EMAIL_PASSWORD=password"}
 
 # The command to start Puma
 # NOTE: TLS would be handled by Nginx
