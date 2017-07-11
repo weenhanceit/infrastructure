@@ -95,17 +95,29 @@ This sets up:
 * An Nginx server block for a given domain name. The server block proxies via a domain socket to Puma
 * A `systemd` service file that runs an instance of Puma
 receiving requests on the same domain socket.
+
+For the following, you get the "secret-key-base" by doing
+`rails secret`. 
+The "database-username" and "database-password" can be whatever you choose them to be.
 ```
 export SECRET_KEY_BASE=secret-key-base
 export DATABASE_USERNAME=database-username
 export DATABASE_PASSWORD=database-password
+export EMAIL_PASSWORD=email-password
 sudo -E ./create-rails-app.sh domain-name
+```
+Don't forget the `-E` to `sudo`. It allows the environment variables to be passed to the script.
+The last step above will tell you how to get a certificate for the site,
+but you can't do that yet.
+You need to deploy the application the first time,
+so the directories get created.
+
+Finally, set up the database:
+```
 export DATABASE=database
 ./create-db-user.sh
 ```
 The last step above will ask you for the password for the `root` user in the Postgres database.
-
-Don't forget the `-E` to `sudo`. It allows the environment variables to be passed to the script.
 
 The root directory of the Rails application is `/var/www/domain-name/html`.
 
