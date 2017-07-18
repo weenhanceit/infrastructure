@@ -99,6 +99,7 @@ receiving requests on the same domain socket.
 export SECRET_KEY_BASE=secret-key-base
 export DATABASE_USERNAME=database-username
 export DATABASE_PASSWORD=database-password
+export EMAIL_PASSWORD=email-password
 sudo -E ./create-rails-app.sh domain-name
 export DATABASE=database
 ./create-db-user.sh

@@ -15,7 +15,7 @@ sudo apt-get install -y -q pdftk
 
 sudo apt-get install -y -q postgresql-client libpq-dev
 sudo apt-get install -y -q sqlite3 libsqlite3-dev
-sudo apt-get install -y -q nodejs
+sudo apt-get install -y -q nodejs yarn
 sudo apt-get -y -q install nginx
 
 # Sendmail
