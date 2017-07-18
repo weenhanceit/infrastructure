@@ -1,6 +1,10 @@
 #!/bin/bash
 # Minimal We Enhance IT web server for static sites and Rails
 
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" |
+  sudo tee /etc/apt/sources.list.d/yarn.list
+
 sudo apt-get update -y -qq
 
 sudo apt-get install -y -q linux-headers-$(uname -r) build-essential dkms
@@ -16,11 +20,7 @@ sudo apt-get install -y -q pdftk
 sudo apt-get install -y -q postgresql-client libpq-dev
 sudo apt-get install -y -q sqlite3 libsqlite3-dev
 sudo apt-get install -y -q nodejs
-sudo apt-get -y -q install nginx
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" |
-  sudo tee /etc/apt/sources.list.d/yarn.list
-sudo apt-get install -y -q  yarn
+sudo apt-get -y -q install nginx yarn
 
 # Sendmail
 sudo apt-get install -y -q sendmail
