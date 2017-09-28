@@ -33,7 +33,7 @@ domain_name=$1
 sidekiq=sidekiq.$domain_name
 redis=redis.$domain_name
 root_directory=${fake_root:-/var/www/$domain_name/html}
-user=${user:-ubuntu}
+user=${user:-nobody}
 service_file=$fake_root/lib/systemd/system/$sidekiq.service
 
 if [[ $debug ]]; then
@@ -60,7 +60,7 @@ After=$redis.service
 # Foreground process (do not use --daemon in ExecStart or config.rb)
 Type=simple
 
-User=nobody
+User=$user
 Group=www-data
 
 # Specify the path to the Rails application root
@@ -77,7 +77,6 @@ Environment=REDIS_URL=unix:///tmp/$redis.sock
 # The command to start Sidekiq
 ExecStart=/usr/local/bin/bundle exec sidekiq -e production
 KillSignal=SIGTERM
-
 Restart=always
 
 SyslogIdentifier=$sidekiq

@@ -34,7 +34,7 @@ redis=redis.$domain_name
 redis_socket=$fake_root/tmp/$redis.sock
 redis_dir=$fake_root/var/lib/$redis
 redis_conf=$fake_root/etc/$redis.conf
-user=${user:-ubuntu}
+user=${user:-nobody}
 service_file=$fake_root/lib/systemd/system/$redis.service
 
 if [[ $debug ]]; then
@@ -65,7 +65,7 @@ sudo chmod 770 $redis_dir
 # TODO: Confirm that Redis is journalling changes so jobs are persistent.
 sed \
   -e "/^dir/s;.*;dir $redis_dir;" \
-  -e "/port 6379/s//port 0/" \
+  -e "/^port 6379/s//port 0/" \
   -e "/^# unixsocket /s;.*;unixsocket $redis_socket;" \
   -e "/^# unixsocketperm/s/^# //" \
   /etc/redis.conf >$redis_conf
