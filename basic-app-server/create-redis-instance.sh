@@ -34,7 +34,7 @@ redis=redis.$domain_name
 redis_socket=$fake_root/tmp/$redis.sock
 redis_dir=$fake_root/var/lib/$redis
 redis_conf=$fake_root/etc/$redis.conf
-user=${user:-redis}
+user=${user:-ubuntu}
 service_file=$fake_root/lib/systemd/system/$redis.service
 
 if [[ $debug ]]; then
@@ -54,7 +54,7 @@ if [[ $debug || $fake_root ]]; then
 fi
 
 sudo mkdir $redis_dir
-sudo chown redis:redis $redis_dir
+sudo chown $user:www-data $redis_dir
 sudo chmod 770 $redis_dir
 
 # Redis Config File
@@ -79,7 +79,7 @@ After=network.target
 
 [Service]
 User=$user
-Group=$user
+Group=www-data
 
 ExecStart=/usr/local/bin/redis-server $redis_conf
 ExecStop=/usr/local/bin/redis-cli -s $redis_socket shutdown
