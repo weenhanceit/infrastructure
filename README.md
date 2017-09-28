@@ -96,17 +96,24 @@ This sets up:
 * A `systemd` service file that runs an instance of Puma
 receiving requests on the same domain socket.
 
+### Set the Rails Environment Variables
+The Rails instance expects certain environment variables to be set.
+
 For the following, you get the "secret-key-base" by doing
-`rails secret`. 
+`rails secret`.
 The "database-username" and "database-password" can be whatever you choose them to be.
 ```
 export SECRET_KEY_BASE=secret-key-base
 export DATABASE_USERNAME=database-username
 export DATABASE_PASSWORD=database-password
 export EMAIL_PASSWORD=email-password
+```
+
+### Create the Rails Application
+```
 sudo -E ./create-rails-app.sh domain-name
 ```
-Don't forget the `-E` to `sudo`. It allows the environment variables to be passed to the script.
+Don't forget the `-E` to `sudo`. It causes the environment variables to be passed to the script.
 The last step above will tell you how to get a certificate for the site,
 but you can't do that yet.
 You need to deploy the application the first time,
@@ -145,9 +152,128 @@ If it's not running, try to restart it with:
 sudo systemctl restart domain-name
 ```
 
+### Set Up Redis for a Rails Application
+The [One Time Server Setup](One-Time-Server-Setup) installs Redis
+with a basic configuration
+useful for simple Redis testing.
+For production applications
+on a shared host
+further build and configuation are required.
+
+Our approach is to use at least one Redis instance per application.
+This allows us to configure each Redis application,
+and reduces the impact of a possible compromise of a Redis instance.
+
+To create an instance of Redis for a Rails application at a given domain-name,
+type:
+```
+sudo ./create-redis-instance.sh domain-name
+```
+This creates the configuration file
+and necessary directories
+to run an instance of Redis for the application.
+A `systemd` unit file is created,
+so you can start the instance of Redis using:
+```
+sudo systemctl start redis.domain-name
+```
+and stop the instance of Redis using:
+```
+sudo systemctl stop redis.domain-name
+```
+You can see the status of the instance of Redis using:
+```
+sudo systemctl status redis.domain-name
+```
+The Redis log messages are written to `/var/log/syslog`.
+
+The create script sets up the Redis instance to automatically start
+when the server starts,
+but it doesn't start the instance when it's first created.
+Remember to start the instance with:
+```
+sudo systemctl start redis.domain-name
+```
+
+### Set Up the Rails Application for Sidekiq
+The Sidekiq configuration in the Rails application
+must be set correctly to work with the our standard production infrastructure.
+`config/sidekiq.yml` must contain at least:
+```YAML
+:queues:
+  - default
+  - mailers
+```
+`config/initializers/sidekiq.rb` must contain at least this:
+```Ruby
+url = case Rails.env
+when "production"
+  ENV[REDIS_URL]
+else
+  "localhost:6379"
+end
+
+end
+Sidekiq.configure_server do |config|
+  config.redis = { url: url }
+end
+
+Sidekiq.configure_client do |config|
+  config.redis = { url: url }
+end
+```
+
+### Set Up Sidekiq for a Rails Application
+To set up Sidekiq for a Rails application,
+first [Set Up Redis for a Rails Application]
+Then,
+[create a Rails application](Creating a Rails Application).
+
+and install the Rails application and make sure it's running.
+Since Sidekiq in many ways is running the Rails application
+in another instance,
+make sure the Rails application runs
+before trying to debug Sidekiq problems.
+
+To create an instance of Sidekiq for a Rails application at a given domain-name,
+[set up the environment variables for the Rails application](Setting the Rails Environment Variables),
+if they're not already set.
+
+Then, type:
+```
+sudo -E ./create-sidekiq-instance.sh domain-name
+```
+(Don't forget the `-E` to `sudo`.
+It causes the environment variables to be passed to the script.)
+This creates the configuration file
+and necessary directories
+to run an instance of Sidekiq for the application.
+A `systemd` unit file is created,
+so you can start the instance of Sidekiq using:
+```
+sudo systemctl start sidekiq.domain-name
+```
+and stop the instance of Sidekiq using:
+```
+sudo systemctl stop sidekiq.domain-name
+```
+You can see the status of the instance of Sidekiq using:
+```
+sudo systemctl status sidekiq.domain-name
+```
+The Sidekiq log messages are written to `/var/log/syslog`.
+
+The create script sets up the Sidekiq instance to automatically start
+when the server starts,
+but it doesn't start the instance when it's first created.
+Remember to start the instance with:
+```
+sudo systemctl start sidekiq.domain-name
+```
+
 ## TLS (formerly SSL)
 All Internet traffic should be encrypted,
-if you want to be a good citizen.
+if you want to be a good Internet citizen.
 We get certificates from [Let's Encrypt](https://letsencrypt.org),
 using the [EFF's Certbot](https://certbot.eff.org).
 You should read the documentation for both of those
