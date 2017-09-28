@@ -11,6 +11,14 @@ Nginx proxies the requests through to the appropriate Rails application,
 or serves up the pages of the appropriate static web site.
 There is an instance of Puma for each of the Rails applications.
 
+Each Rails application has its database configuration
+to talk to a database on the RDS instance.
+
+For applications that need Redis,
+we run a separate Redis instance for each application.
+The Redis instance listens on a domain socket
+at `/tmp/redis.domain_name`.
+
 ## Prerequisites
 This document assumes you've already set up an EC2 instance,
 that CodeDeploy can deploy to the EC2 instance,
