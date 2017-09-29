@@ -161,7 +161,7 @@ sudo systemctl restart domain-name
 ```
 
 ### Set Up Redis for a Rails Application
-The [One Time Server Setup](One-Time-Server-Setup) installs Redis
+The [One Time Server Setup](one-time-server-setup) installs Redis
 with a basic configuration
 useful for simple Redis testing.
 For production applications
@@ -206,7 +206,7 @@ sudo systemctl start redis.domain-name
 ### Set Up the Rails Application for Sidekiq
 The Sidekiq configuration in the Rails application
 must be set correctly to work with the our standard production infrastructure.
-`config/sidekiq.yml` must contain at least:
+`config/sidekiq.yml` must contain at least this:
 ```YAML
 :queues:
   - default
@@ -233,9 +233,9 @@ end
 
 ### Set Up Sidekiq for a Rails Application
 To set up Sidekiq for a Rails application,
-first [Set Up Redis for a Rails Application]
+first [Set Up Redis for a Rails Application](set-up-redis-for-a-rails-application)
 Then,
-[create a Rails application](Creating a Rails Application).
+[create a Rails application](creating-a-rails-application).
 
 and install the Rails application and make sure it's running.
 Since Sidekiq in many ways is running the Rails application
@@ -244,7 +244,7 @@ make sure the Rails application runs
 before trying to debug Sidekiq problems.
 
 To create an instance of Sidekiq for a Rails application at a given domain-name,
-[set up the environment variables for the Rails application](Setting the Rails Environment Variables),
+[set up the environment variables for the Rails application](setting-the-rails-environment-variables),
 if they're not already set.
 
 Then, type:
