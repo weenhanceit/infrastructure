@@ -3,6 +3,7 @@
 usage() {
   echo usage: `basename $0` [-u user -hd] domain_name...
   cat <<EOF
+  -a            Add configuration for ActionCable.
   -d            Debug.
   -h            This help.
   -p  [80|443]  Use HTTP or HTTPS (can't use both). Default based on presence of certificate files.
@@ -11,8 +12,9 @@ usage() {
 EOF
 }
 
-while getopts dhp:r:u: x ; do
+while getopts adhp:r:u: x ; do
   case $x in
+    a) action_cable=1;;
     d)  debug=1
         fake_root=${fake_root:-.};;
     h)  usage; exit 0;;
@@ -150,6 +152,20 @@ cat >>$server_block_definition <<-EOF
     proxy_set_header Host \$http_host;
     proxy_redirect off;
   }
+EOF
+if [[ $action_cable == 1 ]]; then
+  cat >>$server_block_definition <<-EOF
+
+  location /cable {
+    proxy_pass http://$domain_name;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade \$http_upgrade;
+    proxy_set_header Connection "upgrade";
+  }
+EOF
+fi
+
+cat >>$server_block_definition <<-EOF
 
   error_page 500 502 503 504 /500.html;
   client_max_body_size 4G;
@@ -162,9 +178,9 @@ if [[ $use_port == 443 ]]; then
 
 server {
   server_name $domain_names;
-	listen 80;
-	listen [::]:80;
-	return 301 https://\$server_name/\$request_uri;
+  listen 80;
+  listen [::]:80;
+  return 301 https://\$server_name/\$request_uri;
 }
 EOF
 fi
