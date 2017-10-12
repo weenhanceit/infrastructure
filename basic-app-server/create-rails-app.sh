@@ -32,6 +32,7 @@ if [[ $# -lt 1 ]]; then
 fi
 
 domain_name=$1
+redis=redis.$domain_name
 domain_names=""
 certbot_domain_names=""
 for d in "$@"; do
