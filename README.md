@@ -118,11 +118,19 @@ export EMAIL_PASSWORD=email-password
 ```
 
 ### Create the Rails Application
+If the application does *not* use ActionCable:
 ```
 sudo -E ./create-rails-app.sh domain-name
 ```
+If the application uses ActionCable, add the `-a` flag:
+```
+sudo -E ./create-rails-app.sh -a domain-name
+```
 Don't forget the `-E` to `sudo`. It causes the environment variables to be passed to the script.
-The last step above will tell you how to get a certificate for the site,
+If you forget to use the ActionCable (`-a`) flag,
+you can safely re-run this script later with the flag.
+
+The above will tell you how to get a certificate for the site,
 but you can't do that yet.
 You need to deploy the application the first time,
 so the directories get created.
