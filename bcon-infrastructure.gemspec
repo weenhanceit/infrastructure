@@ -12,8 +12,11 @@ Gem::Specification.new do |s|
     "lib/bcon_infrastructure.rb",
     "lib/bcon_infrastructure/config.rb",
     "lib/bcon_infrastructure/http_server_block.rb",
-    "lib/bcon_infrastructure/https_server_block.rb"
+    "lib/bcon_infrastructure/https_server_block.rb",
+    "lib/bcon_infrastructure/rails_builder.rb",
+    "lib/bcon_infrastructure/static_builder.rb"
   ]
+  s.executables << ["create-server-block", "create-rails-app"]
   s.homepage    = "https://github.com/weenhanceit/infrastructure"
   s.license     = "MIT"
 end
