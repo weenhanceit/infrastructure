@@ -162,5 +162,7 @@ sudo certbot certonly --webroot -w $root_directory $certbot_domain_names
 And test renewal with:
 
 certbot renew --dry-run
+
+Finally, re-run this script to configure nginx for TLS.
 EOF
 fi

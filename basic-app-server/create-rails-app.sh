@@ -1,4 +1,6 @@
 #!/bin/bash
+# Create a server block for nginx.
+# Configured to reverse-proxy to a Rails app.
 
 usage() {
   echo usage: `basename $0` [-u user -hd] domain_name...
@@ -265,5 +267,7 @@ sudo certbot certonly --webroot -w $root_directory/public $certbot_domain_names
 You can test renewal with:
 
 sudo certbot renew --dry-run
+
+Finally, re-run this script to configure nginx for TLS.
 EOF
 fi
