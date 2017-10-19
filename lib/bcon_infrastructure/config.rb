@@ -8,7 +8,7 @@ class Config
   end
 
   def certificate_directory
-    "/etc/letsencrypt/lib/#{domain_name}"
+    "/etc/letsencrypt/live/#{domain_name}"
   end
 
   def domain_names

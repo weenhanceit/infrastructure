@@ -23,7 +23,7 @@ class StaticBuilderTest < MiniTest::Test
     ARGV << "example.com"
     builder = StaticBuilder.new.main
     assert_equal "-d example.com -d www.example.com", builder.certbot_domain_names
-    assert_equal "/etc/letsencrypt/lib/example.com", builder.certificate_directory
+    assert_equal "/etc/letsencrypt/live/example.com", builder.certificate_directory
     assert_equal "example.com", builder.domain_name
     assert_equal "example.com www.example.com", builder.domain_names
     assert_equal "/var/www/example.com/html", builder.root_directory
@@ -35,7 +35,7 @@ class StaticBuilderTest < MiniTest::Test
     ARGV.clear
     ARGV << "example.com"
     builder = StaticBuilder.new.main(config_class: ConfigMock)
-    assert_match %r{/tmp/.*/etc/letsencrypt/lib/example.com}, builder.certificate_directory
+    assert_match %r{/tmp/.*/etc/letsencrypt/live/example.com}, builder.certificate_directory
     assert_match %r{/tmp/.*/var/www/example.com/html}, builder.root_directory
     assert_match %r{/tmp/.*/etc/nginx/sites-available/example.com}, builder.server_block_location
   end
@@ -72,11 +72,18 @@ class StaticBuilderTest < MiniTest::Test
   end
 
   def test_default_to_https_when_keys_exist
+    ARGV.clear
+    ARGV.concat(%w[example.com])
     builder = StaticBuilder.new.main(config_class: ConfigMock)
-    FileUtils.touch [File.join(builder.certificate_directory, "privkey.pem"),
+    key_file_list = [File.join(builder.certificate_directory, "privkey.pem"),
                      File.join(builder.certificate_directory, "fullchain.pem")]
+    FileUtils.touch(key_file_list)
+    ARGV.clear
     ARGV.concat(%w[--dhparam 128 example.com])
+    # puts "KEYS SHOULD EXIST #{key_file_list.all? { |f| File.exist?(f) }}"
+    # puts key_file_list
     builder = StaticBuilder.new.main(config_class: ConfigMock)
+    # puts "KEYS SHOULD EXIST #{key_file_list.all? { |f| File.exist?(f) }}"
     assert builder.build, "Build failed"
     assert_directory builder.certificate_directory
     assert_directory builder.root_directory

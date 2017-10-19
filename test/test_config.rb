@@ -11,7 +11,7 @@ class ConfigTest < Minitest::Test
   end
 
   def test_certificate_directory
-    assert_equal "/etc/letsencrypt/lib/example.com", @config.certificate_directory
+    assert_equal "/etc/letsencrypt/live/example.com", @config.certificate_directory
   end
 
   def test_domain_name

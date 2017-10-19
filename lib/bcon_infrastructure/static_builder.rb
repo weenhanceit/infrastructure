@@ -29,6 +29,12 @@ class StaticBuilder
         options[:protocol] = protocol
       end
 
+      opts.on("-u USER",
+        "--user USER",
+        "User to be the owner of certain files. Default: ubuntu.") do |user|
+        options[:user] = user
+      end
+
       opts.on("--dhparam KEYSIZE",
         "KEYSIZE. Default: 2048 should be used. Option is for testing purposes.") do |dhparam|
         options[:dhparam] = dhparam
@@ -40,13 +46,8 @@ class StaticBuilder
 
     $stderr.puts "domain required" unless ARGV.size == 1
 
-    @config = config_class.new(ARGV.first)
-    @builder_class = case protocol(options[:protocol])
-                     when "HTTPS"
-                       StaticHttpsBuilder.new(HttpsServerBlock, @config, options)
-                     else
-                       StaticHttpBuilder.new(HttpServerBlock, @config)
-                     end
+    @config = config_class.new(ARGV.first, options.select { |k, _v| k == :user })
+    @builder_class = protocol_factory(options)
     self
   end
 
@@ -69,13 +70,30 @@ class StaticBuilder
 
   private
 
-  def protocol(protocol)
-    return protocol.upcase unless protocol.nil?
-    if File.exist?(File.join(@config.certificate_directory, "privkey.pem")) &&
-       File.exist?(File.join(@config.certificate_directory, "fullchain.pem"))
-      "HTTPS"
-    else
-      "HTTP"
-    end
+  def protocol_factory(options)
+    klass = case options[:protocol]&.upcase
+            when "HTTP"
+              # puts "Branch A"
+              StaticHttpBuilder.new(HttpServerBlock, @config)
+            when "HTTPS"
+              # puts "Branch B"
+              StaticHttpsBuilder.new(HttpsServerBlock, @config, options)
+            else
+              if File.exist?(File.join(@config.certificate_directory, "privkey.pem")) &&
+                 File.exist?(File.join(@config.certificate_directory, "fullchain.pem"))
+                #  puts "Branch C"
+                StaticHttpsBuilder.new(HttpsServerBlock, @config, options)
+              else
+                # puts "Branch D"
+                # puts "privkey: #{File.exist?(File.join(@config.certificate_directory, "privkey.pem"))}"
+                # puts "fullchain: #{File.exist?(File.join(@config.certificate_directory, "fullchain.pem"))}"
+                # puts "privkey: #{File.join(@config.certificate_directory, "privkey.pem")}"
+                # puts "fullchain: #{File.join(@config.certificate_directory, "fullchain.pem")}"
+                StaticHttpBuilder.new(HttpServerBlock, @config)
+              end
+            end
+
+    # puts "protocol_factory klass: #{klass}"
+    klass
   end
 end
