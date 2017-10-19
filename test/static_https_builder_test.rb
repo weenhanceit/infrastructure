@@ -1,7 +1,7 @@
 require "minitest/autorun"
 require "bcon_infrastructure"
 
-class StaticHttpsBuilderTest < Minuilderitest::Test
+class StaticHttpsBuilderTest < Minitest::Test
   def test_https_server_block
     builder = StaticHttpsBuilder.new(HttpsServerBlock, Config.new("example.com"))
     assert_equal EXPECTED_HTTPS_SERVER_BLOCK, builder.server_block

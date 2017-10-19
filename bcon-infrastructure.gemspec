@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
     "lib/bcon_infrastructure/http_server_block.rb",
     "lib/bcon_infrastructure/https_server_block.rb",
     "lib/bcon_infrastructure/rails_builder.rb",
+    "lib/bcon_infrastructure/reverse_proxy_http_server_block.rb",
     "lib/bcon_infrastructure/static_builder.rb",
     "lib/bcon_infrastructure/static_http_builder.rb",
     "lib/bcon_infrastructure/static_https_builder.rb"

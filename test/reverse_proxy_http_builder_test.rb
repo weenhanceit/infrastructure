@@ -3,7 +3,8 @@ require "bcon_infrastructure"
 
 class ReverseProxyHttpBuilderTest < Minitest::Test
   def test_http_reverse_proxy
-    builder = ReverseProxyHttpBuilder.new(ReverseProxyHttpServerBlock, Config.new("example.com"))
+    builder = ReverseProxyHttpBuilder.new(ReverseProxyHttpServerBlock,
+      Config.new("example.com", proxy_url: "http://search.example.com"))
     assert_equal %(server {
   server_name example.com www.example.com;
 

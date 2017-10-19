@@ -14,21 +14,29 @@ class HttpServerBlock
   private
 
   def end_server_block
+    %(#{location}
+}
+)
+  end
+
+  def location
     %(
   location / {
     try_files $uri $uri/ =404;
-  }
-}
+  })
+  end
+
+  def root
+    %(
+  root #{@config.root_directory};
+  index index.html index.htm;
 )
   end
 
   def start_server_block
     %(server {
   server_name #{@config.domain_names};
-
-  root #{@config.root_directory};
-  index index.html index.htm;
-
+#{root}
 )
   end
 end

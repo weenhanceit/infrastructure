@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Config
-  attr_reader :domain_name, :user
+  attr_reader :domain_name, :proxy_url, :user
 
   def certbot_domain_names
     domain_names_array.map { |d| "-d " + d }.join(" ")
@@ -15,9 +15,10 @@ class Config
     domain_names_array.join(" ")
   end
 
-  def initialize(domain_name, user: "ubuntu")
+  def initialize(domain_name, user: "ubuntu", proxy_url: nil)
     @domain_name = domain_name
     @user = user
+    @proxy_url = proxy_url
   end
 
   def root_directory
