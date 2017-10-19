@@ -1,9 +1,9 @@
 require "minitest/autorun"
 require "bcon_infrastructure"
 
-class HttpServerBlockTest < Minitest::Test
+class StaticHttpBuilderTest < Minitest::Test
   def test_http_server_block
-    server_block = HttpServerBlock.new(Config.new("example.com"))
+    builder = StaticHttpBuilder.new(HttpServerBlock, Config.new("example.com"))
     assert_equal %(server {
   server_name example.com www.example.com;
 
@@ -17,6 +17,6 @@ class HttpServerBlockTest < Minitest::Test
     try_files $uri $uri/ =404;
   }
 }
-), server_block.server_block
+), builder.server_block
   end
 end
