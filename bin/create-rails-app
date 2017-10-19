@@ -4,4 +4,4 @@
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require "bcon_infrastructure"
 
-RailsBuilder.new.main(ARGV).build
+RailsBuilder.new.main.build

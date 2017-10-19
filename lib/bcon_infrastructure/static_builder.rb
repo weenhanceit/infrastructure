@@ -18,6 +18,11 @@ class StaticBuilder
     OptionParser.new do |opts|
       opts.banner = "Usage: [options]"
 
+      opts.on("-h", "--help", "Prints this help") do
+        puts opts
+        exit
+      end
+
       opts.on("-p PROTOCOL",
         "--protocol PROTOCOL",
         "HTTP|HTTPS. Default: HTTPS if key files exist, else HTTP.") do |protocol|
