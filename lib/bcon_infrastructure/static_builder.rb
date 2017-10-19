@@ -23,6 +23,11 @@ class StaticBuilder
         "HTTP|HTTPS. Default: HTTPS if key files exist, else HTTP.") do |protocol|
         options[:protocol] = protocol
       end
+
+      opts.on("--dhparam KEYSIZE",
+        "KEYSIZE. Default: 2048 should be used. Option is for testing purposes.") do |dhparam|
+        options[:dhparam] = dhparam
+      end
     end.parse!
 
     # puts "OPTIONS: #{options.inspect}"
@@ -33,7 +38,7 @@ class StaticBuilder
     @config = config_class.new(ARGV.first)
     @builder_class = case protocol(options[:protocol])
                      when "HTTPS"
-                       StaticHttpsBuilder.new(HttpsServerBlock, @config)
+                       StaticHttpsBuilder.new(HttpsServerBlock, @config, options)
                      else
                        StaticHttpBuilder.new(HttpServerBlock, @config)
                      end
@@ -61,6 +66,11 @@ class StaticBuilder
 
   def protocol(protocol)
     return protocol.upcase unless protocol.nil?
-    "HTTP"
+    if File.exist?(File.join(@config.certificate_directory, "privkey.pem")) &&
+       File.exist?(File.join(@config.certificate_directory, "fullchain.pem"))
+      "HTTPS"
+    else
+      "HTTP"
+    end
   end
 end

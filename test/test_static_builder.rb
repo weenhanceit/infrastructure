@@ -54,7 +54,7 @@ class StaticBuilderTest < MiniTest::Test
 
   def test_build_https
     ARGV.clear
-    ARGV.concat(["-p", "HTTPS", "example.com"])
+    ARGV.concat(%w[-p HTTPS --dhparam 128 example.com])
     builder = StaticBuilder.new.main(config_class: ConfigMock)
     assert builder.build, "Build failed"
     assert_directory builder.certificate_directory
@@ -69,6 +69,23 @@ class StaticBuilderTest < MiniTest::Test
     # need to test it.
     # assert_file File.join(builder.certificate_directory, "privkey.pem")
     # assert_file File.join(builder.certificate_directory, "fullchain.pem")
+  end
+
+  def test_default_to_https_when_keys_exist
+    builder = StaticBuilder.new.main(config_class: ConfigMock)
+    FileUtils.touch [File.join(builder.certificate_directory, "privkey.pem"),
+                     File.join(builder.certificate_directory, "fullchain.pem")]
+    ARGV.concat(%w[--dhparam 128 example.com])
+    builder = StaticBuilder.new.main(config_class: ConfigMock)
+    assert builder.build, "Build failed"
+    assert_directory builder.certificate_directory
+    assert_directory builder.root_directory
+    assert_directory File.join(builder.fake_root, "/etc/nginx/sites-available")
+    assert_directory File.join(builder.fake_root, "/etc/nginx/sites-enabled")
+    assert_file builder.server_block_location
+    assert_equal EXPECTED_HTTPS_SERVER_BLOCK,
+      File.open(builder.server_block_location, "r", &:read)
+    assert_file File.join(builder.certificate_directory, "dhparam.pem")
   end
 
   def assert_directory(d)
