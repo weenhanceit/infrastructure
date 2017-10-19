@@ -4,7 +4,7 @@ require "bcon_infrastructure"
 class HttpsServerBlockTest < Minitest::Test
   def test_https_server_block
     server_block = HttpsServerBlock.new(Config.new("example.com"))
-    assert_equal EXPECTED_HTTPS_SERVER_BLOCK, server_block.to_s
+    assert_equal EXPECTED_HTTPS_SERVER_BLOCK, server_block.server_block
   end
 
   EXPECTED_HTTPS_SERVER_BLOCK = %(server {

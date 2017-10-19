@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class HttpServerBlock
-  def to_s
+  def server_block
     start_server_block + %(  listen 80;
   listen [::]:80;
 ) + end_server_block

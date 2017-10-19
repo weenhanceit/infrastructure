@@ -17,6 +17,6 @@ class HttpServerBlockTest < Minitest::Test
     try_files $uri $uri/ =404;
   }
 }
-), server_block.to_s
+), server_block.server_block
   end
 end

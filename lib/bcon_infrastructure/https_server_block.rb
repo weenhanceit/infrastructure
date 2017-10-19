@@ -1,5 +1,5 @@
 class HttpsServerBlock < HttpServerBlock
-  def to_s
+  def server_block
     start_server_block + %(  # TLS config from: http://nginx.org/en/docs/http/configuring_https_servers.html
   # HTTP2 doesn't require encryption, but at last reading, no browsers support
   # HTTP2 without TLS, so only do http2 when we have TLS.

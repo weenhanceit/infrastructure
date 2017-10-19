@@ -29,6 +29,12 @@ class StaticBuilder
         options[:protocol] = protocol
       end
 
+      opts.on("-r PROXYURL",
+        "--reverse-proxy PROXYURL",
+        "Reverse proxy URL.") do |proxy_url|
+        options[:proxy_url] = proxy_url
+      end
+
       opts.on("-u USER",
         "--user USER",
         "User to be the owner of certain files. Default: ubuntu.") do |user|

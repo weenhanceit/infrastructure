@@ -3,7 +3,7 @@
 class StaticHttpBuilder
   def build
     File.open(@config.server_block_location, "w") do |f|
-      f << @server_block_class.new(@config).to_s
+      f << @server_block_class.new(@config).server_block
     end
   end
 
