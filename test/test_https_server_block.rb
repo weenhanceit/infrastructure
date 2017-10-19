@@ -4,7 +4,10 @@ require "bcon_infrastructure"
 class HttpsServerBlockTest < Minitest::Test
   def test_https_server_block
     server_block = HttpsServerBlock.new(Config.new("example.com"))
-    assert_equal %(server {
+    assert_equal EXPECTED_HTTPS_SERVER_BLOCK, server_block.to_s
+  end
+
+  EXPECTED_HTTPS_SERVER_BLOCK = %(server {
   server_name example.com www.example.com;
 
   root /var/www/example.com/html;
@@ -41,6 +44,5 @@ class HttpsServerBlockTest < Minitest::Test
     try_files $uri $uri/ =404;
   }
 }
-), server_block.to_s
-  end
+)
 end

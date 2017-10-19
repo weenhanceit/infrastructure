@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "optparse"
 
 class StaticBuilder
@@ -8,18 +10,33 @@ class StaticBuilder
   end
 
   def build
-    File.open(server_block_location, "w") do |f|
-      f << HttpServerBlock.new(@config).to_s
-    end
+    @builder_class&.build
   end
 
-  def main(argv, config_class: Config)
+  def main(config_class: Config)
     options = {}
     OptionParser.new do |opts|
       opts.banner = "Usage: [options]"
+
+      opts.on("-p PROTOCOL",
+        "--protocol PROTOCOL",
+        "HTTP|HTTPS. Default: HTTPS if key files exist, else HTTP.") do |protocol|
+        options[:protocol] = protocol
+      end
     end.parse!
-    $stderr.puts "domain required" unless argv.size == 1
-    @config = config_class.new(argv.first)
+
+    # puts "OPTIONS: #{options.inspect}"
+    # puts "ARGV: #{ARGV}"
+
+    $stderr.puts "domain required" unless ARGV.size == 1
+
+    @config = config_class.new(ARGV.first)
+    @builder_class = case protocol(options[:protocol])
+                     when "HTTPS"
+                       StaticHttpsBuilder.new(HttpsServerBlock, @config)
+                     else
+                       StaticHttpBuilder.new(HttpServerBlock, @config)
+                     end
     self
   end
 
@@ -38,5 +55,12 @@ class StaticBuilder
     define_method method do
       @config && @config.send(method)
     end
+  end
+
+  private
+
+  def protocol(protocol)
+    return protocol.upcase unless protocol.nil?
+    "HTTP"
   end
 end
