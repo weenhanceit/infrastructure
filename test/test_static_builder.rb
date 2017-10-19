@@ -94,18 +94,18 @@ class StaticBuilderTest < MiniTest::Test
     assert_file File.join(builder.certificate_directory, "dhparam.pem")
   end
 
-  def test_reverse_proxy_http
-    ARGV.clear
-    ARGV.concat(%w[-r http://search.example.com example.com])
-    builder = StaticBuilder.new.main(config_class: ConfigMock)
-    assert builder.build, "Build failed"
-    assert_directory builder.root_directory
-    assert_directory File.join(builder.fake_root, "/etc/nginx/sites-available")
-    assert_directory File.join(builder.fake_root, "/etc/nginx/sites-enabled")
-    assert_file builder.server_block_location
-    assert_equal EXPECTED_REVERSE_PROXY_HTTP_SERVER_BLOCK,
-      File.open(builder.server_block_location, "r", &:read)
-  end
+  # def test_reverse_proxy_http
+  #   ARGV.clear
+  #   ARGV.concat(%w[-r http://search.example.com example.com])
+  #   builder = StaticBuilder.new.main(config_class: ConfigMock)
+  #   assert builder.build, "Build failed"
+  #   assert_directory builder.root_directory
+  #   assert_directory File.join(builder.fake_root, "/etc/nginx/sites-available")
+  #   assert_directory File.join(builder.fake_root, "/etc/nginx/sites-enabled")
+  #   assert_file builder.server_block_location
+  #   assert_equal EXPECTED_REVERSE_PROXY_HTTP_SERVER_BLOCK,
+  #     File.open(builder.server_block_location, "r", &:read)
+  # end
 
   def assert_directory(d)
     assert File.directory?(d), "#{d}: does not exist"
@@ -151,6 +151,13 @@ class StaticBuilderTest < MiniTest::Test
   location / {
     try_files $uri $uri/ =404;
   }
+}
+
+server {
+  server_name example.com www.example.com ;
+  listen 80;
+  listen [::]:80;
+  return 301 https://$server_name/$request_uri;
 }
 )
 
