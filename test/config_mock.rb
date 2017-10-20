@@ -20,7 +20,7 @@ class ConfigMock < Config
     ConfigMock.fake_root
   end
 
-  def initialize(domain_name, user: "ubuntu")
+  def initialize(domain_name, user: "ubuntu", proxy_url: nil)
     super
     FileUtils.mkdir_p(certificate_directory)
     FileUtils.mkdir_p(root_directory)

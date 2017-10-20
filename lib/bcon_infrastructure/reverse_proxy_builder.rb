@@ -1,8 +1,16 @@
 # frozen_string_literal: true
 
 class ReverseProxyBuilder < StaticBuilder
-  def parse_options
-    super do
+  def check_args
+    $stderr.puts "domain and target url required" unless ARGV.size == 2
+  end
+
+  def options_for_config(options)
+    super(options).merge(proxy_url: ARGV[1])
+  end
+
+  def process_options
+    super do |opts|
       opts.on("-c DOMAIN",
         "--certificate-domain DOMAIN",
         "Use the certificate for DOMAIN.") do |certificate_domain|
@@ -11,8 +19,10 @@ class ReverseProxyBuilder < StaticBuilder
     end
   end
 
-  def options_for_config(options)
-    $stderr.puts "domain and target url required" unless ARGV.size == 2
-    super(options).merge(proxy_url: ARGV.second)
+  def protocol_factory(options)
+    super(options,
+      ReverseProxyHttpBuilder,
+      ReverseProxyHttpServerBlock
+    ) # , ReverseProxyHttpsServerBlock)
   end
 end
