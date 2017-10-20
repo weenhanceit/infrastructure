@@ -16,6 +16,22 @@ class StaticBuilder
   end
 
   def main(config_class: Config)
+    options = process_options
+
+    # puts "OPTIONS: #{options.inspect}"
+    # puts "ARGV: #{ARGV}"
+
+    @config = config_class.new(ARGV.first, options_for_config(options))
+    @builder_class = protocol_factory(options)
+    self
+  end
+
+  def options_for_config(options)
+    $stderr.puts "domain required" unless ARGV.size == 1
+    options.select { |k, _v| k == :user }
+  end
+
+  def process_options
     options = {}
     OptionParser.new do |opts|
       opts.banner = "Usage: [options]"
@@ -31,12 +47,6 @@ class StaticBuilder
         options[:protocol] = protocol
       end
 
-      opts.on("-r PROXYURL",
-        "--reverse-proxy PROXYURL",
-        "Reverse proxy URL.") do |proxy_url|
-        options[:proxy_url] = proxy_url
-      end
-
       opts.on("-u USER",
         "--user USER",
         "User to be the owner of certain files. Default: ubuntu.") do |user|
@@ -47,16 +57,10 @@ class StaticBuilder
         "KEYSIZE. Default: 2048 should be used. Option is for testing purposes.") do |dhparam|
         options[:dhparam] = dhparam
       end
+
+      yield if block_given?
     end.parse!
-
-    # puts "OPTIONS: #{options.inspect}"
-    # puts "ARGV: #{ARGV}"
-
-    $stderr.puts "domain required" unless ARGV.size == 1
-
-    @config = config_class.new(ARGV.first, options.select { |k, _v| k == :user })
-    @builder_class = protocol_factory(options)
-    self
+    options
   end
 
   DELEGATE_TO_CONFIG = %i[
