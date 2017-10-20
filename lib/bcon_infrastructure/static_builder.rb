@@ -3,6 +3,8 @@
 require "optparse"
 
 class StaticBuilder
+  include BconInfrastructure::Files
+
   class << self
     def call(argv)
       puts argv

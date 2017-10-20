@@ -35,9 +35,9 @@ class StaticBuilderTest < MiniTest::Test
     ARGV.clear
     ARGV << "example.com"
     builder = StaticBuilder.new.main(config_class: ConfigMock)
-    assert_match %r{/tmp/.*/etc/letsencrypt/live/example.com}, builder.certificate_directory
-    assert_match %r{/tmp/.*/var/www/example.com/html}, builder.root_directory
-    assert_match %r{/tmp/.*/etc/nginx/sites-available/example.com}, builder.server_block_location
+    assert_match "/tmp/builder_test/etc/letsencrypt/live/example.com", builder.certificate_directory
+    assert_match "/tmp/builder_test/var/www/example.com/html", builder.root_directory
+    assert_match "/tmp/builder_test/etc/nginx/sites-available/example.com", builder.server_block_location
   end
 
   def test_build_http
