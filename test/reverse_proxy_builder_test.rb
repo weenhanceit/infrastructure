@@ -3,8 +3,9 @@
 require "minitest/autorun"
 require "bcon_infrastructure"
 require "config_mock"
+require "test"
 
-class ReverseProxyBuilderTest < MiniTest::Test
+class ReverseProxyBuilderTest < Test
   include FileUtils
 
   def setup
@@ -117,21 +118,4 @@ class ReverseProxyBuilderTest < MiniTest::Test
       "/etc/nginx/sites-enabled",
       File.basename(builder.server_block_location))
   end
-
-  EXPECTED_REVERSE_PROXY_HTTP_SERVER_BLOCK = %(server {
-  server_name example.com www.example.com;
-
-  listen 80;
-  listen [::]:80;
-
-  location / {
-    proxy_pass http://search.example.com;
-    proxy_set_header Host $http_host;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_redirect off;
-  }
-}
-)
 end
