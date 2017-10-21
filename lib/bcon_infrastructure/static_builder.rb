@@ -13,6 +13,8 @@ class StaticBuilder
 
   def build
     @builder_class&.build
+    @config.enable_site
+    @config.make_website_root
   end
 
   def check_args
@@ -86,6 +88,8 @@ class StaticBuilder
   end
 
   private
+
+  attr_reader :config
 
   def protocol_factory(options,
     http_class = StaticHttpBuilder,

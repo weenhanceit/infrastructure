@@ -15,6 +15,7 @@ server {
   def build
     super
     add_force_tls
+    @config.make_certificate_directory
     `openssl dhparam #{@dhparam} -out #{@config.certificate_directory}/dhparam.pem`
   end
 

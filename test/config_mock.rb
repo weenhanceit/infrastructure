@@ -6,6 +6,7 @@ class ConfigMock < Config
 
   PATH_METHODS = %i[
     certificate_directory
+    enabled_server_block_location
     root_directory
     server_block_location
   ].freeze
@@ -22,8 +23,6 @@ class ConfigMock < Config
 
   def initialize(domain_name, user: "ubuntu", proxy_url: nil)
     super
-    FileUtils.mkdir_p(certificate_directory)
-    FileUtils.mkdir_p(root_directory)
     FileUtils.mkdir_p(File.dirname(server_block_location))
     FileUtils.mkdir_p(File.join(fake_root, "/etc/nginx/sites-available"))
     FileUtils.mkdir_p(File.join(fake_root, "/etc/nginx/sites-enabled"))

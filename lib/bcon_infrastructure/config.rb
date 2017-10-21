@@ -15,10 +15,26 @@ class Config
     domain_names_array.join(" ")
   end
 
+  def enable_site
+    `ln -fs ../sites-available/#{domain_name} #{enabled_server_block_location}`
+  end
+
+  def enabled_server_block_location
+    File.join NGINX_ROOT, "/sites-enabled", domain_name
+  end
+
   def initialize(domain_name, user: "ubuntu", proxy_url: nil)
     @domain_name = domain_name
     @user = user
     @proxy_url = proxy_url
+  end
+
+  def make_certificate_directory
+    FileUtils.mkdir_p(certificate_directory)
+  end
+
+  def make_website_root
+    FileUtils.mkdir_p(root_directory)
   end
 
   def root_directory
@@ -26,7 +42,7 @@ class Config
   end
 
   def server_block_location
-    "/etc/nginx/sites-available/#{domain_name}"
+    File.join NGINX_ROOT, "/sites-available", domain_name
   end
 
   private
@@ -34,4 +50,6 @@ class Config
   def domain_names_array
     [domain_name, "www." + domain_name]
   end
+
+  NGINX_ROOT = "/etc/nginx"
 end

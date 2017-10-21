@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 class ReverseProxyBuilder < StaticBuilder
+  def build
+    @builder_class&.build
+    @config.enable_site
+  end
+
   def check_args
     $stderr.puts "domain and target url required" unless ARGV.size == 2
   end

@@ -37,7 +37,7 @@ class ReverseProxyBuilderTest < MiniTest::Test
     ARGV.concat %w[example.com search.example.com]
     builder = ReverseProxyBuilder.new.main(config_class: ConfigMock)
     assert builder.build, "Build failed"
-    assert_directory builder.root_directory
+    assert_no_directory builder.root_directory
     assert_directory File.join(builder.fake_root, "/etc/nginx/sites-available")
     assert_directory File.join(builder.fake_root, "/etc/nginx/sites-enabled")
     assert_file builder.server_block_location
@@ -91,10 +91,11 @@ class ReverseProxyBuilderTest < MiniTest::Test
     ARGV.concat(%w[example.com http://search.example.com])
     builder = ReverseProxyBuilder.new.main(config_class: ConfigMock)
     assert builder.build, "Build failed"
-    assert_directory builder.root_directory
+    assert_no_directory builder.root_directory
     assert_directory File.join(builder.fake_root, "/etc/nginx/sites-available")
     assert_directory File.join(builder.fake_root, "/etc/nginx/sites-enabled")
     assert_file builder.server_block_location
+    assert_file enabled_server_block_location(builder)
     assert_equal EXPECTED_REVERSE_PROXY_HTTP_SERVER_BLOCK,
       File.open(builder.server_block_location, "r", &:read)
   end
@@ -105,6 +106,16 @@ class ReverseProxyBuilderTest < MiniTest::Test
 
   def assert_file(f)
     assert File.exist?(f), "#{f}: does not exist"
+  end
+
+  def assert_no_directory(d)
+    assert !File.directory?(d), "#{d} should not exist"
+  end
+
+  def enabled_server_block_location(builder)
+    File.join(builder.fake_root,
+      "/etc/nginx/sites-enabled",
+      File.basename(builder.server_block_location))
   end
 
   EXPECTED_REVERSE_PROXY_HTTP_SERVER_BLOCK = %(server {
