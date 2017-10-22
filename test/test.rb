@@ -56,6 +56,18 @@ class Test < MiniTest::Test
 ).freeze
 
   module TestHelpers
+    def assert_directory(d)
+      assert File.directory?(d), "#{d}: does not exist"
+    end
+
+    def assert_file(f)
+      assert File.exist?(f), "#{f}: does not exist"
+    end
+
+    def assert_no_directory(d)
+      assert !File.directory?(d), "#{d} should not exist"
+    end
+
     def expected_https_server_block
       %(server {
   server_name example.com www.example.com;
@@ -95,6 +107,33 @@ class Test < MiniTest::Test
   }
 }
 ).freeze
+    end
+  end
+
+  module FakeFiles
+    include FileUtils
+
+    PATH_METHODS = %i[
+      certificate_directory
+      enabled_server_block_location
+      root_directory
+      server_block_location
+    ].freeze
+
+    PATH_METHODS.each do |method|
+      define_method method do |domain_name|
+        File.join fake_root, super(domain_name)
+      end
+    end
+
+    def fake_root
+      "/tmp/builder_test"
+    end
+
+    def prepare_fake_files(domain_name)
+      FileUtils.rm_rf fake_root, secure: true
+      FileUtils.mkdir_p(File.dirname(server_block_location(domain_name)))
+      FileUtils.mkdir_p(File.dirname(enabled_server_block_location(domain_name)))
     end
   end
 end

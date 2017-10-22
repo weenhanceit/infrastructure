@@ -2,10 +2,19 @@
 # Write nginx configuration files.
 module Nginx
   class ServerBlock
+    include Files
+
     def initialize(server: nil, listen: nil, location: nil)
-      @server = server
       @listen = listen
       @location = location
+      @server = server
+    end
+
+    def save
+      File.open(server_block_location(server.domain_name), "w") do |f|
+        f << to_s
+      end
+      `ln -fs ../sites-available/#{server.domain_name} #{enabled_server_block_location(server.domain_name)}`
     end
 
     def to_s
@@ -19,5 +28,9 @@ module Nginx
         }
       SERVER_BLOCK
     end
+
+    private
+
+    attr_reader :listen, :location, :server
   end
 end

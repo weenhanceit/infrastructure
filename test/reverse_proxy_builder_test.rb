@@ -7,6 +7,7 @@ require "test"
 
 class ReverseProxyBuilderTest < Test
   include FileUtils
+  include TestHelpers
 
   def setup
     FileUtils.rm_rf ConfigMock.fake_root, secure: true
@@ -99,18 +100,6 @@ class ReverseProxyBuilderTest < Test
     assert_file enabled_server_block_location(builder)
     assert_equal EXPECTED_REVERSE_PROXY_HTTP_SERVER_BLOCK,
       File.open(builder.server_block_location, "r", &:read)
-  end
-
-  def assert_directory(d)
-    assert File.directory?(d), "#{d}: does not exist"
-  end
-
-  def assert_file(f)
-    assert File.exist?(f), "#{f}: does not exist"
-  end
-
-  def assert_no_directory(d)
-    assert !File.directory?(d), "#{d} should not exist"
   end
 
   def enabled_server_block_location(builder)

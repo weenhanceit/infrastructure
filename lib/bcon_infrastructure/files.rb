@@ -1,4 +1,4 @@
-module BconInfrastructure
+module Nginx
   ##
   # File and directory paths for building infrastructure
   module Files
@@ -12,6 +12,10 @@ module BconInfrastructure
 
     def server_block_location(domain_name)
       "/etc/nginx/sites-available/#{domain_name}"
+    end
+
+    def enabled_server_block_location(domain_name)
+      "/etc/nginx/sites-enabled/#{domain_name}"
     end
   end
 end

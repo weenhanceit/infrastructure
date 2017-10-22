@@ -2,7 +2,7 @@ require "minitest/autorun"
 require "bcon_infrastructure"
 
 class FilesTest < Minitest::Test
-  include BconInfrastructure::Files
+  include Nginx::Files
 
   def test_certificate_directory
     assert_equal "/etc/letsencrypt/live/example.com", certificate_directory("example.com")

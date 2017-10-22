@@ -12,8 +12,6 @@ module Nginx
       "#{' ' * level * 2}server_name #{domain_name} www.#{domain_name};"
     end
 
-    private
-
     attr_reader :domain_name
   end
 end

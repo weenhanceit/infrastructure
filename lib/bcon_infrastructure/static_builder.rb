@@ -3,7 +3,7 @@
 require "optparse"
 
 class StaticBuilder
-  include BconInfrastructure::Files
+  include Nginx::Files
 
   class << self
     def call(argv)
