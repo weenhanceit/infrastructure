@@ -22,8 +22,8 @@ class ServerBlockTest < Test
       listen: Nginx::ListenHttp.new,
       location: Nginx::ReverseProxyLocation.new("/", "http://search.example.com")
     )
-    server_block.class.include FakeFiles
 
+    server_block.class.include FakeFiles
     server_block.prepare_fake_files("example.com")
 
     assert server_block.save, "Failed to save server block"
@@ -34,5 +34,14 @@ class ServerBlockTest < Test
     assert_equal EXPECTED_REVERSE_PROXY_HTTP_SERVER_BLOCK,
       File.open(server_block.server_block_location("example.com"), "r", &:read)
     assert_no_directory server_block.root_directory("example.com")
+  end
+
+  def test_static_http
+    server_block = Nginx::ServerBlock.new(
+      server: Nginx::StaticServer.new("example.com"),
+      listen: Nginx::ListenHttp.new,
+      location: Nginx::Location.new("/")
+    )
+    assert_equal EXPECTED_STATIC_HTTP_SERVER_BLOCK, server_block.to_s
   end
 end

@@ -55,6 +55,21 @@ class Test < MiniTest::Test
 }
 ).freeze
 
+  EXPECTED_STATIC_HTTP_SERVER_BLOCK = %(server {
+  server_name example.com www.example.com;
+
+  root /var/www/example.com/html;
+  index index.html index.htm;
+
+  listen 80;
+  listen [::]:80;
+
+  location / {
+    try_files $uri $uri/ =404;
+  }
+}
+).freeze
+
   module TestHelpers
     def assert_directory(d)
       assert File.directory?(d), "#{d}: does not exist"

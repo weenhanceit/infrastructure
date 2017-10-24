@@ -7,10 +7,7 @@ module Nginx
     end
 
     def to_s(level = 0)
-      [
-        "listen #{port};",
-        "listen [::]:#{port};"
-      ].map { |x| x.empty? ? x : (" " * level * 2) + x }.join("\n")
+      Lines.new("listen #{port};", "listen [::]:#{port};").format(level)
     end
 
     private
