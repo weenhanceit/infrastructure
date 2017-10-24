@@ -18,4 +18,12 @@ class ReverseProxy < Base
       end
     end
   end
+
+  def protocol_factory(options)
+    Nginx::ServerBlock.new(
+      server: Nginx::Server.new(options[:domain_name]),
+      listen: Nginx::ListenHttp.new,
+      location: Nginx::ReverseProxyLocation.new("/", options[:proxy_url])
+    )
+  end
 end

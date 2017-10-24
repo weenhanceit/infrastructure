@@ -11,6 +11,7 @@ module Nginx
     end
 
     def save
+      # FIXME: Return error code or throw on problems.
       File.open(server_block_location(server.domain_name), "w") do |f|
         f << to_s
       end
@@ -21,9 +22,9 @@ module Nginx
       <<~SERVER_BLOCK
         server {
         #{[
-          @server.to_s(1),
-          @listen.to_s(1),
-          @location.to_s(1)
+          @server&.to_s(1),
+          @listen&.to_s(1),
+          @location&.to_s(1)
         ].compact.join("\n\n")}
         }
       SERVER_BLOCK
@@ -32,5 +33,16 @@ module Nginx
     private
 
     attr_reader :listen, :location, :server
+  end
+
+  class StaticServerBlock < ServerBlock
+    def save
+      # FIXME: Return error code or throw on problems.
+      FileUtils.mkdir_p(root_directory(server.domain_name))
+      FileUtils.chown(server.user,
+        "www-data",
+        root_directory(server.domain_name)) if Process.uid.zero?
+      super
+    end
   end
 end

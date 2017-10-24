@@ -2,24 +2,17 @@
 
 module Nginx
   ##
-  # The server_name line of a server block.
-  class Server
-    attr_reader :domain_name
-
-    def initialize(domain_name)
-      @domain_name = domain_name
-    end
-
-    def to_s(level = 0)
-      Lines.new("server_name #{domain_name} www.#{domain_name};").format(level)
-    end
-  end
-
-  ##
   # Server name and site location for a static site.
   # TODO: I don't like the way this gets twisted when subclassing.
-  class StaticServer < Server
+  class Site < Server
     include Files
+
+    attr_reader :user
+
+    def initialize(domain_name, user = "ubuntu")
+      super domain_name
+      @user = user
+    end
 
     def to_s(level = 0)
       [
