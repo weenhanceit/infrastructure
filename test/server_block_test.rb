@@ -64,4 +64,32 @@ class ServerBlockTest < Test
     assert_directory server_block.root_directory("example.com")
     assert_equal EXPECTED_STATIC_HTTP_SERVER_BLOCK, server_block.to_s
   end
+
+  def test_static_https
+    server_block = Nginx::StaticServerBlock.new(
+      server: Nginx::Site.new("example.com"),
+      listen: Nginx::ListenHttps.new("example.com"),
+      location: Nginx::Location.new
+    )
+    assert_equal EXPECTED_STATIC_HTTPS_SERVER_BLOCK, server_block.to_s
+  end
+
+  def test_save_static_https
+    server_block = Nginx::StaticServerBlock.new(
+      server: Nginx::Site.new("example.com", Etc.getlogin),
+      listen: Nginx::ListenHttps.new("example.com"),
+      location: Nginx::Location.new
+    )
+
+    server_block.class.include FakeFiles
+    server_block.prepare_fake_files("example.com")
+
+    assert server_block.save, "Failed to save server block"
+    assert_directory File.join(server_block.fake_root, "/etc/nginx/sites-available")
+    assert_directory File.join(server_block.fake_root, "/etc/nginx/sites-enabled")
+    assert_file server_block.server_block_location("example.com")
+    assert_file server_block.enabled_server_block_location("example.com")
+    assert_directory server_block.root_directory("example.com")
+    assert_equal EXPECTED_STATIC_HTTPS_SERVER_BLOCK, server_block.to_s
+  end
 end

@@ -2,7 +2,7 @@
 
 module Nginx
   class Location
-    def initialize(location)
+    def initialize(location = "/")
       @location = location
     end
 
