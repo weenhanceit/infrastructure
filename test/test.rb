@@ -184,6 +184,15 @@ class Test < MiniTest::Test
     try_files $uri $uri/ =404;
   }
 }
+
+server {
+  server_name example.com www.example.com;
+
+  listen 80;
+  listen [::]:80;
+
+  return 301 https://$server_name/$request_uri;
+}
 ).freeze
     end
   end

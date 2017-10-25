@@ -34,12 +34,21 @@ module Nginx
 
   class StaticServerBlock < ServerBlock
     def save
-      # FIXME: Return error code or throw on problems.
       FileUtils.mkdir_p(Nginx.root_directory(server.domain_name))
       FileUtils.chown(server.user,
         "www-data",
         Nginx.root_directory(server.domain_name)) if Process.uid.zero?
       super
+    end
+  end
+
+  class TlsRedirectServerBlock < ServerBlock
+    def initialize(domain_name)
+      super(
+        server: Server.new(domain_name),
+        listen: ListenHttp.new,
+        location: RedirectLocation.new
+      )
     end
   end
 end

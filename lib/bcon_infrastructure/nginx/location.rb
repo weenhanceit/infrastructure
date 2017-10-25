@@ -38,4 +38,15 @@ module Nginx
 
     attr_reader :proxy_url
   end
+
+  class RedirectLocation < Location
+    def initialize
+      super
+      @location = nil
+    end
+
+    def to_s(level = 0)
+      Lines.new("return 301 https://$server_name/$request_uri;").format(level)
+    end
+  end
 end

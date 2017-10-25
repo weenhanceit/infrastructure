@@ -3,9 +3,11 @@ class StaticHttpsBuilder < StaticHttpBuilder
     File.open(@config.server_block_location, "a") do |f|
       f << %(
 server {
-  server_name #{@config.domain_names} ;
+  server_name #{@config.domain_names};
+
   listen 80;
   listen [::]:80;
+
   return 301 https://$server_name/$request_uri;
 }
 )

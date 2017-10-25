@@ -58,7 +58,7 @@ class StaticBuilderTest < Test
       assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
       assert_file Nginx.server_block_location("example.com")
       assert_file Nginx.enabled_server_block_location("example.com")
-      assert_equal expected_https_server_block + EXPECTED_HTTPS_REDIRECT_SERVER_BLOCK,
+      assert_equal expected_https_server_block,
         File.open(Nginx.server_block_location("example.com"), "r", &:read)
       assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
       # The following is actually done by the letsencrypt stuff, so we don't
@@ -91,7 +91,7 @@ class StaticBuilderTest < Test
       assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
       assert_file Nginx.server_block_location("example.com")
       assert_file Nginx.enabled_server_block_location("example.com")
-      assert_equal expected_https_server_block + EXPECTED_HTTPS_REDIRECT_SERVER_BLOCK,
+      assert_equal expected_https_server_block,
         File.open(Nginx.server_block_location("example.com"), "r", &:read)
       assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
     end
@@ -99,9 +99,11 @@ class StaticBuilderTest < Test
 
   EXPECTED_HTTPS_REDIRECT_SERVER_BLOCK = %(
 server {
-  server_name example.com www.example.com ;
+  server_name example.com www.example.com;
+
   listen 80;
   listen [::]:80;
+
   return 301 https://$server_name/$request_uri;
 }
 )
