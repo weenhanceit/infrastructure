@@ -188,27 +188,6 @@ class Test < MiniTest::Test
     end
   end
 
-  module FakeFiles
-    include FileUtils
-
-    PATH_METHODS = %i[
-      certificate_directory
-      enabled_server_block_location
-      root_directory
-      server_block_location
-    ].freeze
-
-    PATH_METHODS.each do |method|
-      define_method method do |domain_name|
-        File.join fake_root, super(domain_name)
-      end
-    end
-
-    def fake_root
-      "/tmp/builder_test"
-    end
-  end
-
   def prepare_fake_files(domain_name)
     FileUtils.rm_rf Nginx.root, secure: true
     FileUtils.mkdir_p(File.dirname(Nginx.server_block_location(domain_name)))

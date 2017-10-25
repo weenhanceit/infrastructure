@@ -3,8 +3,6 @@
 require "optparse"
 
 class StaticBuilder
-  include Nginx::Files
-
   class << self
     def call(argv)
       puts argv
