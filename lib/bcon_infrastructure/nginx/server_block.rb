@@ -9,7 +9,6 @@ module Nginx
     end
 
     def save
-      # FIXME: Return error code or throw on problems.
       File.open(Nginx.server_block_location(server.domain_name), "w") do |f|
         f << to_s
       end
