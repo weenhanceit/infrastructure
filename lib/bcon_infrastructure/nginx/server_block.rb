@@ -2,8 +2,6 @@
 # Write nginx configuration files.
 module Nginx
   class ServerBlock
-    include Files
-
     def initialize(server: nil, listen: nil, location: nil)
       @listen = listen
       @location = location
@@ -12,10 +10,10 @@ module Nginx
 
     def save
       # FIXME: Return error code or throw on problems.
-      File.open(server_block_location(server.domain_name), "w") do |f|
+      File.open(Nginx.server_block_location(server.domain_name), "w") do |f|
         f << to_s
       end
-      `ln -fs ../sites-available/#{server.domain_name} #{enabled_server_block_location(server.domain_name)}`
+      `ln -fs ../sites-available/#{server.domain_name} #{Nginx.enabled_server_block_location(server.domain_name)}`
     end
 
     def to_s
@@ -38,10 +36,10 @@ module Nginx
   class StaticServerBlock < ServerBlock
     def save
       # FIXME: Return error code or throw on problems.
-      FileUtils.mkdir_p(root_directory(server.domain_name))
+      FileUtils.mkdir_p(Nginx.root_directory(server.domain_name))
       FileUtils.chown(server.user,
         "www-data",
-        root_directory(server.domain_name)) if Process.uid.zero?
+        Nginx.root_directory(server.domain_name)) if Process.uid.zero?
       super
     end
   end

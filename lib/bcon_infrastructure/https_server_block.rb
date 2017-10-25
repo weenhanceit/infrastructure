@@ -6,8 +6,8 @@ class HttpsServerBlock < HttpServerBlock
   listen 443 ssl http2;
   listen [::]:443 ssl http2;
   # Let's Encrypt file names and locations from: https://certbot.eff.org/docs/using.html#where-are-my-certificates
-  ssl_certificate_key /etc/letsencrypt/live/#{@config.domain_name}/privkey.pem;
-  ssl_certificate     /etc/letsencrypt/live/#{@config.domain_name}/fullchain.pem;
+  ssl_certificate_key #{Nginx.root}/etc/letsencrypt/live/#{@config.domain_name}/privkey.pem;
+  ssl_certificate     #{Nginx.root}/etc/letsencrypt/live/#{@config.domain_name}/fullchain.pem;
 
   # Test the site using: https://www.ssllabs.com/ssltest/index.html
   # Optimize TLS, from: https://www.bjornjohansen.no/optimizing-https-nginx, steps 1-3
@@ -17,11 +17,11 @@ class HttpsServerBlock < HttpServerBlock
   ssl_prefer_server_ciphers on;
   ssl_ciphers ECDH+AESGCM:ECDH+AES256:ECDH+AES128:DH+3DES:!ADH:!AECDH:!MD5;
   # Step 4
-  ssl_dhparam /etc/letsencrypt/live/#{@config.domain_name}/dhparam.pem;
+  ssl_dhparam #{Nginx.root}/etc/letsencrypt/live/#{@config.domain_name}/dhparam.pem;
   # Step 5
   ssl_stapling on;
   ssl_stapling_verify on;
-  ssl_trusted_certificate /etc/letsencrypt/live/#{@config.domain_name}/chain.pem;
+  ssl_trusted_certificate #{Nginx.root}/etc/letsencrypt/live/#{@config.domain_name}/chain.pem;
   resolver 8.8.8.8 8.8.4.4;
   # Step 6 pin for a fortnight
   add_header Strict-Transport-Security "max-age=1209600" always;

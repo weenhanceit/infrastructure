@@ -31,11 +31,14 @@ module Nginx
     # of the block. If no block is given, is the same as configure.
     def chroot(root = nil)
       if block_given?
-        save_root = configuration.root
-        chroot(root)
-        result = yield
-        chroot(save_root)
-        result
+        begin
+          save_root = configuration.root
+          chroot(root)
+          result = yield
+        ensure
+          chroot(save_root)
+          result
+        end
       else
         configuration.root = root
       end
@@ -48,16 +51,20 @@ module Nginx
     def configuration
       @configuration ||= Configuration.new
     end
-  end
 
-  %i[
-    certificate_directory
-    enabled_server_block_location
-    root_directory
-    server_block_location
-  ].each do |method|
-    define_method method do |domain_name|
-      configuration.send(method, domain_name)
+    def root
+      configuration.root
+    end
+
+    %i[
+      certificate_directory
+      enabled_server_block_location
+      root_directory
+      server_block_location
+    ].each do |method|
+      define_method method do |domain_name|
+        configuration.send(method, domain_name)
+      end
     end
   end
 end

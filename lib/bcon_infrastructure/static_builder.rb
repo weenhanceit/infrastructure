@@ -72,18 +72,26 @@ class StaticBuilder
 
   DELEGATE_TO_CONFIG = %i[
     certbot_domain_names
-    certificate_directory
     domain_name
     domain_names
     fake_root
-    root_directory
-    server_block_location
     user
   ].freeze
 
   DELEGATE_TO_CONFIG.each do |method|
     define_method method do
       @config && @config.send(method)
+    end
+  end
+
+  %i[
+    certificate_directory
+    enabled_server_block_location
+    root_directory
+    server_block_location
+  ].each do |method|
+    define_method method do
+      Nginx.configuration.send(method, config.domain_name)
     end
   end
 

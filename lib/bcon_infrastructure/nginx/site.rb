@@ -5,8 +5,6 @@ module Nginx
   # Server name and site location for a static site.
   # TODO: I don't like the way this gets twisted when subclassing.
   class Site < Server
-    include Files
-
     attr_reader :user
 
     def initialize(domain_name, user = "ubuntu")
@@ -18,7 +16,7 @@ module Nginx
       [
         super(level),
         Lines.new(
-          "root #{root_directory(domain_name)};",
+          "root #{Nginx.root_directory(domain_name)};",
           "index index.html index.htm;"
         ).format(level)
       ].join("\n\n")
