@@ -27,7 +27,8 @@ module Runner
       { domain_name: ARGV[0] }
     end
 
-    def process_options
+    def process_options(http_builder_class = Builder::Base,
+      https_builder_class = nil)
       options = {}
       OptionParser.new do |opts|
         opts.banner = "Usage: [options]"
@@ -44,7 +45,15 @@ module Runner
         opts.on("-p PROTOCOL",
           "--protocol PROTOCOL",
           "HTTP|HTTPS. Default: HTTPS if key files exist, else HTTP.") do |protocol|
-          options[:protocol] = protocol
+          options[:protocol] = case protocol
+                               when "HTTP"
+                                 http_builder_class
+                               when "HTTPS"
+                                 https_builder_class
+                               else
+                                 puts opts
+                                 exit
+                               end
         end
 
         opts.on("-r DIRECTORY",

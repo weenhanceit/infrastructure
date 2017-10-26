@@ -22,6 +22,18 @@ module Nginx
       attr_reader :domain_name, :server_blocks
     end
 
+    class ReverseProxyHttp < Base
+      def initialize(domain_name, proxy_url)
+        super(domain_name,
+          Nginx::ServerBlock.new(
+            server: Nginx::Server.new(domain_name),
+            listen: Nginx::ListenHttp.new,
+            location: Nginx::ReverseProxyLocation.new(proxy_url)
+          )
+        )
+      end
+    end
+
     class ReverseProxyHttps < Base
       def initialize(domain_name, proxy_url)
         super(domain_name,
