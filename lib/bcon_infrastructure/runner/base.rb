@@ -4,7 +4,7 @@ module Runner
   ##
   # Basic runner for nginx config file generation.
   class Base
-    def main(config_class: Config)
+    def main
       options = process_options
       options.merge!(process_args)
 
@@ -12,7 +12,6 @@ module Runner
 
       Nginx.prepare_fake_files(options[:domain_name]) if Nginx.root?
 
-      @config = config_class.new(ARGV.first, options_for_config(options))
       @builder_class = protocol_factory(options)
       puts "builder_class: #{builder_class.inspect}" if options[:debug]
       builder_class

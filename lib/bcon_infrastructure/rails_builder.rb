@@ -1,2 +1,0 @@
-class RailsBuilder < StaticBuilder
-end
