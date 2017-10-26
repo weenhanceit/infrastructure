@@ -11,48 +11,48 @@ class BuildTest < Test
 
   def test_save_reverse_proxy_http
     Nginx.chroot("/tmp/test_builder") do
-      Nginx.prepare_fake_files("example.com")
+      Nginx.prepare_fake_files("search.example.com")
 
       builder = Nginx::Builder::Base.new(
-        "example.com",
+        "search.example.com",
         Nginx::ServerBlock.new(
-          server: Nginx::Server.new("example.com"),
+          server: Nginx::Server.new("search.example.com"),
           listen: Nginx::ListenHttp.new,
-          location: Nginx::ReverseProxyLocation.new("http://search.example.com")
+          location: Nginx::ReverseProxyLocation.new("http://10.0.0.1")
         )
       )
 
       assert builder.save, "Failed to save server block"
       assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
       assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
-      assert_file Nginx.server_block_location("example.com")
-      assert_file Nginx.enabled_server_block_location("example.com")
+      assert_file Nginx.server_block_location("search.example.com")
+      assert_file Nginx.enabled_server_block_location("search.example.com")
       assert_equal EXPECTED_REVERSE_PROXY_HTTP_SERVER_BLOCK,
-        File.open(Nginx.server_block_location("example.com"), "r", &:read)
-      assert_no_directory Nginx.root_directory("example.com")
+        File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
+      assert_no_directory Nginx.root_directory("search.example.com")
     end
   end
 
   def test_save_reverse_proxy_https
     Nginx.chroot("/tmp/test_builder") do
-      Nginx.prepare_fake_files("example.com")
+      Nginx.prepare_fake_files("search.example.com")
       Nginx.dhparam = 128
 
       builder = Nginx::Builder::ReverseProxyHttps.new(
-        "example.com",
-        "http://search.example.com"
+        "search.example.com",
+        "http://10.0.0.1"
       )
 
       assert builder.save, "Failed to save server block"
       assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
       assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
-      assert_file Nginx.server_block_location("example.com")
-      assert_file Nginx.enabled_server_block_location("example.com")
-      assert_directory Nginx.certificate_directory("example.com")
-      assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
+      assert_file Nginx.server_block_location("search.example.com")
+      assert_file Nginx.enabled_server_block_location("search.example.com")
+      assert_directory Nginx.certificate_directory("search.example.com")
+      assert_file File.join(Nginx.certificate_directory("search.example.com"), "dhparam.pem")
       assert_equal expected_reverse_proxy_https_server_block,
-        File.open(Nginx.server_block_location("example.com"), "r", &:read)
-      assert_no_directory Nginx.root_directory("example.com")
+        File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
+      assert_no_directory Nginx.root_directory("search.example.com")
     end
   end
 
