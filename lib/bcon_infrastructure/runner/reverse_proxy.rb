@@ -31,7 +31,10 @@ module Runner
         options[:protocol] = Nginx::Builder::ReverseProxyHttp
       end
 
-      options[:protocol].new(options[:domain_name], options[:proxy_url])
+      protocol = options.delete(:protocol)
+      domain_name = options.delete(:domain_name)
+      proxy_url = options.delete(:proxy_url)
+      protocol.new(domain_name, proxy_url)
     end
   end
 end

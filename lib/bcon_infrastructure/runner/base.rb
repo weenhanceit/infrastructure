@@ -69,8 +69,8 @@ module Runner
         end
 
         opts.on("--dhparam KEYSIZE",
-          "KEYSIZE. Default: 2048 should be used. This option is for testing.") do |dhparam|
-          options[:dhparam] = dhparam
+          "KEYSIZE. Default: 2048 should be used. This option is for testing.") do |keysize|
+          Nginx.dhparam = keysize
         end
 
         yield opts if block_given?

@@ -9,6 +9,7 @@ module Nginx
     end
 
     def initialize(root = nil)
+      @dhparam = 2048
       @root = root
     end
 
@@ -28,7 +29,7 @@ module Nginx
       "#{root}/etc/nginx/sites-enabled/#{domain_name}"
     end
 
-    attr_accessor :root
+    attr_accessor :dhparam, :root
   end
 
   class << self
@@ -58,10 +59,19 @@ module Nginx
       @configuration ||= Configuration.new
     end
 
+    def dhparam
+      configuration.dhparam
+    end
+
+    def dhparam=(key_length)
+      configuration.dhparam = key_length
+    end
+
     def prepare_fake_files(domain_name)
       ::FileUtils.rm_rf root, secure: true
       ::FileUtils.mkdir_p(File.dirname(server_block_location(domain_name)))
       ::FileUtils.mkdir_p(File.dirname(enabled_server_block_location(domain_name)))
+      ::FileUtils.mkdir_p(certificate_directory(domain_name))
     end
 
     def root

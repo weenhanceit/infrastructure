@@ -22,6 +22,14 @@ module Nginx
       attr_reader :domain_name, :server_blocks
     end
 
+    class Https < Base
+      def save
+        puts "ABOUT TO GENERATE KEY FILE."
+        `openssl dhparam #{Nginx.dhparam} -out #{Nginx.certificate_directory(domain_name)}/dhparam.pem`
+        super
+      end
+    end
+
     class ReverseProxyHttp < Base
       def initialize(domain_name, proxy_url)
         super(domain_name,
@@ -34,7 +42,7 @@ module Nginx
       end
     end
 
-    class ReverseProxyHttps < Base
+    class ReverseProxyHttps < Https
       def initialize(domain_name, proxy_url)
         super(domain_name,
           Nginx::ServerBlock.new(

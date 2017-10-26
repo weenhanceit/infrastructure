@@ -11,7 +11,7 @@ class BuildTest < Test
 
   def test_save_reverse_proxy_http
     Nginx.chroot("/tmp/test_builder") do
-      prepare_fake_files("example.com")
+      Nginx.prepare_fake_files("example.com")
 
       builder = Nginx::Builder::Base.new(
         "example.com",
@@ -35,7 +35,8 @@ class BuildTest < Test
 
   def test_save_reverse_proxy_https
     Nginx.chroot("/tmp/test_builder") do
-      prepare_fake_files("example.com")
+      Nginx.prepare_fake_files("example.com")
+      Nginx.dhparam = 128
 
       builder = Nginx::Builder::ReverseProxyHttps.new(
         "example.com",
@@ -47,6 +48,8 @@ class BuildTest < Test
       assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
       assert_file Nginx.server_block_location("example.com")
       assert_file Nginx.enabled_server_block_location("example.com")
+      assert_directory Nginx.certificate_directory("example.com")
+      assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
       assert_equal expected_reverse_proxy_https_server_block,
         File.open(Nginx.server_block_location("example.com"), "r", &:read)
       assert_no_directory Nginx.root_directory("example.com")
@@ -55,7 +58,7 @@ class BuildTest < Test
 
   def test_save_static_http
     Nginx.chroot("/tmp/builder_test") do
-      prepare_fake_files("example.com")
+      Nginx.prepare_fake_files("example.com")
 
       builder = Nginx::Builder::Site.new(
         "example.com",
@@ -79,7 +82,8 @@ class BuildTest < Test
 
   def test_save_static_https
     Nginx.chroot("/tmp/builder_test") do
-      prepare_fake_files("example.com")
+      Nginx.prepare_fake_files("example.com")
+      Nginx.dhparam = 128
 
       builder = Nginx::Builder::Site.new(
         "example.com",
@@ -98,6 +102,8 @@ class BuildTest < Test
       assert_file Nginx.server_block_location("example.com")
       assert_file Nginx.enabled_server_block_location("example.com")
       assert_directory Nginx.root_directory("example.com")
+      assert_directory Nginx.certificate_directory("example.com")
+      assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
       assert_equal expected_https_server_block, builder.to_s
     end
   end

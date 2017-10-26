@@ -248,11 +248,4 @@ server {
 ).freeze
     end
   end
-
-  # FIXME: Remove
-  def prepare_fake_files(domain_name)
-    FileUtils.rm_rf Nginx.root, secure: true
-    FileUtils.mkdir_p(File.dirname(Nginx.server_block_location(domain_name)))
-    FileUtils.mkdir_p(File.dirname(Nginx.enabled_server_block_location(domain_name)))
-  end
 end
