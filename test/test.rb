@@ -116,6 +116,7 @@ class Test < MiniTest::Test
   }
 }
 ).freeze
+
   def expected_static_http_server_block
     %(server {
   server_name example.com www.example.com;

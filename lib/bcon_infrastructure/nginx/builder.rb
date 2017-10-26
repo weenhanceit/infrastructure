@@ -75,8 +75,32 @@ module Nginx
       attr_reader :user
     end
 
+    class SiteHttp < Site
+      def initialize(domain_name, user)
+        super(domain_name,
+          user,
+          Nginx::StaticServerBlock.new(
+            server: Nginx::Site.new(domain_name, user),
+            listen: Nginx::ListenHttp.new,
+            location: Nginx::Location.new
+          )
+        )
+      end
+    end
+
     class SiteHttps < Site
       include Https
+      def initialize(domain_name, user)
+        super(domain_name,
+          user,
+          Nginx::StaticServerBlock.new(
+            server: Nginx::Site.new(domain_name, user),
+            listen: Nginx::ListenHttps.new(domain_name),
+            location: Nginx::Location.new
+          ),
+          Nginx::TlsRedirectServerBlock.new(domain_name)
+        )
+      end
     end
   end
 end

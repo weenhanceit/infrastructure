@@ -60,15 +60,7 @@ class BuildTest < Test
     Nginx.chroot("/tmp/builder_test") do
       Nginx.prepare_fake_files("example.com")
 
-      builder = Nginx::Builder::Site.new(
-        "example.com",
-        Etc.getlogin,
-        Nginx::StaticServerBlock.new(
-          server: Nginx::Site.new("example.com", Etc.getlogin),
-          listen: Nginx::ListenHttp.new,
-          location: Nginx::Location.new("/")
-        )
-      )
+      builder = Nginx::Builder::SiteHttp.new("example.com", Etc.getlogin)
 
       assert builder.save, "Failed to save server block"
       assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
@@ -85,16 +77,7 @@ class BuildTest < Test
       Nginx.prepare_fake_files("example.com")
       Nginx.dhparam = 128
 
-      builder = Nginx::Builder::SiteHttps.new(
-        "example.com",
-        Etc.getlogin,
-        Nginx::StaticServerBlock.new(
-          server: Nginx::Site.new("example.com", Etc.getlogin),
-          listen: Nginx::ListenHttps.new("example.com"),
-          location: Nginx::Location.new
-        ),
-        Nginx::TlsRedirectServerBlock.new("example.com")
-      )
+      builder = Nginx::Builder::SiteHttps.new("example.com", Etc.getlogin)
 
       assert builder.save, "Failed to save server block"
       assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
