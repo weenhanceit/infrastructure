@@ -12,7 +12,7 @@ module Runner
 
       puts "options: #{options.inspect}" if options[:debug]
 
-      Nginx.prepare_fake_files(options[:domain_name]) if Nginx.root?
+      Nginx.prepare_fake_files(options[:domain_name], options[:certificate_domain]) if Nginx.root?
 
       @builder_class = protocol_factory(options)
       puts "builder_class: #{builder_class.inspect}" if options[:debug]
@@ -33,6 +33,12 @@ module Runner
       options = {}
       OptionParser.new do |opts|
         opts.banner = "Usage: [options]"
+
+        opts.on("-c DOMAIN",
+          "--certificate-domain DOMAIN",
+          "Use the certificate for DOMAIN.") do |certificate_domain|
+          options[:certificate_domain] = certificate_domain
+        end
 
         opts.on("-h", "--help", "Prints this help") do
           puts opts
@@ -87,7 +93,9 @@ module Runner
       if options[:protocol]
         options[:protocol]
       else
-        certificate_directory = Nginx.certificate_directory(options[:domain_name])
+        certificate_directory = Nginx.certificate_directory(
+          options[:certificate_domain] || options[:domain_name]
+        )
         if File.exist?(File.join(certificate_directory, "privkey.pem")) &&
            File.exist?(File.join(certificate_directory, "fullchain.pem")) &&
            File.exist?(File.join(certificate_directory, "chain.pem")) &&

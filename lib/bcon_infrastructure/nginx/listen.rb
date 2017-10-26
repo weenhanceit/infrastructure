@@ -22,8 +22,9 @@ module Nginx
   end
 
   class ListenHttps < Listen
-    def initialize(domain_name)
+    def initialize(domain_name, certificate_domain = nil)
       @domain_name = domain_name
+      @certificate_domain = certificate_domain || domain_name
       super 443
     end
 
@@ -35,8 +36,8 @@ module Nginx
         "listen #{port} ssl http2;",
         "listen [::]:#{port} ssl http2;",
         "# Let's Encrypt file names and locations from: https://certbot.eff.org/docs/using.html#where-are-my-certificates",
-        "ssl_certificate_key #{Nginx.certificate_directory(domain_name)}/privkey.pem;",
-        "ssl_certificate     #{Nginx.certificate_directory(domain_name)}/fullchain.pem;",
+        "ssl_certificate_key #{Nginx.certificate_directory(certificate_domain)}/privkey.pem;",
+        "ssl_certificate     #{Nginx.certificate_directory(certificate_domain)}/fullchain.pem;",
         "",
         "# Test the site using: https://www.ssllabs.com/ssltest/index.html",
         "# Optimize TLS, from: https://www.bjornjohansen.no/optimizing-https-nginx, steps 1-3",
@@ -46,11 +47,11 @@ module Nginx
         "ssl_prefer_server_ciphers on;",
         "ssl_ciphers ECDH+AESGCM:ECDH+AES256:ECDH+AES128:DH+3DES:!ADH:!AECDH:!MD5;",
         "# Step 4",
-        "ssl_dhparam #{Nginx.certificate_directory(domain_name)}/dhparam.pem;",
+        "ssl_dhparam #{Nginx.certificate_directory(certificate_domain)}/dhparam.pem;",
         "# Step 5",
         "ssl_stapling on;",
         "ssl_stapling_verify on;",
-        "ssl_trusted_certificate #{Nginx.certificate_directory(domain_name)}/chain.pem;",
+        "ssl_trusted_certificate #{Nginx.certificate_directory(certificate_domain)}/chain.pem;",
         "resolver 8.8.8.8 8.8.4.4;",
         "# Step 6 pin for a fortnight",
         "add_header Strict-Transport-Security \"max-age=1209600\" always;",
@@ -60,6 +61,6 @@ module Nginx
 
     private
 
-    attr_reader :domain_name
+    attr_reader :certificate_domain, :domain_name
   end
 end

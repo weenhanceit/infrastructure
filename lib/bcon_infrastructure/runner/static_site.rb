@@ -13,7 +13,8 @@ module Runner
 
       domain_name = options.delete(:domain_name)
       user = options.delete(:user) || "ubuntu"
-      protocol_class.new(domain_name, user)
+      certificate_domain = options.delete(:certificate_domain)
+      protocol_class.new(domain_name, user, certificate_domain)
     end
   end
 end

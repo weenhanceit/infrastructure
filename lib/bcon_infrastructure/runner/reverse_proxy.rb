@@ -17,13 +17,7 @@ module Runner
     end
 
     def process_options
-      super(Nginx::Builder::ReverseProxyHttp, Nginx::Builder::ReverseProxyHttps) do |opts|
-        opts.on("-c DOMAIN",
-          "--certificate-domain DOMAIN",
-          "Use the certificate for DOMAIN.") do |certificate_domain|
-          options[:certificate_domain] = certificate_domain
-        end
-      end
+      super(Nginx::Builder::ReverseProxyHttp, Nginx::Builder::ReverseProxyHttps)
     end
 
     def protocol_factory(options)
@@ -35,7 +29,8 @@ module Runner
 
       domain_name = options.delete(:domain_name)
       proxy_url = options.delete(:proxy_url)
-      protocol_class.new(domain_name, proxy_url)
+      certificate_domain = options.delete(:certificate_domain)
+      protocol_class.new(domain_name, proxy_url, certificate_domain)
     end
   end
 end

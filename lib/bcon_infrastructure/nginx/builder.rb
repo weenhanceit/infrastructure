@@ -4,7 +4,7 @@ module Nginx
   module Builder
     module Https
       def save
-        `openssl dhparam #{Nginx.dhparam} -out #{Nginx.certificate_directory(domain_name)}/dhparam.pem`
+        `openssl dhparam #{Nginx.dhparam} -out #{Nginx.certificate_directory(certificate_domain)}/dhparam.pem`
         super
       end
     end
@@ -48,7 +48,7 @@ Finally, re-run this script to configure nginx for TLS.
     end
 
     class ReverseProxyHttp < Base
-      def initialize(domain_name, proxy_url)
+      def initialize(domain_name, proxy_url, _certificate_domain = nil)
         super(domain_name,
           Nginx::ServerBlock.new(
             server: Nginx::Server.new(domain_name),
@@ -68,16 +68,20 @@ Finally, re-run this script to configure nginx for TLS.
     class ReverseProxyHttps < Base
       include Https
 
-      def initialize(domain_name, proxy_url)
+      def initialize(domain_name, proxy_url, certificate_domain = nil)
+        @certificate_domain = certificate_domain || domain_name
+
         super(domain_name,
           Nginx::ServerBlock.new(
             server: Nginx::Server.new(domain_name),
-            listen: Nginx::ListenHttps.new(domain_name),
+            listen: Nginx::ListenHttps.new(domain_name, certificate_domain),
             location: Nginx::ReverseProxyLocation.new(proxy_url)
           ),
           Nginx::TlsRedirectServerBlock.new(domain_name)
         )
       end
+
+      attr_reader :certificate_domain
     end
 
     class Site < Base
@@ -100,7 +104,7 @@ Finally, re-run this script to configure nginx for TLS.
     end
 
     class SiteHttp < Site
-      def initialize(domain_name, user)
+      def initialize(domain_name, user, _certificate_domain = nil)
         super(domain_name,
           user,
           Nginx::StaticServerBlock.new(
@@ -120,17 +124,22 @@ Finally, re-run this script to configure nginx for TLS.
 
     class SiteHttps < Site
       include Https
-      def initialize(domain_name, user)
+
+      def initialize(domain_name, user, certificate_domain = nil)
+        @certificate_domain = certificate_domain || domain_name
+
         super(domain_name,
           user,
           Nginx::StaticServerBlock.new(
             server: Nginx::Site.new(domain_name, user),
-            listen: Nginx::ListenHttps.new(domain_name),
+            listen: Nginx::ListenHttps.new(domain_name, certificate_domain),
             location: Nginx::Location.new
           ),
           Nginx::TlsRedirectServerBlock.new(domain_name)
         )
       end
+
+      attr_reader :certificate_domain
     end
   end
 end

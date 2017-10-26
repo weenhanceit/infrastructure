@@ -71,10 +71,10 @@ module Nginx
       configuration.dhparam = key_length
     end
 
-    def prepare_fake_files(domain_name)
+    def prepare_fake_files(domain_name, certificate_domain = nil)
       ::FileUtils.mkdir_p(File.dirname(server_block_location(domain_name)))
       ::FileUtils.mkdir_p(File.dirname(enabled_server_block_location(domain_name)))
-      ::FileUtils.mkdir_p(certificate_directory(domain_name))
+      ::FileUtils.mkdir_p(certificate_directory(certificate_domain || domain_name))
     end
 
     def root
