@@ -61,7 +61,7 @@ class ReverseProxyRunnerTest < Test
                        File.join(Nginx.certificate_directory("example.com"), "cert.pem")]
       FileUtils.touch(key_file_list)
 
-      ARGV.concat(%w[-d --dhparam 128 example.com http://search.example.com])
+      ARGV.concat(%w[--dhparam 128 example.com http://search.example.com])
       runner = Runner::ReverseProxy.new.main
       assert runner.save, "Build failed"
       assert_no_directory Nginx.root_directory("example.com")
