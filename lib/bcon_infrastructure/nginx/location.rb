@@ -18,7 +18,7 @@ module Nginx
   end
 
   class ReverseProxyLocation < Location
-    def initialize(location, proxy_url)
+    def initialize(proxy_url, location = "/")
       super location
       @proxy_url = proxy_url
     end

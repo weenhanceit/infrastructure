@@ -13,7 +13,7 @@ class ServerBlockTest < Test
     server_block = Nginx::ServerBlock.new(
       server: Nginx::Server.new("example.com"),
       listen: Nginx::ListenHttp.new,
-      location: Nginx::ReverseProxyLocation.new("/", "http://search.example.com")
+      location: Nginx::ReverseProxyLocation.new("http://search.example.com")
     )
     assert_equal EXPECTED_REVERSE_PROXY_HTTP_SERVER_BLOCK, server_block.to_s
   end
@@ -24,7 +24,7 @@ class ServerBlockTest < Test
       Nginx::StaticServerBlock.new(
         server: Nginx::Server.new("example.com"),
         listen: Nginx::ListenHttps.new("example.com"),
-        location: Nginx::ReverseProxyLocation.new("/", "http://search.example.com")
+        location: Nginx::ReverseProxyLocation.new("http://search.example.com")
       ),
       Nginx::TlsRedirectServerBlock.new("example.com")
     )

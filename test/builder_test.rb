@@ -18,7 +18,7 @@ class BuildTest < Test
         Nginx::ServerBlock.new(
           server: Nginx::Server.new("example.com"),
           listen: Nginx::ListenHttp.new,
-          location: Nginx::ReverseProxyLocation.new("/", "http://search.example.com")
+          location: Nginx::ReverseProxyLocation.new("http://search.example.com")
         )
       )
 
