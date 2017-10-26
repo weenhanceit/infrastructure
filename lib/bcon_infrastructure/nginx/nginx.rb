@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "fileutils"
+
 module Nginx
   class Configuration
     def certificate_directory(domain_name)
@@ -8,6 +10,10 @@ module Nginx
 
     def initialize(root = nil)
       @root = root
+    end
+
+    def root?
+      !(root.nil? || root.empty?)
     end
 
     def root_directory(domain_name)
@@ -52,8 +58,18 @@ module Nginx
       @configuration ||= Configuration.new
     end
 
+    def prepare_fake_files(domain_name)
+      ::FileUtils.rm_rf root, secure: true
+      ::FileUtils.mkdir_p(File.dirname(server_block_location(domain_name)))
+      ::FileUtils.mkdir_p(File.dirname(enabled_server_block_location(domain_name)))
+    end
+
     def root
       configuration.root
+    end
+
+    def root?
+      configuration.root?
     end
 
     %i[
