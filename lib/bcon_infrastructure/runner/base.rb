@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "optparse"
+
 module Runner
   ##
   # Basic runner for nginx config file generation.

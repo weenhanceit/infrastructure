@@ -11,7 +11,7 @@ module Nginx
     end
 
     def to_s(level = 0)
-      Lines.new("server_name #{domain_name} www.#{domain_name};").format(level)
+      Lines.new("server_name #{Nginx.certbot_domain_names(domain_name)};").format(level)
     end
   end
 

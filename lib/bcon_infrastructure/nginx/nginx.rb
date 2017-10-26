@@ -4,6 +4,10 @@ require "fileutils"
 
 module Nginx
   class Configuration
+    def certbot_domain_names(domain_name)
+      "#{domain_name} www.#{domain_name}"
+    end
+
     def certificate_directory(domain_name)
       "#{root}/etc/letsencrypt/live/#{domain_name}"
     end
@@ -82,6 +86,7 @@ module Nginx
     end
 
     %i[
+      certbot_domain_names
       certificate_directory
       enabled_server_block_location
       root_directory

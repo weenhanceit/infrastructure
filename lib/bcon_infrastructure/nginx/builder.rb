@@ -10,6 +10,24 @@ module Nginx
     end
 
     class Base
+      def https_reminder_message
+        puts %(You have to obtain a certificate and enable TLS for the site.
+To do so, reload the Nginx configuration:
+
+sudo nginx -s reload
+
+Then run the following command:
+
+sudo certbot certonly --webroot -w #{Nginx.root_directory(domain_name)} #{Nginx.certbot_domain_names(domain_name)}
+
+You can test renewal with:
+
+sudo certbot renew --dry-run
+
+Finally, re-run this script to configure nginx for TLS.
+)
+      end
+
       def initialize(domain_name, *server_blocks)
         @server_blocks = server_blocks
         @domain_name = domain_name
@@ -38,6 +56,12 @@ module Nginx
             location: Nginx::ReverseProxyLocation.new(proxy_url)
           )
         )
+      end
+
+      def save
+        result = super
+        https_reminder_message
+        result
       end
     end
 
@@ -85,6 +109,12 @@ module Nginx
             location: Nginx::Location.new
           )
         )
+      end
+
+      def save
+        result = super
+        https_reminder_message
+        result
       end
     end
 
