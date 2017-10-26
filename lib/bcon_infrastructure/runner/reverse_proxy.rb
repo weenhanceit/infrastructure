@@ -27,7 +27,7 @@ module Runner
     end
 
     def protocol_factory(options)
-      Nginx::Builder.new(
+      Nginx::Builder::Base.new(
         options[:domain_name],
         Nginx::ServerBlock.new(
           server: Nginx::Server.new(options[:domain_name]),

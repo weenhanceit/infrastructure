@@ -19,7 +19,7 @@ class ServerBlockTest < Test
   end
 
   def test_reverse_proxy_https
-    builder = Nginx::Builder.new(
+    builder = Nginx::Builder::Base.new(
       "example.com",
       Nginx::StaticServerBlock.new(
         server: Nginx::Server.new("example.com"),
@@ -41,7 +41,7 @@ class ServerBlockTest < Test
   end
 
   def test_static_https
-    builder = Nginx::SiteBuilder.new(
+    builder = Nginx::Builder::Site.new(
       "example.com",
       Etc.getlogin,
       Nginx::StaticServerBlock.new(
