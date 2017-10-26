@@ -9,6 +9,7 @@ class ReverseProxyRunnerTest < Test
 
   def setup
     ARGV.clear
+    ::FileUtils.rm_rf "/tmp/builder_test", secure: true
   end
 
   def test_one_arg
@@ -56,8 +57,8 @@ class ReverseProxyRunnerTest < Test
 
       key_file_list = [File.join(Nginx.certificate_directory("example.com"), "privkey.pem"),
                        File.join(Nginx.certificate_directory("example.com"), "fullchain.pem"),
-                       File.join(Nginx.certificate_directory("example.com"), "chain.pem")]
-      FileUtils.mkdir_p Nginx.certificate_directory("example.com")
+                       File.join(Nginx.certificate_directory("example.com"), "chain.pem"),
+                       File.join(Nginx.certificate_directory("example.com"), "cert.pem")]
       FileUtils.touch(key_file_list)
 
       ARGV.concat(%w[-d --dhparam 128 example.com http://search.example.com])

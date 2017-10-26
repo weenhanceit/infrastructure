@@ -85,7 +85,7 @@ class BuildTest < Test
       Nginx.prepare_fake_files("example.com")
       Nginx.dhparam = 128
 
-      builder = Nginx::Builder::Site.new(
+      builder = Nginx::Builder::SiteHttps.new(
         "example.com",
         Etc.getlogin,
         Nginx::StaticServerBlock.new(

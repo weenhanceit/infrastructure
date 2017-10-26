@@ -27,14 +27,15 @@ module Runner
     end
 
     def protocol_factory(options)
-      if options[:protocol].nil?
-        options[:protocol] = Nginx::Builder::ReverseProxyHttp
-      end
+      protocol_class = super(
+        options,
+        Nginx::Builder::ReverseProxyHttp,
+        Nginx::Builder::ReverseProxyHttps
+      )
 
-      protocol = options.delete(:protocol)
       domain_name = options.delete(:domain_name)
       proxy_url = options.delete(:proxy_url)
-      protocol.new(domain_name, proxy_url)
+      protocol_class.new(domain_name, proxy_url)
     end
   end
 end

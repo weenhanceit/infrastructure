@@ -28,7 +28,7 @@ module Runner
     end
 
     def process_options(http_builder_class = Builder::Base,
-      https_builder_class = nil)
+      https_builder_class = Builder::Https)
       options = {}
       OptionParser.new do |opts|
         opts.banner = "Usage: [options]"
@@ -79,5 +79,21 @@ module Runner
     end
 
     attr_reader :builder_class
+
+    def protocol_factory(options,
+      http_builder_class = Builder::Base,
+      https_builder_class = Builder::Https)
+      return options[:protocol] if options[:protocol]
+
+      certificate_directory = Nginx.certificate_directory(options[:domain_name])
+      if File.exist?(File.join(certificate_directory, "privkey.pem")) &&
+        File.exist?(File.join(certificate_directory, "fullchain.pem")) &&
+        File.exist?(File.join(certificate_directory, "chain.pem")) &&
+        File.exist?(File.join(certificate_directory, "cert.pem"))
+        https_builder_class
+      else
+        http_builder_class
+      end
+    end
   end
 end

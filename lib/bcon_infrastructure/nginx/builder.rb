@@ -2,6 +2,13 @@
 
 module Nginx
   module Builder
+    module Https
+      def save
+        `openssl dhparam #{Nginx.dhparam} -out #{Nginx.certificate_directory(domain_name)}/dhparam.pem`
+        super
+      end
+    end
+
     class Base
       def initialize(domain_name, *server_blocks)
         @server_blocks = server_blocks
@@ -22,14 +29,6 @@ module Nginx
       attr_reader :domain_name, :server_blocks
     end
 
-    class Https < Base
-      def save
-        puts "ABOUT TO GENERATE KEY FILE."
-        `openssl dhparam #{Nginx.dhparam} -out #{Nginx.certificate_directory(domain_name)}/dhparam.pem`
-        super
-      end
-    end
-
     class ReverseProxyHttp < Base
       def initialize(domain_name, proxy_url)
         super(domain_name,
@@ -42,7 +41,9 @@ module Nginx
       end
     end
 
-    class ReverseProxyHttps < Https
+    class ReverseProxyHttps < Base
+      include Https
+
       def initialize(domain_name, proxy_url)
         super(domain_name,
           Nginx::ServerBlock.new(
@@ -72,6 +73,10 @@ module Nginx
       end
 
       attr_reader :user
+    end
+
+    class SiteHttps < Site
+      include Https
     end
   end
 end
