@@ -1,11 +1,14 @@
+# frozen_string_literal: true
+
 ##
 # Write nginx configuration files.
 module Nginx
   class ServerBlock
-    def initialize(server: nil, listen: nil, location: nil)
+    def initialize(upstream: nil, server: nil, listen: nil, location: nil)
       @listen = listen
-      @location = location
+      @location = Array(location)
       @server = server
+      @upstream = upstream
     end
 
     def save
@@ -16,30 +19,56 @@ module Nginx
     end
 
     def to_s
+      [
+        upstream_string,
+        server_block_string
+      ].compact.join("\n\n")
+    end
+
+    private
+
+    def server_block_string
       <<~SERVER_BLOCK
         server {
         #{[
           @server&.to_s(1),
           @listen&.to_s(1),
-          @location&.to_s(1)
+          @location&.map { |l| l.to_s(1) }
         ].compact.join("\n\n")}
         }
-      SERVER_BLOCK
+SERVER_BLOCK
     end
 
-    private
+    def upstream_string
+      upstream&.to_s
+    end
 
-    attr_reader :listen, :location, :server
+    attr_reader :listen, :location, :server, :upstream
   end
 
-  class StaticServerBlock < ServerBlock
+  class SiteServerBlock < ServerBlock
+    def make_root_directory(root_directory)
+      FileUtils.mkdir_p(server.root_directory)
+      if Process.uid.zero?
+        FileUtils.chown(server.user,
+          "www-data",
+          server.root_directory)
+      end
+    end
+
     def save
-      FileUtils.mkdir_p(Nginx.root_directory(server.domain_name))
-      FileUtils.chown(server.user,
-        "www-data",
-        Nginx.root_directory(server.domain_name)) if Process.uid.zero?
+      make_root_directory(root_directory)
       super
     end
+  end
+
+  class RailsServerBlock < SiteServerBlock
+    def root_directory
+      File.join(server.root_directory, "/public")
+    end
+  end
+
+  class StaticServerBlock < SiteServerBlock
   end
 
   class TlsRedirectServerBlock < ServerBlock

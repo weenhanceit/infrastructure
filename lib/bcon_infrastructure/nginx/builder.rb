@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Nginx
+  ##
+  # Builders.
+  # Builders build different files.
   module Builder
     module Https
       def save
@@ -29,6 +32,8 @@ Finally, re-run this script to configure nginx for TLS.
       end
 
       def initialize(domain_name, *server_blocks)
+        # puts "Base#initialize domain_name: #{domain_name}"
+        # puts "Base#initialize server_blocks.inspect: #{server_blocks.inspect}"
         @server_blocks = server_blocks
         @domain_name = domain_name
       end
@@ -137,6 +142,32 @@ Finally, re-run this script to configure nginx for TLS.
           ),
           Nginx::TlsRedirectServerBlock.new(domain_name)
         )
+      end
+
+      attr_reader :certificate_domain
+    end
+
+    class RailsHttp < Site
+      def initialize(domain_name, user, _certificate_domain = nil)
+        super(domain_name,
+          user,
+            Nginx::RailsServerBlock.new(
+              upstream: Nginx::Upstream.new(domain_name),
+              server: Nginx::RailsServer.new(domain_name),
+              listen: Nginx::ListenHttp.new,
+              location: [
+                Nginx::RailsLocation.new(domain_name),
+                Nginx::ActionCableLocation.new(domain_name)
+              ]
+            )
+          )
+      end
+    end
+
+    class RailsHttps < Site
+      def initialize(domain_name, user, _certificate_domain = nil)
+        @certificate_domain = certificate_domain || domain_name
+        super(domain_name, user)
       end
 
       attr_reader :certificate_domain

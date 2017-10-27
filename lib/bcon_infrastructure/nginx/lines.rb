@@ -7,7 +7,13 @@ module Nginx
     end
 
     def format(level = 0)
-      @lines.map { |x| x.empty? ? x : (" " * level * 2) + x }.join("\n")
+      @lines.map { |x| Lines.indent(x, level) }.join("\n")
+    end
+
+    class << self
+      def indent(s, level = 0)
+        s.empty? ? s : (" " * level * 2) + s
+      end
     end
   end
 end

@@ -12,6 +12,10 @@ module Nginx
       @user = user
     end
 
+    def root_directory
+      Nginx.root_directory(domain_name)
+    end
+
     def to_s(level = 0)
       [
         super(level),
