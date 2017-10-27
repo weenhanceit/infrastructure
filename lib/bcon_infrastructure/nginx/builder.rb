@@ -162,6 +162,10 @@ Finally, re-run this script to configure nginx for TLS.
             )
           )
       end
+
+      def save
+        Systemd::Rails.write_unit_file(domain_name) && super
+      end
     end
 
     class RailsHttps < Site

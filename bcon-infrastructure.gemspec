@@ -2,11 +2,10 @@
 
 Gem::Specification.new do |s|
   s.name        = "bcon-infrastructure"
-  s.version     = "0.0.1"
+  s.version     = "0.0.2"
   s.date        = "2017-10-26"
-  s.summary     = "Configure nginx and/or Puma"
-  s.description = %(For static sites and reverse proxies.
-Rails apps coming soon.
+  s.summary     = "Configure nginx, systemd, and/or Puma"
+  s.description = %(For static sites, Rails apps, and reverse proxies.
 )
   s.authors     = ["Larry Reid"]
   s.email       = "lcreid@jadesystems.ca"
@@ -23,6 +22,8 @@ Rails apps coming soon.
     "lib/bcon_infrastructure/runner/base.rb",
     "lib/bcon_infrastructure/runner/reverse_proxy.rb",
     "lib/bcon_infrastructure/runner/static_site.rb",
+    "lib/bcon_infrastructure/systemd/systemd.rb",
+    "lib/bcon_infrastructure/systemd/rails.rb",
     "bin/create-rails-app",
     "bin/create-reverse-proxy",
     "bin/create-server-block"

@@ -9,9 +9,14 @@ class BuilderTest < Test
   include TestHelpers
   include Nginx
 
+  def setup
+    FileUtils.rm_rf "/tmp/builder_test", secure: true
+  end
+
   def test_save_rails_http
     Nginx.chroot("/tmp/builder_test") do
       Nginx.prepare_fake_files("example.com")
+      FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))
 
       builder = Nginx::Builder::RailsHttp.new("example.com", Etc.getlogin)
 
