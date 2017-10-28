@@ -201,6 +201,9 @@ server {
   # is what serves from public directly without hitting Puma
   root #{Nginx.root}/var/www/example.com/html/public;
   try_files $uri/index.html $uri @example.com;
+  error_page 500 502 503 504 /500.html;
+  client_max_body_size 4G;
+  keepalive_timeout 10;
 
   # TLS config from: http://nginx.org/en/docs/http/configuring_https_servers.html
   # HTTP2 doesn't require encryption, but at last reading, no browsers support
@@ -225,7 +228,7 @@ server {
   ssl_stapling_verify on;
   ssl_trusted_certificate #{Nginx.root}/etc/letsencrypt/live/example.com/chain.pem;
   resolver 8.8.8.8 8.8.4.4;
-  # Step 6 (Rails does this for us anyway) pin for a fortnight
+  # Step 6 pin for a fortnight
   add_header Strict-Transport-Security "max-age=1209600" always;
   # Other steps TBD
 
@@ -249,16 +252,14 @@ server {
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";
   }
-
-  error_page 500 502 503 504 /500.html;
-  client_max_body_size 4G;
-  keepalive_timeout 10;
 }
 
 server {
   server_name example.com www.example.com;
+
   listen 80;
   listen [::]:80;
+
   return 301 https://$server_name/$request_uri;
 }
 )

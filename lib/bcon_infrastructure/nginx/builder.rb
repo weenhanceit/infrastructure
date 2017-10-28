@@ -169,9 +169,28 @@ Finally, re-run this script to configure nginx for TLS.
     end
 
     class RailsHttps < Site
+      include Https
+
       def initialize(domain_name, user, _certificate_domain = nil)
         @certificate_domain = certificate_domain || domain_name
-        super(domain_name, user)
+        super(domain_name,
+          user,
+          Nginx::RailsServerBlock.new(
+            upstream: Nginx::Upstream.new(domain_name),
+            server: Nginx::RailsServer.new(domain_name),
+            listen: Nginx::ListenHttps.new(domain_name, certificate_domain),
+            location: [
+              Nginx::RailsLocation.new(domain_name),
+              Nginx::ActionCableLocation.new(domain_name)
+            ]
+          ),
+          Nginx::TlsRedirectServerBlock.new(domain_name)
+        )
+      end
+
+      # FIXME: DRY this up with the HTTP class.
+      def save
+        Systemd::Rails.write_unit_file(domain_name) && super
       end
 
       attr_reader :certificate_domain

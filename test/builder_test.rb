@@ -38,8 +38,14 @@ class BuilderTest < Test
 
   def test_save_rails_https
     Nginx.chroot("/tmp/builder_test") do
-      Nginx.prepare_fake_files("example.com")
       Nginx.dhparam = 128
+      Nginx.prepare_fake_files("example.com")
+      FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))
+
+      ENV["SECRET_KEY_BASE"] = "BASE"
+      ENV["DATABASE_USERNAME"] = "USER"
+      ENV["DATABASE_PASSWORD"] = "PASS"
+      ENV["EMAIL_PASSWORD"] = "EMAIL"
 
       builder = Nginx::Builder::RailsHttps.new("example.com", Etc.getlogin)
 
@@ -82,8 +88,8 @@ class BuilderTest < Test
 
   def test_save_reverse_proxy_https
     Nginx.chroot("/tmp/test_builder") do
-      Nginx.prepare_fake_files("search.example.com")
       Nginx.dhparam = 128
+      Nginx.prepare_fake_files("search.example.com")
 
       builder = Nginx::Builder::ReverseProxyHttps.new(
         "search.example.com",
