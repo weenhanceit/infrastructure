@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "minitest/autorun"
-require "bcon_infrastructure"
+require "shared_infrastructure"
 require "test"
 
 class ReverseProxyRunnerTest < Test

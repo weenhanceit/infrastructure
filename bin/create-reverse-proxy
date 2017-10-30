@@ -2,6 +2,6 @@
 # frozen_string_literal: true
 
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), "..", "lib")
-require "bcon_infrastructure"
+require "shared_infrastructure"
 
 Runner::ReverseProxy.new.main.save
