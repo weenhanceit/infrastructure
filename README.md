@@ -358,3 +358,43 @@ sudo ./create-default-server.sh
 sudo nginx -s reload
 
 ```
+
+## Reverse Proxy
+(Experimental implementation.)
+To create a reverse proxy to forward HTTPS requests to an HTTP-only site
+(this works, but keep reading before you do it):
+```
+sudo gem install shared-infrastructure
+sudo create-reverse-proxy proxy-domain-name target-url
+```
+This creates a reverse proxy accessible via HTTP.
+
+The Let's Encrypt `certbot` program for getting certificates
+expects a publicly accessible directory behind the `proxy-domain-name`.
+A proxy normally doesn't have that,
+and `create-reverse-proxy` doesn't create one.
+
+One solutions is to create a certificate with multiple URLs
+when configuring the original domain.
+For example,
+if the main site is `example.com`
+but you want to reverse-proxy `https://search.example.com`
+to another address,
+you could create the site like this:
+```
+create-server-block example.com search.example.com
+```
+then get the certificate,
+which will cover both domains.
+Then create the reverse proxy like this:
+```
+create-reverse-proxy --certificate-domain example.com http://search.example.com
+```
+I thought this would fail
+because the site is now using HTTPS,
+so the `certbot` command wouldn't work,
+but it does.
+
+However,
+it does fail because each site does indeed need to get the download.
+So the reverse proxy needs to have a location that maps to `/.well-known`.

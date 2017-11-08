@@ -23,13 +23,13 @@ class ReverseProxyRunnerTest < Test
     Nginx.chroot("/tmp/builder_test") do
       Nginx.prepare_fake_files("search.example.com")
 
-      ARGV.concat(%w[search.example.com http://10.0.0.1])
+      ARGV.concat(%w[-c example.com search.example.com http://10.0.0.1])
       runner = Runner::ReverseProxy.new.main
       assert runner.save, "Build failed"
       assert_no_directory Nginx.root_directory("search.example.com")
       assert_file Nginx.server_block_location("search.example.com")
       assert_file Nginx.enabled_server_block_location("search.example.com")
-      assert_equal EXPECTED_REVERSE_PROXY_HTTP_SERVER_BLOCK,
+      assert_equal expected_reverse_proxy_http_server_block,
         File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
     end
   end

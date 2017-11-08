@@ -13,9 +13,12 @@ class ServerBlockTest < Test
     server_block = Nginx::ServerBlock.new(
       server: Nginx::Server.new("search.example.com"),
       listen: Nginx::ListenHttp.new,
-      location: Nginx::ReverseProxyLocation.new("http://10.0.0.1")
+      location: [
+        Nginx::AcmeLocation.new("example.com"),
+        Nginx::ReverseProxyLocation.new("http://10.0.0.1")
+      ]
     )
-    assert_equal EXPECTED_REVERSE_PROXY_HTTP_SERVER_BLOCK, server_block.to_s
+    assert_equal expected_reverse_proxy_http_server_block, server_block.to_s
   end
 
   def test_reverse_proxy_https

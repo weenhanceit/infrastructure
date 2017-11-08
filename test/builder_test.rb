@@ -71,7 +71,10 @@ class BuilderTest < Test
         Nginx::ServerBlock.new(
           server: Nginx::Server.new("search.example.com"),
           listen: Nginx::ListenHttp.new,
-          location: Nginx::ReverseProxyLocation.new("http://10.0.0.1")
+          location: [
+            Nginx::AcmeLocation.new("example.com"),
+            Nginx::ReverseProxyLocation.new("http://10.0.0.1")
+          ]
         )
       )
 
@@ -80,7 +83,7 @@ class BuilderTest < Test
       assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
       assert_file Nginx.server_block_location("search.example.com")
       assert_file Nginx.enabled_server_block_location("search.example.com")
-      assert_equal EXPECTED_REVERSE_PROXY_HTTP_SERVER_BLOCK,
+      assert_equal expected_reverse_proxy_http_server_block,
         File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
       assert_no_directory Nginx.root_directory("search.example.com")
     end

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 Gem::Specification.new do |s|
-  s.name        = "bcon-infrastructure"
-  s.version     = "0.0.2"
-  s.date        = "2017-10-26"
+  s.name        = "shared-infrastructure"
+  s.version     = "0.0.4"
+  s.date        = "2017-10-30"
   s.summary     = "Configure nginx, systemd, and/or Puma"
   s.description = %(For static sites, Rails apps, and reverse proxies.
 )
@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
     "lib/shared_infrastructure/nginx/lines.rb",
     "lib/shared_infrastructure/nginx/listen.rb",
     "lib/shared_infrastructure/nginx/location.rb",
+    "lib/shared_infrastructure/nginx/upstream.rb",
     "lib/shared_infrastructure/nginx/site.rb",
     "lib/shared_infrastructure/nginx/builder.rb",
     "lib/shared_infrastructure/runner/base.rb",

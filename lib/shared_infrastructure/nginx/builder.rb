@@ -53,12 +53,17 @@ Finally, re-run this script to configure nginx for TLS.
     end
 
     class ReverseProxyHttp < Base
-      def initialize(domain_name, proxy_url, _certificate_domain = nil)
+      def initialize(domain_name, proxy_url, certificate_domain = nil)
         super(domain_name,
           Nginx::ServerBlock.new(
             server: Nginx::Server.new(domain_name),
             listen: Nginx::ListenHttp.new,
-            location: Nginx::ReverseProxyLocation.new(proxy_url)
+            location: [
+              # TODO: the following should really only happen when the domains
+              # are different.
+              Nginx::AcmeLocation.new(certificate_domain || domain_name),
+              Nginx::ReverseProxyLocation.new(proxy_url)
+            ]
           )
         )
       end

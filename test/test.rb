@@ -1,9 +1,14 @@
 class Test < MiniTest::Test
-  EXPECTED_REVERSE_PROXY_HTTP_SERVER_BLOCK = %(server {
+  def expected_reverse_proxy_http_server_block
+    %(server {
   server_name search.example.com www.search.example.com;
 
   listen 80;
   listen [::]:80;
+
+  location /.well-known {
+    alias #{Nginx.root}/var/www/example.com/html/.well-known;
+  }
 
   location / {
     proxy_pass http://10.0.0.1;
@@ -15,6 +20,7 @@ class Test < MiniTest::Test
   }
 }
 ).freeze
+  end
 
   def expected_static_http_server_block
     %(server {

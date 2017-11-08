@@ -17,6 +17,21 @@ module Nginx
     attr_reader :location
   end
 
+  class AcmeLocation < Location
+    def initialize(certificate_domain, location = "/.well-known")
+      super(location)
+      @certificate_domain = certificate_domain
+    end
+
+    def to_s(level = 0)
+      Lines.new("location #{location} {",
+        "  alias #{File.join(Nginx.root_directory(certificate_domain), ".well-known")};",
+        "}").format(level)
+    end
+
+    attr_reader :certificate_domain, :location
+  end
+
   class ActionCableLocation < Location
     def initialize(domain_name, location = "/cable")
       super(location)
