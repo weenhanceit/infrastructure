@@ -84,6 +84,10 @@ module Nginx
       @proxy_url = proxy_url
     end
 
+    ##
+    # Don't change any of the response headers
+    # http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_redirect
+    # The URI is added if none is specified in the proxy_url.
     def to_s(level = 0)
       Lines.new("location #{location} {",
         "  proxy_pass #{proxy_url};",

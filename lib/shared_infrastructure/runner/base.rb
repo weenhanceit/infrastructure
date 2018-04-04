@@ -49,10 +49,10 @@ module Runner
           options[:debug] = true
         end
 
-        opts.on("-p PROTOCOL",
+        opts.on("-P PROTOCOL",
           "--protocol PROTOCOL",
           "HTTP|HTTPS. Default: HTTPS if key files exist, else HTTP.") do |protocol|
-          options[:protocol] = case protocol
+          options[:protocol] = case protocol.upcase
                                when "HTTP"
                                  http_builder_class
                                when "HTTPS"
