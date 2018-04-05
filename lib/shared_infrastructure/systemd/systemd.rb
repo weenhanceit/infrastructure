@@ -1,7 +1,7 @@
 module Systemd
   class Configuration
     def initialize
-      @unit_file_path = File.join(Nginx.root, "/lib/systemd/system")
+      @unit_file_path = "#{Nginx.root}/lib/systemd/system"
     end
 
     def unit_file(domain_name)
