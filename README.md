@@ -2,9 +2,8 @@
 Set up infrastructure for Weenhanceit projects.
 
 ## Architecture
-One Amazon EC2 server with multiple static sites and/or Rails applications,
-and one Amazon RDS instance.
-Use Amazon CodeDeploy to deploy the application or static web site.
+One server with multiple static sites and/or Rails applications,
+and one database instance on another server.
 
 On the application server,
 Nginx proxies the requests through to the appropriate Rails application,
@@ -12,7 +11,7 @@ or serves up the pages of the appropriate static web site.
 There is an instance of Puma for each of the Rails applications.
 
 Each Rails application has its database configuration
-to talk to a database on the RDS instance.
+to talk to a database on the database server.
 
 For applications that need Redis,
 we run a separate Redis instance for each application.
@@ -20,18 +19,17 @@ The Redis instance listens on a domain socket
 at `/tmp/redis.domain_name`.
 
 ## Prerequisites
-This document assumes you've already set up an EC2 instance,
-that CodeDeploy can deploy to the EC2 instance,
-and that you've set up an RDS Postgres instance.
+This document assumes you've already set up a server,
+and a Postgres instance.
 
 ## Common First Steps
 These steps are necessary whether you want to deploy
 a static web site
 or a Rails application.
 
-1. Log in to the EC2 instance via SSH
+1. Log in to the server via SSH
 ```
-    ssh -i ~/.ssh/weita.pem ubuntu@URL-of-ec2-instance
+    ssh -i ~/.ssh/weita.pem ubuntu@URL-of-server
 ```
 2. Get the set-up scripts:
 ```
@@ -47,10 +45,16 @@ or a Rails application.
 ```
 
 ## One-Time Server Set-Up
-This step is only necessary after you first set up the EC2 instance.
+This step is only necessary after you first set up the server.
 It installs additional software needed on the server.
 ```
 ./build.sh
+```
+
+Also install the gem:
+```
+sudo gem install specific_install --no-document
+sudo gem install shared-infrastructure -l https://github.com/weenhanceit/infrastructure.git -b ruby --no-document
 ```
 
 ### Creating Users
@@ -61,8 +65,8 @@ These instructions work if your desktop is running Ubuntu.
 and don't enter a pass phrase:
 ```
     mkdir ~/.ssh
-  chmod 700 ~/.ssh  
-  ssh-keygen -t rsa
+    chmod 700 ~/.ssh  
+    ssh-keygen -t rsa
 ```
   This leaves a key pair in `~/.ssh/id_rsa` (the private key)
   and `~/.ssh/id_rsa.pub` (the public key).
@@ -86,7 +90,7 @@ This sets up an Nginx server block for a given domain name.
 In all the examples that follow,
 replace `domain-name` with your domain name.
 ```
-sudo ./create-server-block.sh domain-name
+sudo bundle exec create-server-block domain-name
 ```
 The root directory of the static web site files is `/var/www/domain-name/html`.
 
@@ -107,8 +111,8 @@ receiving requests on the same domain socket.
 ### Set the Rails Environment Variables
 The Rails instance expects certain environment variables to be set.
 
-For the following, you get the "secret-key-base" by doing
-`rails secret`.
+For the following, you get the "secret-key-base" by doing `rails secret`.
+[TODO: `rails secret` assumes you have an application set up, which you might not have at this point.]
 The "database-username" and "database-password" can be whatever you choose them to be.
 ```
 export SECRET_KEY_BASE=secret-key-base
@@ -120,11 +124,11 @@ export EMAIL_PASSWORD=email-password
 ### Create the Rails Application
 If the application does *not* use ActionCable:
 ```
-sudo -E ./create-rails-app.sh domain-name
+sudo -E bundle exec create-rails-app domain-name
 ```
 If the application uses ActionCable, add the `-a` flag:
 ```
-sudo -E ./create-rails-app.sh -a domain-name
+sudo -E bundle exec create-rails-app -a domain-name
 ```
 Don't forget the `-E` to `sudo`. It causes the environment variables to be passed to the script.
 If you forget to use the ActionCable (`-a`) flag,
