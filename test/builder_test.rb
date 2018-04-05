@@ -18,10 +18,7 @@ class BuilderTest < Test
       Nginx.prepare_fake_files("example.com")
       FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))
 
-      ENV["SECRET_KEY_BASE"] = "BASE"
-      ENV["DATABASE_USERNAME"] = "USER"
-      ENV["DATABASE_PASSWORD"] = "PASS"
-      ENV["EMAIL_PASSWORD"] = "EMAIL"
+      fake_env
 
       builder = Nginx::Builder::RailsHttp.new("example.com", Etc.getlogin)
 
@@ -42,10 +39,7 @@ class BuilderTest < Test
       Nginx.prepare_fake_files("example.com")
       FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))
 
-      ENV["SECRET_KEY_BASE"] = "BASE"
-      ENV["DATABASE_USERNAME"] = "USER"
-      ENV["DATABASE_PASSWORD"] = "PASS"
-      ENV["EMAIL_PASSWORD"] = "EMAIL"
+      fake_env
 
       builder = Nginx::Builder::RailsHttps.new("example.com", Etc.getlogin)
 

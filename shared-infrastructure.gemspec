@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
     "lib/shared_infrastructure/runner/base.rb",
     "lib/shared_infrastructure/runner/reverse_proxy.rb",
     "lib/shared_infrastructure/runner/static_site.rb",
+    "lib/shared_infrastructure/runner/rails.rb",
     "lib/shared_infrastructure/systemd/systemd.rb",
     "lib/shared_infrastructure/systemd/rails.rb",
     "bin/create-rails-app",

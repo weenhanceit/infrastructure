@@ -176,7 +176,7 @@ Finally, re-run this script to configure nginx for TLS.
     class RailsHttps < Site
       include Https
 
-      def initialize(domain_name, user, _certificate_domain = nil)
+      def initialize(domain_name, user, certificate_domain = nil)
         @certificate_domain = certificate_domain || domain_name
         super(domain_name,
           user,
