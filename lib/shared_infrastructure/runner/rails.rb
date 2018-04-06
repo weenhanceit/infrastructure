@@ -1,5 +1,11 @@
 module Runner
   class Rails < Base
+    def main
+      builder = super
+      FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com"))) if Nginx.root?
+      builder
+    end
+
     def process_options
       super(Nginx::Builder::RailsHttp, Nginx::Builder::RailsHttps)
     end
