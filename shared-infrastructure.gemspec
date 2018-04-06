@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name        = "shared-infrastructure"
-  s.version     = "0.0.7"
+  s.version     = "0.0.8"
   s.date        = "2018-04-05"
   s.summary     = "Configure nginx, systemd, and/or Puma"
   s.description = %(For static sites, Rails apps, and reverse proxies.

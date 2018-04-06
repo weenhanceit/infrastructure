@@ -5,7 +5,7 @@ require "optparse"
 module Runner
   @debug = false
   class << self
-    attr_reader :debug
+    attr_accessor :debug
   end
 
   ##
