@@ -67,7 +67,7 @@ module Systemd
         puts "changing mode of unit file" if Runner.debug
         FileUtils.chmod(0o600, Systemd.unit_file(domain_name))
         puts "enabling service" if Runner.debug && Process.uid.zero?
-        `sudo systemctl enable $domain_name.service` if Process.uid.zero?
+        `systemctl enable #{domain_name}.service` if Process.uid.zero?
 
         result
       end
