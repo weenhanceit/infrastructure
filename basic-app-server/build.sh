@@ -19,8 +19,7 @@ sudo apt-get install -y -q pdftk
 
 sudo apt-get install -y -q postgresql-client libpq-dev
 sudo apt-get install -y -q sqlite3 libsqlite3-dev
-sudo apt-get install -y -q nodejs
-sudo apt-get -y -q install nginx yarn
+sudo apt-get install -y -q nodejs nginx yarn
 
 # Install Redis
 # Adapted from: https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-redis-on-ubuntu-16-04
