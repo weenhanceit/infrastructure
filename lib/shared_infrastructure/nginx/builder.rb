@@ -43,6 +43,7 @@ Finally, re-run this script to configure nginx for TLS.
         File.open(Nginx.server_block_location(domain_name), "w") do |f|
           f << to_s
         end
+        puts "enabling site" if Runner.debug
         `ln -fs ../sites-available/#{domain_name} #{Nginx.enabled_server_block_location(domain_name)}`
       end
 
