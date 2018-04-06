@@ -101,6 +101,7 @@ class RailsRunnerTest < Test
   end
 
   def test_rails_https_when_files_exist_with_certificate_directory_arg
+    fake_env
     Nginx.chroot("/tmp/builder_test") do
       Nginx.prepare_fake_files("search.example.com", "example.com")
       FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))

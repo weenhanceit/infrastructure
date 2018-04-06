@@ -3,6 +3,11 @@
 require "optparse"
 
 module Runner
+  @debug = false
+  class << self
+    attr_reader :debug
+  end
+
   ##
   # Basic runner for nginx config file generation.
   class Base
@@ -10,12 +15,12 @@ module Runner
       options = process_options
       options.merge!(process_args)
 
-      puts "options: #{options.inspect}" if options[:debug]
+      puts "options: #{options.inspect}" if Runner.debug
 
       Nginx.prepare_fake_files(options[:domain_name], options[:certificate_domain]) if Nginx.root?
 
       @builder_class = protocol_factory(options)
-      puts "builder_class: #{builder_class.inspect}" if options[:debug]
+      puts "builder_class: #{builder_class.inspect}" if Runner.debug
       builder_class
     end
 
@@ -47,6 +52,7 @@ module Runner
 
         opts.on("-d", "--debug", "Print debugging information.") do
           options[:debug] = true
+          Runner.debug = true
         end
 
         opts.on("-P PROTOCOL",

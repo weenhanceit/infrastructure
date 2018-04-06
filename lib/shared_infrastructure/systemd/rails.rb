@@ -19,6 +19,8 @@ module Systemd
           raise "Missing environment variable"
         end
 
+        puts "writing unit file (domain_name): #{Systemd.unit_file(domain_name)} (#{domain_name})" if Runner.debug
+
         result = File.open(Systemd.unit_file(domain_name), "w") do |f|
           f << <<~UNIT_FILE
             [Unit]
