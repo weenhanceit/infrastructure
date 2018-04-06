@@ -13,9 +13,11 @@ class ReverseProxyRunnerTest < Test
   end
 
   def test_one_arg
-    assert_output "", "domain and target url required\n" do
-      ARGV << "search.example.com"
-      Runner::ReverseProxy.new.main
+    assert_raises Runner::MissingArgument do
+      assert_output "", "domain and target url required\n" do
+        ARGV << "search.example.com"
+        Runner::ReverseProxy.new.main
+      end
     end
   end
 

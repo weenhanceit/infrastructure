@@ -8,8 +8,8 @@ module Runner
       super(options).merge(proxy_url: ARGV[1])
     end
 
-    def process_args
-      $stderr.puts "domain and target url required" unless ARGV.size == 2
+    def process_args(opts = nil)
+      raise MissingArgument.new("domain and target url required", opts) unless ARGV.size == 2
       {
         domain_name: ARGV[0],
         proxy_url: ARGV[1]

@@ -13,7 +13,6 @@ module Runner
   class Base
     def main
       options = process_options
-      options.merge!(process_args)
 
       puts "options: #{options.inspect}" if Runner.debug
 
@@ -28,26 +27,21 @@ module Runner
       options.select { |k, _v| k == :user }
     end
 
-    def process_args
-      $stderr.puts "domain required" unless ARGV.size == 1
+    def process_args(opts = nil)
+      raise MissingArgument.new("domain required", opts) unless ARGV.size == 1
       { domain_name: ARGV[0] }
     end
 
     def process_options(http_builder_class = Nginx::Builder::SiteHttp,
       https_builder_class = Nginx::Builder::SiteHttps)
       options = {}
-      OptionParser.new do |opts|
+      opts = OptionParser.new do |opts|
         opts.banner = "Usage: [options]"
 
         opts.on("-c DOMAIN",
           "--certificate-domain DOMAIN",
           "Use the certificate for DOMAIN.") do |certificate_domain|
           options[:certificate_domain] = certificate_domain
-        end
-
-        opts.on("-h", "--help", "Prints this help") do
-          puts opts
-          exit
         end
 
         opts.on("-d", "--debug", "Print debugging information.") do
@@ -64,8 +58,7 @@ module Runner
                                when "HTTPS"
                                  https_builder_class
                                else
-                                 puts opts
-                                 exit
+                                 opts.abort opts.help
                                end
         end
 
@@ -87,8 +80,9 @@ module Runner
         end
 
         yield opts if block_given?
-      end.parse!
-      options
+      end
+      opts.parse!
+      options.merge!(process_args(opts))
     end
 
     attr_reader :builder_class
@@ -112,5 +106,14 @@ module Runner
         end
       end
     end
+  end
+
+  class MissingArgument < RuntimeError
+    def initialize(msg, opts)
+      @opts = opts
+      super msg
+    end
+    attr_reader :msg
+    attr_reader :opts
   end
 end

@@ -4,4 +4,7 @@
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), "..", "lib")
 require "shared_infrastructure"
 
-Runner::ReverseProxy.new.main.save
+begin Runner::ReverseProxy.new.main.save
+rescue Runner::MissingArgument => e
+  e.opts.abort e.to_s + "\n" + e.opts.to_s
+end
