@@ -11,14 +11,6 @@ module Nginx
       @upstream = upstream
     end
 
-    def save
-      puts "writing server block: #{Nginx.server_block_location(server.domain_name)}" if Runner.debug
-      File.open(Nginx.server_block_location(server.domain_name), "w") do |f|
-        f << to_s
-      end
-      `ln -fs ../sites-available/#{server.domain_name} #{Nginx.enabled_server_block_location(server.domain_name)}`
-    end
-
     def to_s
       [
         upstream_string,
