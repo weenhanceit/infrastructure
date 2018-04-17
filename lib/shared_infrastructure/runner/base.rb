@@ -38,6 +38,14 @@ module Runner
       opts = OptionParser.new do |opts|
         opts.banner = "Usage: [options]"
 
+        # FIXME: This is only applicable to Rails apps.
+        opts.on("-a LOCATION",
+          "--accel LOCATION",
+          "Location to serve when app responds with 'X-Accel'") do |accel_location|
+          options[:accel_location] = accel_location
+          puts "FOUND X-ACCEL"
+        end
+
         opts.on("-c DOMAIN",
           "--certificate-domain DOMAIN",
           "Use the certificate for DOMAIN.") do |certificate_domain|
@@ -79,7 +87,7 @@ module Runner
           Nginx.dhparam = keysize
         end
 
-        yield opts if block_given?
+        options.merge! yield opts if block_given?
       end
       opts.parse!
       options.merge!(process_args(opts))

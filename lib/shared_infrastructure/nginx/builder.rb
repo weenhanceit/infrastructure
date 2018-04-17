@@ -155,7 +155,7 @@ Finally, re-run this script to configure nginx for TLS.
     end
 
     class RailsHttp < Site
-      def initialize(domain_name, user, _certificate_domain = nil)
+      def initialize(domain_name, user, _certificate_domain = nil, accel_location: nil)
         super(domain_name,
           user,
             Nginx::RailsServerBlock.new(
@@ -164,8 +164,9 @@ Finally, re-run this script to configure nginx for TLS.
               listen: Nginx::ListenHttp.new,
               location: [
                 Nginx::RailsLocation.new(domain_name),
+                accel_location ? Nginx::AccelLocation.new(accel_location) : nil,
                 Nginx::ActionCableLocation.new(domain_name)
-              ]
+              ].compact
             )
           )
       end
@@ -178,7 +179,7 @@ Finally, re-run this script to configure nginx for TLS.
     class RailsHttps < Site
       include Https
 
-      def initialize(domain_name, user, certificate_domain = nil)
+      def initialize(domain_name, user, certificate_domain = nil, accel_location: nil)
         @certificate_domain = certificate_domain || domain_name
         super(domain_name,
           user,
@@ -188,8 +189,9 @@ Finally, re-run this script to configure nginx for TLS.
             listen: Nginx::ListenHttps.new(domain_name, certificate_domain),
             location: [
               Nginx::RailsLocation.new(domain_name),
+              accel_location ? Nginx::AccelLocation.new(accel_location) : nil,
               Nginx::ActionCableLocation.new(domain_name)
-            ]
+            ].compact
           ),
           Nginx::TlsRedirectServerBlock.new(domain_name)
         )

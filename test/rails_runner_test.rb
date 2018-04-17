@@ -128,4 +128,21 @@ class RailsRunnerTest < Test
         File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
     end
   end
+
+  def test_rails_http_x_accel
+    fake_env
+    Nginx.chroot("/tmp/builder_test") do
+      Nginx.prepare_fake_files("example.com")
+      FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))
+
+      ARGV.concat(%w[--accel /private example.com])
+      runner = Runner::Rails.new.main
+      assert runner.save, "Build failed"
+      assert_directory Nginx.root_directory("example.com")
+      assert_file Nginx.server_block_location("example.com")
+      assert_file Nginx.enabled_server_block_location("example.com")
+      assert_equal expected_rails_http_x_accel_server_block,
+        File.open(Nginx.server_block_location("example.com"), "r", &:read)
+    end
+  end
 end

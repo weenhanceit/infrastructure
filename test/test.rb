@@ -152,6 +152,54 @@ server {
 ).freeze
     end
 
+    def expected_rails_http_x_accel_server_block
+      %(upstream example.com {
+  server unix:///tmp/example.com.sock fail_timeout=0;
+}
+
+server {
+  server_name example.com www.example.com;
+
+  # http://stackoverflow.com/a/11313241/3109926 said the following
+  # is what serves from public directly without hitting Puma
+  root #{Nginx.root}/var/www/example.com/html/public;
+  try_files $uri/index.html $uri @example.com;
+  error_page 500 502 503 504 /500.html;
+  client_max_body_size 4G;
+  keepalive_timeout 10;
+
+  listen 80;
+  listen [::]:80;
+
+  location @example.com {
+    # A Rails app should force "SSL" so that it generates redirects to HTTPS,
+    # among other things.
+    # However, you want Nginx to handle the workload of TLS.
+    # The trick to proxying to a Rails app, therefore, is to proxy pass to HTTP,
+    # but set the header to HTTPS
+    # Next two lines.
+    proxy_pass http://example.com;
+    proxy_set_header X-Forwarded-Proto $scheme; # $scheme says http or https
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    proxy_redirect off;
+  }
+
+  location /private/ {
+    internal;
+    root /;
+  }
+
+  location /cable {
+    proxy_pass http://example.com;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+  }
+}
+)
+    end
+
     def expected_rails_http_server_block
       %(upstream example.com {
   server unix:///tmp/example.com.sock fail_timeout=0;

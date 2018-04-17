@@ -17,6 +17,22 @@ module Nginx
     attr_reader :location
   end
 
+  class AccelLocation < Location
+    def initialize(location, root = "/")
+      super(location)
+      @root = root
+    end
+
+    def to_s(level = 0)
+      Lines.new("location /#{location.chomp("/").reverse.chomp("/").reverse}/ {",
+        "  internal;",
+        "  root #{root};",
+        "}").format(level)
+    end
+
+    attr_reader :location, :root
+  end
+
   class AcmeLocation < Location
     def initialize(certificate_domain, location = "/.well-known")
       super(location)
