@@ -122,16 +122,18 @@ export EMAIL_PASSWORD=email-password
 ```
 
 ### Create the Rails Application
-If the application does *not* use ActionCable:
+If the application does *not* use `send_file` to ask Nginx to send private files:
 ```
 sudo -E bundle exec create-rails-app domain-name
 ```
-If the application uses ActionCable, add the `-a` flag:
+If the application uses uses `send_file` to ask Nginx to send private files, add the `-a` flag:
 ```
-sudo -E bundle exec create-rails-app -a domain-name
+sudo -E bundle exec create-rails-app -a location
 ```
+Where `location` is the folder in which the private documents are kept (e.g. `/private`).
+
 Don't forget the `-E` to `sudo`. It causes the environment variables to be passed to the script.
-If you forget to use the ActionCable (`-a`) flag,
+If you forget to use the `-a` flag,
 you can safely re-run this script later with the flag.
 
 The above will tell you how to get a certificate for the site,
