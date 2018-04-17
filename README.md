@@ -53,8 +53,7 @@ It installs additional software needed on the server.
 
 Also install the gem:
 ```
-sudo gem install specific_install --no-document
-sudo gem specific_install shared-infrastructure -l https://github.com/weenhanceit/infrastructure.git -b ruby
+sudo gem install shared-infrastructure
 ```
 
 ### Creating Users
