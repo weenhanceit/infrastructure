@@ -53,7 +53,7 @@ It installs additional software needed on the server.
 
 Also install the gem:
 ```
-sudo gem install shared-infrastructure
+sudo gem install shared-infrastructure --no-document
 ```
 
 ### Creating Users
