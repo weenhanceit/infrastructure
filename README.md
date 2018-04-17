@@ -180,7 +180,7 @@ with a basic configuration
 useful for simple Redis testing.
 For production applications
 on a shared host
-further build and configuation are required.
+further build and configuration are required.
 
 Our approach is to use at least one Redis instance per application.
 This allows us to configure each Redis application,
