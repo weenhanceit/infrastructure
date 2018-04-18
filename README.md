@@ -123,13 +123,13 @@ export EMAIL_PASSWORD=email-password
 ### Create the Rails Application
 If the application does *not* use `send_file` to ask Nginx to send private files:
 ```
-sudo -E bundle exec create-rails-app domain-name
+sudo -E create-rails-app domain-name
 ```
 If the application uses uses `send_file` to ask Nginx to send private files, add the `-a` flag:
 ```
-sudo -E bundle exec create-rails-app -a location
+sudo -E create-rails-app -a location domain-name
 ```
-Where `location` is the folder in which the private documents are kept (e.g. `/private`).
+Where `location` is the directory below `Rails.root` in which the private documents are kept (e.g. `/private`).
 
 Don't forget the `-E` to `sudo`. It causes the environment variables to be passed to the script.
 If you forget to use the `-a` flag,

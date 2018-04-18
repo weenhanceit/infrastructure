@@ -43,7 +43,6 @@ module Runner
           "--accel LOCATION",
           "Location to serve when app responds with 'X-Accel'") do |accel_location|
           options[:accel_location] = accel_location
-          puts "FOUND X-ACCEL"
         end
 
         opts.on("-c DOMAIN",
