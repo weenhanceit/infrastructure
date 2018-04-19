@@ -156,6 +156,7 @@ Finally, re-run this script to configure nginx for TLS.
 
     class RailsHttp < Site
       def initialize(domain_name, user, _certificate_domain = nil, accel_location: nil)
+        accel_location = Accel.new(accel_location) if accel_location
         super(domain_name,
           user,
             Nginx::RailsServerBlock.new(
@@ -164,9 +165,10 @@ Finally, re-run this script to configure nginx for TLS.
               listen: Nginx::ListenHttp.new,
               location: [
                 Nginx::RailsLocation.new(domain_name),
-                accel_location ? Nginx::AccelLocation.new(accel_location) : nil,
+                accel_location ? Nginx::AccelLocation.new(domain_name, accel_location) : nil,
                 Nginx::ActionCableLocation.new(domain_name)
-              ].compact
+              ].compact,
+              accel_location: accel_location
             )
           )
       end
@@ -181,6 +183,7 @@ Finally, re-run this script to configure nginx for TLS.
 
       def initialize(domain_name, user, certificate_domain = nil, accel_location: nil)
         @certificate_domain = certificate_domain || domain_name
+        accel_location = Accel.new(accel_location) if accel_location
         super(domain_name,
           user,
           Nginx::RailsServerBlock.new(
@@ -189,9 +192,10 @@ Finally, re-run this script to configure nginx for TLS.
             listen: Nginx::ListenHttps.new(domain_name, certificate_domain),
             location: [
               Nginx::RailsLocation.new(domain_name),
-              accel_location ? Nginx::AccelLocation.new(accel_location) : nil,
+              accel_location ? Nginx::AccelLocation.new(domain_name, accel_location) : nil,
               Nginx::ActionCableLocation.new(domain_name)
-            ].compact
+            ].compact,
+            accel_location: accel_location
           ),
           Nginx::TlsRedirectServerBlock.new(domain_name)
         )

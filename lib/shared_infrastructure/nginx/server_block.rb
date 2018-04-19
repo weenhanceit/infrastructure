@@ -4,9 +4,10 @@
 # Write nginx configuration files.
 module Nginx
   class ServerBlock
-    def initialize(upstream: nil, server: nil, listen: nil, location: nil)
+    def initialize(upstream: nil, server: nil, listen: nil, location: nil, accel_location: nil)
       @listen = listen
       @location = Array(location)
+      @accel_location = accel_location
       @server = server
       @upstream = upstream
     end
@@ -26,6 +27,7 @@ module Nginx
         #{[
           @server&.to_s(1),
           @listen&.to_s(1),
+          @accel_location&.proxy_set_header(server.domain_name),
           @location&.map { |l| l.to_s(1) }
         ].compact.join("\n\n")}
         }
@@ -36,7 +38,7 @@ SERVER_BLOCK
       upstream&.to_s
     end
 
-    attr_reader :listen, :location, :server, :upstream
+    attr_reader :accel_location, :listen, :location, :server, :upstream
   end
 
   class SiteServerBlock < ServerBlock

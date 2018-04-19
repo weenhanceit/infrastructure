@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
     "lib/shared_infrastructure/nginx/upstream.rb",
     "lib/shared_infrastructure/nginx/site.rb",
     "lib/shared_infrastructure/nginx/builder.rb",
+    "lib/shared_infrastructure/nginx/accel.rb",
     "lib/shared_infrastructure/runner/base.rb",
     "lib/shared_infrastructure/runner/reverse_proxy.rb",
     "lib/shared_infrastructure/runner/static_site.rb",

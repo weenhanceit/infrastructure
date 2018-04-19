@@ -171,6 +171,9 @@ server {
   listen 80;
   listen [::]:80;
 
+  proxy_set_header X-Sendfile-Type X-Accel-Redirect;
+  proxy_set_header X-Accel-Mapping #{Nginx.root}/var/www/example.com/html/private/=/private/;
+
   location @example.com {
     # A Rails app should force "SSL" so that it generates redirects to HTTPS,
     # among other things.
@@ -185,9 +188,9 @@ server {
     proxy_redirect off;
   }
 
-  location /private/ {
+  location /private {
     internal;
-    root /;
+    alias #{Nginx.root}/var/www/example.com/html/private;
   }
 
   location /cable {
