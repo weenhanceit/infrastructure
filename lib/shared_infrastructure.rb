@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "shared_infrastructure/output/output.rb"
+require "shared_infrastructure/domain.rb"
 require "shared_infrastructure/nginx/nginx.rb"
 require "shared_infrastructure/nginx/server_block.rb"
 require "shared_infrastructure/nginx/server.rb"

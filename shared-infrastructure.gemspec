@@ -11,6 +11,8 @@ Gem::Specification.new do |s|
   s.email       = "lcreid@jadesystems.ca"
   s.files       = [
     "lib/shared_infrastructure.rb",
+    "lib/shared_infrastructure/domain.rb",
+    "lib/shared_infrastructure/output/output.rb",
     "lib/shared_infrastructure/nginx/nginx.rb",
     "lib/shared_infrastructure/nginx/server_block.rb",
     "lib/shared_infrastructure/nginx/server.rb",
