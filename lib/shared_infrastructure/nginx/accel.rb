@@ -2,14 +2,15 @@
 
 module Nginx
   class Accel
-    def initialize(location_directory)
+    def initialize(location_directory, domain: nil)
+      @domain = domain
       @location_directory = location_directory.chomp("/").reverse.chomp("/").reverse
     end
 
-    attr_reader :location_directory
+    attr_reader :domain, :location_directory
 
     def alias_string(domain_name)
-      File.join(Nginx.configuration.root_directory(domain_name), location_directory).to_s
+      File.join(Nginx.configuration.root_directory(domain ? domain.domain_name : domain_name), location_directory).to_s
     end
 
     def location

@@ -6,7 +6,7 @@ module Nginx
   class Server
     attr_reader :domain, :domain_name
 
-    def initialize(domain_name, domain: nil)
+    def initialize(domain_name = nil, domain: nil)
       @domain_name = domain_name
       @domain = domain
     end
@@ -24,17 +24,18 @@ module Nginx
   ##
   # Server name and site location for a static site.
   # TODO: I don't like the way this gets twisted when subclassing.
-  class StaticServer < Server
-    def to_s(level = 0)
-      [
-        super(level),
-        Lines.new(
-          "root #{domain ? domain.site_root : root_directory};",
-          "index index.html index.htm;"
-        ).format(level)
-      ].join("\n\n")
-    end
-  end
+  # TODO: This class wasn't used anywhere
+  # class StaticServer < Server
+  #   def to_s(level = 0)
+  #     [
+  #       super(level),
+  #       Lines.new(
+  #         "root #{domain ? domain.site_root : root_directory};",
+  #         "index index.html index.htm;"
+  #       ).format(level)
+  #     ].join("\n\n")
+  #   end
+  # end
 
   class RailsServer < Server
     def root_directory

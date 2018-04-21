@@ -18,8 +18,9 @@ module Nginx
   end
 
   class AccelLocation < Location
-    def initialize(domain_name, accel)
+    def initialize(domain_name, accel, domain: nil)
       super(location)
+      @domain = domain
       @domain_name = domain_name
       @accel = accel
     end
@@ -27,11 +28,11 @@ module Nginx
     def to_s(level = 0)
       Lines.new("location #{accel.location} {",
         "  internal;",
-        "  alias #{accel.alias_string(domain_name)};",
+        "  alias #{accel.alias_string(domain ? domain.name : domain_name)};",
         "}").format(level)
     end
 
-    attr_reader :accel, :domain_name
+    attr_reader :accel, :domain, :domain_name
   end
 
   class AcmeLocation < Location

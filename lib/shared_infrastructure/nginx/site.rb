@@ -7,7 +7,7 @@ module Nginx
   class Site < Server
     attr_reader :user
 
-    def initialize(domain_name, user = "ubuntu", domain: nil)
+    def initialize(domain_name = nil, user = "ubuntu", domain: nil)
       super domain_name, domain: domain
       @user = user
     end
