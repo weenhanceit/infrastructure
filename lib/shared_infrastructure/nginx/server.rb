@@ -29,7 +29,7 @@ module Nginx
       [
         super(level),
         Lines.new(
-          "root #{domain ? domain.root_directory : root_directory};",
+          "root #{domain ? domain.site_root : root_directory};",
           "index index.html index.htm;"
         ).format(level)
       ].join("\n\n")
@@ -38,7 +38,7 @@ module Nginx
 
   class RailsServer < Server
     def root_directory
-      File.join(Nginx.root_directory(domain_name), "public")
+      File.join(domain ? domain.site_root : Nginx.root_directory(domain_name), "public")
     end
 
     def to_s(level = 0)
@@ -47,7 +47,7 @@ module Nginx
         Lines.new(
           "# http://stackoverflow.com/a/11313241/3109926 said the following",
           "# is what serves from public directly without hitting Puma",
-          "root #{domain ? domain.root_directory : root_directory};",
+          "root #{root_directory};",
           "try_files $uri/index.html $uri @#{domain ? domain.domain_name : domain_name};",
           "error_page 500 502 503 504 /500.html;",
           "client_max_body_size 4G;",

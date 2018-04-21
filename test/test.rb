@@ -162,7 +162,7 @@ server {
 
   # http://stackoverflow.com/a/11313241/3109926 said the following
   # is what serves from public directly without hitting Puma
-  root #{Nginx.root}/var/www/example.com/html/public;
+  root /var/www/example.com/html/public;
   try_files $uri/index.html $uri @example.com;
   error_page 500 502 503 504 /500.html;
   client_max_body_size 4G;
@@ -213,7 +213,7 @@ server {
 
   # http://stackoverflow.com/a/11313241/3109926 said the following
   # is what serves from public directly without hitting Puma
-  root #{Nginx.root}/var/www/example.com/html/public;
+  root /var/www/example.com/html/public;
   try_files $uri/index.html $uri @example.com;
   error_page 500 502 503 504 /500.html;
   client_max_body_size 4G;
@@ -256,7 +256,7 @@ server {
 
   # http://stackoverflow.com/a/11313241/3109926 said the following
   # is what serves from public directly without hitting Puma
-  root #{Nginx.root}/var/www/example.com/html/public;
+  root /var/www/example.com/html/public;
   try_files $uri/index.html $uri @example.com;
   error_page 500 502 503 504 /500.html;
   client_max_body_size 4G;
@@ -332,7 +332,7 @@ server {
 
   # http://stackoverflow.com/a/11313241/3109926 said the following
   # is what serves from public directly without hitting Puma
-  root #{Nginx.root}/var/www/search.example.com/html/public;
+  root /var/www/search.example.com/html/public;
   try_files $uri/index.html $uri @search.example.com;
   error_page 500 502 503 504 /500.html;
   client_max_body_size 4G;

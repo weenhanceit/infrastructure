@@ -20,7 +20,7 @@ class BuilderTest < Test
 
       fake_env
 
-      builder = Nginx::Builder::RailsHttp.new("example.com", Etc.getlogin)
+      builder = Nginx::Builder::RailsHttp.new("example.com", Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
 
       assert builder.save, "Failed to save server block"
       assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
@@ -41,7 +41,7 @@ class BuilderTest < Test
 
       fake_env
 
-      builder = Nginx::Builder::RailsHttps.new("example.com", Etc.getlogin)
+      builder = Nginx::Builder::RailsHttps.new("example.com", Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
 
       assert builder.save, "Failed to save server block"
       assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")

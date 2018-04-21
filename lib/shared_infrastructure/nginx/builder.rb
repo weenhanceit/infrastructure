@@ -7,7 +7,9 @@ module Nginx
   module Builder
     module Https
       def save
-        `openssl dhparam #{Nginx.dhparam} -out #{Nginx.certificate_directory(certificate_domain)}/dhparam.pem`
+        pem_file = "#{Nginx.certificate_directory(certificate_domain)}/dhparam.pem"
+        # FileUtils.mkdir_p File.dirname(pem_file)
+        `openssl dhparam #{Nginx.dhparam} -out #{pem_file}`
         super
       end
     end
@@ -58,7 +60,7 @@ Finally, re-run this script to configure nginx for TLS.
       def initialize(domain_name, proxy_url, certificate_domain = nil, domain: nil)
         super(domain_name,
           Nginx::ServerBlock.new(
-            server: Nginx::Server.new(domain_name),
+            server: Nginx::Server.new(domain_name, domain: SharedInfrastructure::Domain.new(domain_name)),
             listen: Nginx::ListenHttp.new,
             location: [
               # TODO: the following should really only happen when the domains
@@ -85,7 +87,7 @@ Finally, re-run this script to configure nginx for TLS.
 
         super(domain_name,
           Nginx::ServerBlock.new(
-            server: Nginx::Server.new(domain_name),
+            server: Nginx::Server.new(domain_name, domain: SharedInfrastructure::Domain.new(domain_name)),
             listen: Nginx::ListenHttps.new(domain_name, certificate_domain),
             location: Nginx::ReverseProxyLocation.new(proxy_url)
           ),
@@ -98,7 +100,7 @@ Finally, re-run this script to configure nginx for TLS.
 
     class Site < Base
       def initialize(domain_name, user, *server_blocks, domain: nil)
-        super(domain_name, *server_blocks)
+        super(domain_name, *server_blocks, domain: domain)
         @user = user
       end
 
@@ -163,14 +165,15 @@ Finally, re-run this script to configure nginx for TLS.
           user,
             Nginx::RailsServerBlock.new(
               upstream: Nginx::Upstream.new(domain_name),
-              server: Nginx::RailsServer.new(domain_name),
+              server: Nginx::RailsServer.new(domain_name, domain: SharedInfrastructure::Domain.new(domain_name)),
               listen: Nginx::ListenHttp.new,
               location: [
                 Nginx::RailsLocation.new(domain_name),
                 accel_location ? Nginx::AccelLocation.new(domain_name, accel_location) : nil,
                 Nginx::ActionCableLocation.new(domain_name)
               ].compact,
-              accel_location: accel_location
+              accel_location: accel_location,
+              domain: domain
             )
           )
       end
@@ -190,14 +193,15 @@ Finally, re-run this script to configure nginx for TLS.
           user,
           Nginx::RailsServerBlock.new(
             upstream: Nginx::Upstream.new(domain_name),
-            server: Nginx::RailsServer.new(domain_name),
+            server: Nginx::RailsServer.new(domain_name, domain: SharedInfrastructure::Domain.new(domain_name)),
             listen: Nginx::ListenHttps.new(domain_name, certificate_domain),
             location: [
               Nginx::RailsLocation.new(domain_name),
               accel_location ? Nginx::AccelLocation.new(domain_name, accel_location) : nil,
               Nginx::ActionCableLocation.new(domain_name)
             ].compact,
-            accel_location: accel_location
+            accel_location: accel_location,
+            domain: domain
           ),
           Nginx::TlsRedirectServerBlock.new(domain_name)
         )
