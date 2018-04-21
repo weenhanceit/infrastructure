@@ -7,7 +7,9 @@ module SharedInfrastructure
         @io = if file.is_a?(IO) || file.is_a?(StringIO)
                 file
               else
-                File.open(File.join([SharedInfrastructure::Output.root, file].compact), "w")
+                file_name = File.join([SharedInfrastructure::Output.root, file].compact)
+                FileUtils.mkdir_p(File.dirname(file_name))
+                File.open(file_name, "w")
               end
       end
 

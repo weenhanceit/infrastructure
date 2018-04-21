@@ -41,15 +41,15 @@ class OutputTest < Test
 
   def test_fake_file_names
     SharedInfrastructure::Output.fake_root("/tmp")
-    o = SharedInfrastructure::Output::Output.new("example.com")
-    assert_equal "/tmp/example.com", o.send(:io).path
+    o = SharedInfrastructure::Output::Output.new("/var/www/example.com")
+    assert_equal "/tmp/var/www/example.com", o.send(:io).path
     SharedInfrastructure::Output.fake_root(nil)
   end
 
   def test_fake_file_names_block
     SharedInfrastructure::Output.fake_root("/tmp") do
-      o = SharedInfrastructure::Output::Output.new("example.com")
-      assert_equal "/tmp/example.com", o.send(:io).path
+      o = SharedInfrastructure::Output::Output.new("/var/www/example.com")
+      assert_equal "/tmp/var/www/example.com", o.send(:io).path
     end
     o = SharedInfrastructure::Output::Output.new("example.com")
     assert_equal "example.com", o.send(:io).path
