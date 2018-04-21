@@ -4,6 +4,10 @@ module SharedInfrastructure
       "/etc/nginx/sites-available/#{domain_name}"
     end
 
+    def certbot_domain_names
+      "#{domain_name} www.#{domain_name}"
+    end
+
     def certificate_directory
       "/etc/letsencrypt/live/#{domain_name}"
     end

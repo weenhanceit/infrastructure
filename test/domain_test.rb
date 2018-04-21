@@ -17,6 +17,7 @@ class DomainTest < Test
     assert_equal "/etc/letsencrypt/live/example.com", o.certificate_directory
     assert_equal "/etc/nginx/sites-available/example.com", o.available_site
     assert_equal "/etc/nginx/sites-enabled/example.com", o.enabled_site
+    assert_equal "example.com www.example.com", o.certbot_domain_names
   end
 
   def test_fake_file_names
@@ -25,6 +26,7 @@ class DomainTest < Test
       assert_equal "/etc/letsencrypt/live/example.com", o.certificate_directory
       assert_equal "/etc/nginx/sites-available/example.com", o.available_site
       assert_equal "/etc/nginx/sites-enabled/example.com", o.enabled_site
+      assert_equal "example.com www.example.com", o.certbot_domain_names
     end
   end
 end
