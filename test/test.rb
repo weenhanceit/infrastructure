@@ -26,7 +26,7 @@ class Test < MiniTest::Test
     %(server {
   server_name example.com www.example.com;
 
-  root #{Nginx.root}/var/www/example.com/html;
+  root /var/www/example.com/html;
   index index.html index.htm;
 
   listen 80;
@@ -56,7 +56,7 @@ class Test < MiniTest::Test
       %(server {
   server_name example.com www.example.com;
 
-  root #{Nginx.root}/var/www/example.com/html;
+  root /var/www/example.com/html;
   index index.html index.htm;
 
   # TLS config from: http://nginx.org/en/docs/http/configuring_https_servers.html
@@ -106,7 +106,7 @@ server {
       %(server {
   server_name search.example.com www.search.example.com;
 
-  root #{Nginx.root}/var/www/search.example.com/html;
+  root /var/www/search.example.com/html;
   index index.html index.htm;
 
   # TLS config from: http://nginx.org/en/docs/http/configuring_https_servers.html

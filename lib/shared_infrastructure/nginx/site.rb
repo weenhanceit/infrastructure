@@ -14,7 +14,7 @@ module Nginx
 
     def root_directory
       # FIXME: Remove conditional when refactoring done
-      domain ? domain.root_directory : Nginx.root_directory(domain_name)
+      domain ? domain.site_root : Nginx.root_directory(domain_name)
     end
 
     def to_s(level = 0)
@@ -22,7 +22,7 @@ module Nginx
         super(level),
         # FIXME: Remove conditional when refactoring done
         Lines.new(
-          "root #{domain ? domain.root_directory : Nginx.root_directory(domain_name)};",
+          "root #{domain ? domain.site_root : Nginx.root_directory(domain_name)};",
           "index index.html index.htm;"
         ).format(level)
       ].join("\n\n")
