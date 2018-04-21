@@ -14,7 +14,7 @@ module Nginx
     def to_s(level = 0)
       # TODO: Remove the condition when done refactoring.
       if domain
-        Lines.new("server_name #{Nginx.certbot_domain_names(domain_name)};").format(level)
+        Lines.new("server_name #{domain.certbot_domain_names};").format(level)
       else
         Lines.new("server_name #{Nginx.certbot_domain_names(domain_name)};").format(level)
       end
@@ -29,7 +29,7 @@ module Nginx
       [
         super(level),
         Lines.new(
-          "root #{root_directory};",
+          "root #{domain ? domain.root_directory : root_directory};",
           "index index.html index.htm;"
         ).format(level)
       ].join("\n\n")
@@ -47,8 +47,8 @@ module Nginx
         Lines.new(
           "# http://stackoverflow.com/a/11313241/3109926 said the following",
           "# is what serves from public directly without hitting Puma",
-          "root #{root_directory};",
-          "try_files $uri/index.html $uri @#{domain_name};",
+          "root #{domain ? domain.root_directory : root_directory};",
+          "try_files $uri/index.html $uri @#{domain ? domain.domain_name : domain_name};",
           "error_page 500 502 503 504 /500.html;",
           "client_max_body_size 4G;",
           "keepalive_timeout 10;"
