@@ -4,14 +4,20 @@ module Nginx
   ##
   # The server_name line of a server block.
   class Server
-    attr_reader :domain_name
+    attr_reader :domain, :domain_name
 
-    def initialize(domain_name)
+    def initialize(domain_name, domain: nil)
       @domain_name = domain_name
+      @domain = domain
     end
 
     def to_s(level = 0)
-      Lines.new("server_name #{Nginx.certbot_domain_names(domain_name)};").format(level)
+      # TODO: Remove the condition when done refactoring.
+      if domain
+        Lines.new("server_name #{Nginx.certbot_domain_names(domain_name)};").format(level)
+      else
+        Lines.new("server_name #{Nginx.certbot_domain_names(domain_name)};").format(level)
+      end
     end
   end
 
