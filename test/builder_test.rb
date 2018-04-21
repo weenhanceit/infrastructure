@@ -63,7 +63,7 @@ class BuilderTest < Test
       builder = Nginx::Builder::Base.new(
         "search.example.com",
         Nginx::ServerBlock.new(
-          server: Nginx::Server.new("search.example.com"),
+          server: Nginx::Server.new(domain: SharedInfrastructure::Domain.new("search.example.com")),
           listen: Nginx::ListenHttp.new,
           location: [
             Nginx::AcmeLocation.new("example.com"),
@@ -110,7 +110,7 @@ class BuilderTest < Test
     Nginx.chroot("/tmp/builder_test") do
       Nginx.prepare_fake_files("example.com")
 
-      builder = Nginx::Builder::SiteHttp.new("example.com", Etc.getlogin)
+      builder = Nginx::Builder::SiteHttp.new("example.com", Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
 
       assert builder.save, "Failed to save server block"
       assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
@@ -127,7 +127,7 @@ class BuilderTest < Test
       Nginx.prepare_fake_files("example.com")
       Nginx.dhparam = 128
 
-      builder = Nginx::Builder::SiteHttps.new("example.com", Etc.getlogin)
+      builder = Nginx::Builder::SiteHttps.new("example.com", Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
 
       assert builder.save, "Failed to save server block"
       assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")

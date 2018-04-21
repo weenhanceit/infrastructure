@@ -11,7 +11,7 @@ class ServerBlockTest < Test
 
   def test_reverse_proxy_http
     server_block = Nginx::ServerBlock.new(
-      server: Nginx::Server.new("search.example.com"),
+      server: Nginx::Server.new(domain: SharedInfrastructure::Domain.new("search.example.com")),
       listen: Nginx::ListenHttp.new,
       location: [
         Nginx::AcmeLocation.new("example.com"),
@@ -25,7 +25,7 @@ class ServerBlockTest < Test
     builder = Nginx::Builder::Base.new(
       "search.example.com",
       Nginx::StaticServerBlock.new(
-        server: Nginx::Server.new("search.example.com"),
+        server: Nginx::Server.new(domain: SharedInfrastructure::Domain.new("search.example.com")),
         listen: Nginx::ListenHttps.new("search.example.com"),
         location: Nginx::ReverseProxyLocation.new("http://10.0.0.1")
       ),
@@ -36,7 +36,7 @@ class ServerBlockTest < Test
 
   def test_static_http
     server_block = Nginx::StaticServerBlock.new(
-      server: Nginx::Site.new("example.com"),
+      server: Nginx::Site.new(domain: SharedInfrastructure::Domain.new("example.com")),
       listen: Nginx::ListenHttp.new,
       location: Nginx::Location.new("/")
     )
@@ -48,11 +48,12 @@ class ServerBlockTest < Test
       "example.com",
       Etc.getlogin,
       Nginx::StaticServerBlock.new(
-        server: Nginx::Site.new("example.com", Etc.getlogin),
+        server: Nginx::Site.new(Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com")),
         listen: Nginx::ListenHttps.new("example.com"),
         location: Nginx::Location.new
       ),
-      Nginx::TlsRedirectServerBlock.new("example.com")
+      Nginx::TlsRedirectServerBlock.new("example.com"),
+      domain: SharedInfrastructure::Domain.new("example.com")
     )
     assert_equal expected_https_server_block, builder.to_s
   end

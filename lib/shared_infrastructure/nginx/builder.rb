@@ -8,7 +8,7 @@ module Nginx
     module Https
       def save
         pem_file = "#{Nginx.certificate_directory(certificate_domain)}/dhparam.pem"
-        # FileUtils.mkdir_p File.dirname(pem_file)
+        FileUtils.mkdir_p File.dirname(pem_file)
         `openssl dhparam #{Nginx.dhparam} -out #{pem_file}`
         super
       end
@@ -37,6 +37,7 @@ Finally, re-run this script to configure nginx for TLS.
         # puts "Base#initialize domain_name: #{domain_name}"
         # puts "Base#initialize server_blocks.inspect: #{server_blocks.inspect}"
         @server_blocks = server_blocks
+        @domain = domain
         @domain_name = domain_name
       end
 
@@ -53,14 +54,14 @@ Finally, re-run this script to configure nginx for TLS.
         server_blocks.map(&:to_s).join("\n")
       end
 
-      attr_reader :domain_name, :server_blocks
+      attr_reader :domain, :domain_name, :server_blocks
     end
 
     class ReverseProxyHttp < Base
       def initialize(domain_name, proxy_url, certificate_domain = nil, domain: nil)
         super(domain_name,
           Nginx::ServerBlock.new(
-            server: Nginx::Server.new(domain_name, domain: SharedInfrastructure::Domain.new(domain_name)),
+            server: Nginx::Server.new(domain: SharedInfrastructure::Domain.new(domain_name)),
             listen: Nginx::ListenHttp.new,
             location: [
               # TODO: the following should really only happen when the domains
@@ -68,7 +69,8 @@ Finally, re-run this script to configure nginx for TLS.
               Nginx::AcmeLocation.new(certificate_domain || domain_name),
               Nginx::ReverseProxyLocation.new(proxy_url)
             ]
-          )
+          ),
+          domain: domain
         )
       end
 
@@ -87,11 +89,12 @@ Finally, re-run this script to configure nginx for TLS.
 
         super(domain_name,
           Nginx::ServerBlock.new(
-            server: Nginx::Server.new(domain_name, domain: SharedInfrastructure::Domain.new(domain_name)),
+            server: Nginx::Server.new(domain: SharedInfrastructure::Domain.new(domain_name)),
             listen: Nginx::ListenHttps.new(domain_name, certificate_domain),
             location: Nginx::ReverseProxyLocation.new(proxy_url)
           ),
-          Nginx::TlsRedirectServerBlock.new(domain_name)
+          Nginx::TlsRedirectServerBlock.new(domain_name),
+          domain: domain
         )
       end
 
@@ -122,7 +125,7 @@ Finally, re-run this script to configure nginx for TLS.
         super(domain_name,
           user,
           Nginx::StaticServerBlock.new(
-            server: Nginx::Site.new(domain_name, user, domain: SharedInfrastructure::Domain.new(domain_name)),
+            server: Nginx::Site.new(user, domain: SharedInfrastructure::Domain.new(domain_name)),
             listen: Nginx::ListenHttp.new,
             location: Nginx::Location.new
           ),
@@ -146,7 +149,7 @@ Finally, re-run this script to configure nginx for TLS.
         super(domain_name,
           user,
           Nginx::StaticServerBlock.new(
-            server: Nginx::Site.new(domain_name, user, domain: SharedInfrastructure::Domain.new(domain_name)),
+            server: Nginx::Site.new(user, domain: SharedInfrastructure::Domain.new(domain_name)),
             listen: Nginx::ListenHttps.new(domain_name, certificate_domain),
             location: Nginx::Location.new
           ),

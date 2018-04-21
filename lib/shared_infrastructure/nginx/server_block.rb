@@ -28,7 +28,7 @@ module Nginx
         #{[
           @server&.to_s(1),
           @listen&.to_s(1),
-          @accel_location&.proxy_set_header(server.domain_name),
+          @accel_location&.proxy_set_header(server.domain.domain_name),
           @location&.map { |l| l.to_s(1) }
         ].compact.join("\n\n")}
         }
@@ -70,7 +70,7 @@ SERVER_BLOCK
   class TlsRedirectServerBlock < ServerBlock
     def initialize(domain_name)
       super(
-        server: Server.new(domain_name, domain: SharedInfrastructure::Domain.new(domain_name)),
+        server: Server.new(domain: SharedInfrastructure::Domain.new(domain_name)),
         listen: ListenHttp.new,
         location: RedirectLocation.new
       )
