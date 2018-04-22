@@ -1,36 +1,26 @@
 # frozen_string_literal: true
 
 module SharedInfrastructure
-  module Output
-    class Output
-      def initialize(file)
-        @io = if file.is_a?(IO) || file.is_a?(StringIO)
-                file
-              else
-                file_name = File.join([SharedInfrastructure::Output.root, file].compact)
-                FileUtils.mkdir_p(File.dirname(file_name))
-                File.open(file_name, "w")
-              end
+  module OutputHelpers
+    # @param indent_string The string to use for indenting. Defaults to the
+    # first character of `s`.
+    # @param amount The number of `indent_string` to put at the start of each
+    #   line. Default: 2.
+    # @param indent_empty_lines Don't indent empty lines unless this is true.
+    def indent(s, amount = 2, indent_string = nil, indent_empty_lines = false)
+      indent_string = indent_string || s[/^[ \t]/] || " "
+      re = indent_empty_lines ? /^/ : /^(?!$)/
+      s.gsub(re, indent_string * amount)
+    end
+  end
+
+  class Output < File
+    def initialize(file_name, *args)
+      if Output.root
+        file_name = File.join(Output.root, file_name)
+        FileUtils.mkdir_p(File.dirname(file_name))
       end
-
-      # @param indent_string The string to use for indenting. Defaults to the
-      # first character of `s`.
-      # @param amount The number of `indent_string` to put at the start of each
-      #   line. Default: 2.
-      # @param indent_empty_lines Don't indent empty lines unless this is true.
-      def indent(s, amount = 2, indent_string = nil, indent_empty_lines = false)
-        indent_string = indent_string || s[/^[ \t]/] || " "
-        re = indent_empty_lines ? /^/ : /^(?!$)/
-        s.gsub(re, indent_string * amount)
-      end
-
-      def print(s)
-        io << s
-      end
-
-      private
-
-      attr_accessor :io
+      super file_name, *args
     end
 
     class << self
@@ -40,7 +30,7 @@ module SharedInfrastructure
       def fake_root(root = nil)
         if block_given?
           begin
-            save_root = SharedInfrastructure::Output.root
+            save_root = Output.root
             fake_root(root)
             result = yield
           ensure
