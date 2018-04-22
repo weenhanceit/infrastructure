@@ -89,7 +89,6 @@ class BuilderTest < Test
       Nginx.prepare_fake_files("search.example.com")
 
       builder = Nginx::Builder::ReverseProxyHttps.new(
-        "search.example.com",
         "http://10.0.0.1",
         domain: SharedInfrastructure::Domain.new("search.example.com")
       )
@@ -111,7 +110,7 @@ class BuilderTest < Test
     Nginx.chroot("/tmp/builder_test") do
       Nginx.prepare_fake_files("example.com")
 
-      builder = Nginx::Builder::SiteHttp.new(nil, Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
+      builder = Nginx::Builder::SiteHttp.new(Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
 
       assert builder.save, "Failed to save server block"
       assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
@@ -128,7 +127,7 @@ class BuilderTest < Test
       Nginx.prepare_fake_files("example.com")
       Nginx.dhparam = 128
 
-      builder = Nginx::Builder::SiteHttps.new(nil, Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
+      builder = Nginx::Builder::SiteHttps.new(Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
 
       assert builder.save, "Failed to save server block"
       assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")

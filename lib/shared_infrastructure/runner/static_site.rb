@@ -15,7 +15,7 @@ module Runner
       user = options.delete(:user) || "ubuntu"
       certificate_domain = options.delete(:certificate_domain)
       domain = SharedInfrastructure::Domain.new(domain_name)
-      protocol_class.new(domain_name, user, certificate_domain, domain: domain)
+      protocol_class.new(user, certificate_domain, domain: domain)
     end
   end
 end

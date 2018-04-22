@@ -44,7 +44,6 @@ class ServerBlockTest < Test
 
   def test_static_https
     builder = Nginx::Builder::Site.new(
-      "example.com",
       Etc.getlogin,
       Nginx::StaticServerBlock.new(
         server: Nginx::Site.new(domain: SharedInfrastructure::Domain.new("example.com")),

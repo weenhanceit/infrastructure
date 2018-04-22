@@ -31,7 +31,7 @@ module Runner
       proxy_url = options.delete(:proxy_url)
       certificate_domain = options.delete(:certificate_domain)
       domain = SharedInfrastructure::Domain.new(domain_name)
-      protocol_class.new(domain_name, proxy_url, certificate_domain, domain: domain)
+      protocol_class.new(proxy_url, certificate_domain, domain: domain)
     end
   end
 end

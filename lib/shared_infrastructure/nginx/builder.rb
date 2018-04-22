@@ -57,7 +57,7 @@ Finally, re-run this script to configure nginx for TLS.
     end
 
     class ReverseProxyHttp < Base
-      def initialize(domain_name, proxy_url, certificate_domain = nil, domain: nil)
+      def initialize(proxy_url, certificate_domain = nil, domain: nil)
         super(Nginx::ServerBlock.new(
             server: Nginx::Server.new(domain: domain),
             listen: Nginx::ListenHttp.new,
@@ -82,7 +82,7 @@ Finally, re-run this script to configure nginx for TLS.
     class ReverseProxyHttps < Base
       include Https
 
-      def initialize(domain_name, proxy_url, certificate_domain = nil, domain: nil)
+      def initialize(proxy_url, certificate_domain = nil, domain: nil)
         @certificate_domain = certificate_domain || domain.domain_name
 
         super(Nginx::ServerBlock.new(
@@ -99,7 +99,7 @@ Finally, re-run this script to configure nginx for TLS.
     end
 
     class Site < Base
-      def initialize(domain_name, user, *server_blocks, domain: nil)
+      def initialize(user, *server_blocks, domain: nil)
         super(*server_blocks, domain: domain)
         @user = user
       end
@@ -118,9 +118,8 @@ Finally, re-run this script to configure nginx for TLS.
     end
 
     class SiteHttp < Site
-      def initialize(domain_name, user, _certificate_domain = nil, domain: nil)
-        super(domain.domain_name,
-          user,
+      def initialize(user, _certificate_domain = nil, domain: nil)
+        super(user,
           Nginx::StaticServerBlock.new(
             server: Nginx::Site.new(domain: domain),
             listen: Nginx::ListenHttp.new,
@@ -140,11 +139,10 @@ Finally, re-run this script to configure nginx for TLS.
     class SiteHttps < Site
       include Https
 
-      def initialize(domain_name, user, certificate_domain = nil, domain: nil)
+      def initialize(user, certificate_domain = nil, domain: nil)
         @certificate_domain = certificate_domain || domain.domain_name
 
-        super(domain.domain_name,
-          user,
+        super(user,
           Nginx::StaticServerBlock.new(
             server: Nginx::Site.new(domain: domain),
             listen: Nginx::ListenHttps.new(domain.domain_name, certificate_domain),
@@ -161,8 +159,7 @@ Finally, re-run this script to configure nginx for TLS.
     class RailsHttp < Site
       def initialize(domain_name, user, _certificate_domain = nil, accel_location: nil, domain: nil)
         accel_location = Accel.new(accel_location, domain: domain) if accel_location
-        super(domain.domain_name,
-          user,
+        super(user,
             Nginx::RailsServerBlock.new(
               upstream: Nginx::Upstream.new(domain.domain_name),
               server: Nginx::RailsServer.new(domain: domain),
@@ -190,8 +187,7 @@ Finally, re-run this script to configure nginx for TLS.
       def initialize(domain_name, user, certificate_domain = nil, accel_location: nil, domain: nil)
         @certificate_domain = certificate_domain || domain.domain_name
         accel_location = Accel.new(accel_location, domain) if accel_location
-        super(domain.domain_name,
-          user,
+        super(user,
           Nginx::RailsServerBlock.new(
             upstream: Nginx::Upstream.new(domain.domain_name),
             server: Nginx::RailsServer.new(domain: domain),
