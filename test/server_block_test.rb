@@ -23,7 +23,6 @@ class ServerBlockTest < Test
 
   def test_reverse_proxy_https
     builder = Nginx::Builder::Base.new(
-      "search.example.com",
       Nginx::StaticServerBlock.new(
         server: Nginx::Server.new(domain: SharedInfrastructure::Domain.new("search.example.com")),
         listen: Nginx::ListenHttps.new("search.example.com"),
