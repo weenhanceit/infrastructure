@@ -121,7 +121,7 @@ Finally, re-run this script to configure nginx for TLS.
       def initialize(user, _certificate_domain = nil, domain: nil)
         super(user,
           Nginx::StaticServerBlock.new(
-            server: Nginx::Site.new(domain: domain),
+            server: Nginx::StaticServer.new(domain: domain),
             listen: Nginx::ListenHttp.new,
             location: Nginx::Location.new
           ),
@@ -144,7 +144,7 @@ Finally, re-run this script to configure nginx for TLS.
 
         super(user,
           Nginx::StaticServerBlock.new(
-            server: Nginx::Site.new(domain: domain),
+            server: Nginx::StaticServer.new(domain: domain),
             listen: Nginx::ListenHttps.new(domain.domain_name, certificate_domain),
             location: Nginx::Location.new
           ),

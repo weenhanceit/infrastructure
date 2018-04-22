@@ -20,7 +20,6 @@ Gem::Specification.new do |s|
     "lib/shared_infrastructure/nginx/listen.rb",
     "lib/shared_infrastructure/nginx/location.rb",
     "lib/shared_infrastructure/nginx/upstream.rb",
-    "lib/shared_infrastructure/nginx/site.rb",
     "lib/shared_infrastructure/nginx/builder.rb",
     "lib/shared_infrastructure/nginx/accel.rb",
     "lib/shared_infrastructure/runner/base.rb",

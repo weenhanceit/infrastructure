@@ -35,7 +35,7 @@ class ServerBlockTest < Test
 
   def test_static_http
     server_block = Nginx::StaticServerBlock.new(
-      server: Nginx::Site.new(domain: SharedInfrastructure::Domain.new("example.com")),
+      server: Nginx::StaticServer.new(domain: SharedInfrastructure::Domain.new("example.com")),
       listen: Nginx::ListenHttp.new,
       location: Nginx::Location.new("/")
     )
@@ -46,7 +46,7 @@ class ServerBlockTest < Test
     builder = Nginx::Builder::Site.new(
       Etc.getlogin,
       Nginx::StaticServerBlock.new(
-        server: Nginx::Site.new(domain: SharedInfrastructure::Domain.new("example.com")),
+        server: Nginx::StaticServer.new(domain: SharedInfrastructure::Domain.new("example.com")),
         listen: Nginx::ListenHttps.new("example.com"),
         location: Nginx::Location.new
       ),

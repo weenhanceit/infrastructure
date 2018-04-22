@@ -19,6 +19,18 @@ module Nginx
     end
   end
 
+  class StaticServer < Server
+    def to_s(level = 0)
+      [
+        super(level),
+        Lines.new(
+          "root #{root_directory};",
+          "index index.html index.htm;"
+        ).format(level)
+      ].join("\n\n")
+    end
+  end
+
   class RailsServer < Server
     def root_directory
       File.join(domain.site_root, "public")
