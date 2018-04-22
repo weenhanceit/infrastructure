@@ -4,7 +4,7 @@
 # Write nginx configuration files.
 module Nginx
   class ServerBlock
-    def initialize(upstream: nil, server: nil, listen: nil, location: nil, accel_location: nil, domain: domain)
+    def initialize(upstream: nil, server: nil, listen: nil, location: nil, accel_location: nil, domain: nil)
       @accel_location = accel_location
       @domain = domain
       @listen = listen
@@ -60,7 +60,7 @@ SERVER_BLOCK
 
   class RailsServerBlock < SiteServerBlock
     def root_directory
-      File.join(domain ? domain.site_root : server.root_directory, "/public")
+      File.join(domain.site_root, "/public")
     end
   end
 

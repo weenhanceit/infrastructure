@@ -125,7 +125,7 @@ Finally, re-run this script to configure nginx for TLS.
         super(domain_name,
           user,
           Nginx::StaticServerBlock.new(
-            server: Nginx::Site.new(user, domain: SharedInfrastructure::Domain.new(domain_name)),
+            server: Nginx::Site.new(domain: SharedInfrastructure::Domain.new(domain_name)),
             listen: Nginx::ListenHttp.new,
             location: Nginx::Location.new
           ),
@@ -149,7 +149,7 @@ Finally, re-run this script to configure nginx for TLS.
         super(domain_name,
           user,
           Nginx::StaticServerBlock.new(
-            server: Nginx::Site.new(user, domain: SharedInfrastructure::Domain.new(domain_name)),
+            server: Nginx::Site.new(domain: SharedInfrastructure::Domain.new(domain_name)),
             listen: Nginx::ListenHttps.new(domain_name, certificate_domain),
             location: Nginx::Location.new
           ),

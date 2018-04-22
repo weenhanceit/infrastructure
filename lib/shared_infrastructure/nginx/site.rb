@@ -5,24 +5,11 @@ module Nginx
   # Server name and site location for a static site.
   # TODO: I don't like the way this gets twisted when subclassing.
   class Site < Server
-    attr_reader :user
-
-    def initialize(user = "ubuntu", domain: nil)
-      super domain: domain
-      @user = user
-    end
-
-    def root_directory
-      # FIXME: Remove conditional when refactoring done
-      domain ? domain.site_root : Nginx.root_directory(domain_name)
-    end
-
     def to_s(level = 0)
       [
         super(level),
-        # FIXME: Remove conditional when refactoring done
         Lines.new(
-          "root #{domain ? domain.site_root : Nginx.root_directory(domain_name)};",
+          "root #{root_directory};",
           "index index.html index.htm;"
         ).format(level)
       ].join("\n\n")

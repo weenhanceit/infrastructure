@@ -10,6 +10,10 @@ module Nginx
 
     attr_reader :domain
 
+    def root_directory
+      domain.site_root
+    end
+
     def to_s(level = 0)
       Lines.new("server_name #{domain.certbot_domain_names};").format(level)
     end
@@ -18,7 +22,6 @@ module Nginx
   class RailsServer < Server
     def root_directory
       File.join(domain.site_root, "public")
-      # File.join(domain ? domain.site_root : Nginx.root_directory(domain_name), "public")
     end
 
     def to_s(level = 0)

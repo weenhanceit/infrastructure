@@ -48,7 +48,7 @@ class ServerBlockTest < Test
       "example.com",
       Etc.getlogin,
       Nginx::StaticServerBlock.new(
-        server: Nginx::Site.new(Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com")),
+        server: Nginx::Site.new(domain: SharedInfrastructure::Domain.new("example.com")),
         listen: Nginx::ListenHttps.new("example.com"),
         location: Nginx::Location.new
       ),
