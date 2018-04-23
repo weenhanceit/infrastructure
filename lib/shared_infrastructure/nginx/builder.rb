@@ -158,7 +158,23 @@ Finally, re-run this script to configure nginx for TLS.
 
     class Rails < Site
       def save
-        Systemd::Rails.write_unit_file(domain.domain_name) && super
+        env = {}
+        %w[SECRET_KEY_BASE
+           DATABASE_USERNAME
+           DATABASE_PASSWORD
+           EMAIL_PASSWORD].each do |var|
+          env[var.to_sym] = if ENV[var].nil?
+                              puts "Enter #{var}: "
+                              $stdin.gets.strip
+                            else
+                              ENV[var]
+                            end
+        end
+        File.open(SharedInfrastructure::Output.file_name(File.join(domain.site_root, "secrets")), "w", 0o600) do |io|
+          io << env.map { |pair| "#{pair[0]}=#{pair[1]}\n" }.join
+        end &&
+          Systemd::Rails.write_unit_file(domain.domain_name, domain) &&
+          super
       end
     end
 

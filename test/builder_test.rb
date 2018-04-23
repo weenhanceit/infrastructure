@@ -14,45 +14,49 @@ class BuilderTest < Test
   end
 
   def test_save_rails_http
-    Nginx.chroot("/tmp/builder_test") do
-      Nginx.prepare_fake_files("example.com")
-      FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))
+    SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
+      Nginx.chroot("/tmp/builder_test") do
+        Nginx.prepare_fake_files("example.com")
+        FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))
 
-      fake_env
+        fake_env
 
-      builder = Nginx::Builder::RailsHttp.new(Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
+        builder = Nginx::Builder::RailsHttp.new(Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
 
-      assert builder.save, "Failed to save server block"
-      assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
-      assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
-      assert_file Nginx.server_block_location("example.com")
-      assert_file Nginx.enabled_server_block_location("example.com")
-      assert_directory Nginx.root_directory("example.com")
-      assert_equal expected_rails_http_server_block, builder.to_s
-      assert_file Systemd.unit_file("example.com")
+        assert builder.save, "Failed to save server block"
+        assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
+        assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
+        assert_file Nginx.server_block_location("example.com")
+        assert_file Nginx.enabled_server_block_location("example.com")
+        assert_directory Nginx.root_directory("example.com")
+        assert_equal expected_rails_http_server_block, builder.to_s
+        assert_file Systemd.unit_file("example.com")
+      end
     end
   end
 
   def test_save_rails_https
-    Nginx.chroot("/tmp/builder_test") do
-      Nginx.dhparam = 128
-      Nginx.prepare_fake_files("example.com")
-      FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))
+    SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
+      Nginx.chroot("/tmp/builder_test") do
+        Nginx.dhparam = 128
+        Nginx.prepare_fake_files("example.com")
+        FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))
 
-      fake_env
+        fake_env
 
-      builder = Nginx::Builder::RailsHttps.new(Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
+        builder = Nginx::Builder::RailsHttps.new(Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
 
-      assert builder.save, "Failed to save server block"
-      assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
-      assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
-      assert_file Nginx.server_block_location("example.com")
-      assert_file Nginx.enabled_server_block_location("example.com")
-      assert_directory Nginx.root_directory("example.com")
-      assert_directory Nginx.certificate_directory("example.com")
-      assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
-      assert_equal expected_rails_https_server_block, builder.to_s
-      assert_file Systemd.unit_file("example.com")
+        assert builder.save, "Failed to save server block"
+        assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
+        assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
+        assert_file Nginx.server_block_location("example.com")
+        assert_file Nginx.enabled_server_block_location("example.com")
+        assert_directory Nginx.root_directory("example.com")
+        assert_directory Nginx.certificate_directory("example.com")
+        assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
+        assert_equal expected_rails_https_server_block, builder.to_s
+        assert_file Systemd.unit_file("example.com")
+      end
     end
   end
 

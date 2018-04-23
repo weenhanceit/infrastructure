@@ -11,14 +11,14 @@ module Systemd
         "redis." + domain_name
       end
 
-      def write_unit_file(domain_name)
-        if ENV["SECRET_KEY_BASE"].nil? ||
-           ENV["DATABASE_USERNAME"].nil? ||
-           ENV["DATABASE_PASSWORD"].nil? ||
-           ENV["EMAIL_PASSWORD"].nil?
-          raise "Missing environment variable"
-        end
-
+      def write_unit_file(domain_name, domain)
+        # if ENV["SECRET_KEY_BASE"].nil? ||
+        #    ENV["DATABASE_USERNAME"].nil? ||
+        #    ENV["DATABASE_PASSWORD"].nil? ||
+        #    ENV["EMAIL_PASSWORD"].nil?
+        #   raise "Missing environment variable"
+        # end
+        #
         puts "writing unit file (domain_name): #{Systemd.unit_file(domain_name)} (#{domain_name})" if Runner.debug
 
         result = File.open(Systemd.unit_file(domain_name), "w") do |f|
@@ -44,6 +44,7 @@ module Systemd
             # Environment=PUMA_DEBUG=1
             Environment=RACK_ENV=production
             Environment=RAILS_ENV=production
+            EnvironmentFile=#{domain.secrets}
             Environment=SECRET_KEY_BASE=#{ENV['SECRET_KEY_BASE']}
             Environment=DATABASE_USERNAME=#{ENV['DATABASE_USERNAME']}
             Environment=DATABASE_PASSWORD=#{ENV['DATABASE_PASSWORD']}

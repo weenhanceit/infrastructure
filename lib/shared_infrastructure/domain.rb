@@ -20,6 +20,10 @@ module SharedInfrastructure
       @domain_name = domain_name
     end
 
+    def secrets
+      File.join(site_root, "secrets")
+    end
+
     def site_root
       "/var/www/#{domain_name}/html"
     end
