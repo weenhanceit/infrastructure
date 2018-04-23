@@ -59,15 +59,15 @@ Finally, re-run this script to configure nginx for TLS.
     class ReverseProxyHttp < Base
       def initialize(proxy_url, certificate_domain = nil, domain: nil)
         super(Nginx::ServerBlock.new(
-            server: Nginx::Server.new(domain: domain),
-            listen: Nginx::ListenHttp.new,
-            location: [
-              # TODO: the following should really only happen when the domains
-              # are different.
-              Nginx::AcmeLocation.new(certificate_domain || domain.domain_name),
-              Nginx::ReverseProxyLocation.new(proxy_url)
-            ]
-          ),
+          server: Nginx::Server.new(domain: domain),
+          listen: Nginx::ListenHttp.new,
+          location: [
+            # TODO: the following should really only happen when the domains
+            # are different.
+            Nginx::AcmeLocation.new(certificate_domain || domain.domain_name),
+            Nginx::ReverseProxyLocation.new(proxy_url)
+          ]
+        ),
           domain: domain
         )
       end
@@ -86,10 +86,10 @@ Finally, re-run this script to configure nginx for TLS.
         @certificate_domain = certificate_domain || domain.domain_name
 
         super(Nginx::ServerBlock.new(
-            server: Nginx::Server.new(domain: domain),
-            listen: Nginx::ListenHttps.new(domain.domain_name, certificate_domain),
-            location: Nginx::ReverseProxyLocation.new(proxy_url)
-          ),
+          server: Nginx::Server.new(domain: domain),
+          listen: Nginx::ListenHttps.new(domain.domain_name, certificate_domain),
+          location: Nginx::ReverseProxyLocation.new(proxy_url)
+        ),
           Nginx::TlsRedirectServerBlock.new(domain.domain_name),
           domain: domain
         )
@@ -156,7 +156,13 @@ Finally, re-run this script to configure nginx for TLS.
       attr_reader :certificate_domain
     end
 
-    class RailsHttp < Site
+    class Rails < Site
+      def save
+        Systemd::Rails.write_unit_file(domain.domain_name) && super
+      end
+    end
+
+    class RailsHttp < Rails
       def initialize(user, _certificate_domain = nil, accel_location: nil, domain: nil)
         accel_location = Accel.new(accel_location, domain: domain) if accel_location
         super(user,
@@ -175,13 +181,9 @@ Finally, re-run this script to configure nginx for TLS.
             domain: domain
           )
       end
-
-      def save
-        Systemd::Rails.write_unit_file(domain.domain_name) && super
-      end
     end
 
-    class RailsHttps < Site
+    class RailsHttps < Rails
       include Https
 
       def initialize(user, certificate_domain = nil, accel_location: nil, domain: nil)
@@ -203,11 +205,6 @@ Finally, re-run this script to configure nginx for TLS.
           Nginx::TlsRedirectServerBlock.new(domain.domain_name),
           domain: domain
         )
-      end
-
-      # FIXME: DRY this up with the HTTP class.
-      def save
-        Systemd::Rails.write_unit_file(domain.domain_name) && super
       end
 
       attr_reader :certificate_domain
