@@ -157,7 +157,7 @@ Finally, re-run this script to configure nginx for TLS.
     end
 
     class RailsHttp < Site
-      def initialize(domain_name, user, _certificate_domain = nil, accel_location: nil, domain: nil)
+      def initialize(user, _certificate_domain = nil, accel_location: nil, domain: nil)
         accel_location = Accel.new(accel_location, domain: domain) if accel_location
         super(user,
             Nginx::RailsServerBlock.new(
@@ -184,7 +184,7 @@ Finally, re-run this script to configure nginx for TLS.
     class RailsHttps < Site
       include Https
 
-      def initialize(domain_name, user, certificate_domain = nil, accel_location: nil, domain: nil)
+      def initialize(user, certificate_domain = nil, accel_location: nil, domain: nil)
         @certificate_domain = certificate_domain || domain.domain_name
         accel_location = Accel.new(accel_location, domain) if accel_location
         super(user,
