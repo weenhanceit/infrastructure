@@ -16,11 +16,7 @@ module SharedInfrastructure
 
   class Output < File
     def initialize(file_name, *args)
-      if Output.root
-        file_name = File.join(Output.root, file_name)
-        FileUtils.mkdir_p(File.dirname(file_name))
-      end
-      super file_name, *args
+      super Output.file_name(file_name), *args
     end
 
     class << self
@@ -40,6 +36,13 @@ module SharedInfrastructure
         else
           self.root = root
         end
+      end
+
+      def file_name(file_name)
+        return file_name unless Output.root
+        file_name = File.join(Output.root, file_name)
+        FileUtils.mkdir_p(File.dirname(file_name))
+        file_name
       end
 
       attr_accessor :root
