@@ -73,6 +73,7 @@ module Runner
           "--root DIRECTORY",
           "DIRECTORY. Set a root for files. This options is for debugging.") do |directory|
           Nginx.chroot(directory)
+          SharedInfrastructure::Output.fake_root(directory)
         end
 
         opts.on("-u USER",
