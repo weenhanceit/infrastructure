@@ -22,7 +22,7 @@ module Runner
       # There's almost certainly a refactoring that would make this less
       # convoluted.
       domain_name = options.delete(:domain_name)
-      user = options.delete(:user) || "ubuntu"
+      user = options.delete(:user)
       certificate_domain = options.delete(:certificate_domain)
       accel_location = options.delete(:accel_location)
       domain = SharedInfrastructure::Domain.new(domain_name)

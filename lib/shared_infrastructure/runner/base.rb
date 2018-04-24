@@ -78,7 +78,7 @@ module Runner
 
         opts.on("-u USER",
           "--user USER",
-          "User to be the owner of certain files. Default: ubuntu.") do |user|
+          "User to be the owner of certain files. Default: the current user.") do |user|
           options[:user] = user
         end
 

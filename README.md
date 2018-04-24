@@ -108,7 +108,7 @@ This sets up:
 receiving requests on the same domain socket.
 
 ### Set the Rails Environment Variables
-The Rails instance expects certain environment variables to be set.
+The Rails instance expects certain environment variables to be set. `create-rails-app` will prompt you for them and create a secrets file in a useful location.
 
 For the following, you get the "secret-key-base" by doing `rails secret`.
 [TODO: `rails secret` assumes you have an application set up, which you might not have at this point.]
@@ -131,7 +131,7 @@ sudo -E create-rails-app -a location domain-name
 ```
 Where `location` is the directory below `Rails.root` in which the private documents are kept (e.g. `/private`).
 
-Don't forget the `-E` to `sudo`. It causes the environment variables to be passed to the script.
+If you're passing the secrets in environment variables, don't forget the `-E` to `sudo`. It causes the environment variables to be passed to the script. It's optional if you just type the variables in.
 If you forget to use the `-a` flag,
 you can safely re-run this script later with the flag.
 
