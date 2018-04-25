@@ -31,17 +31,21 @@ class OutputTest < Test
 
   def test_fake_file_names
     SharedInfrastructure::Output.fake_root("/tmp")
-    o = SharedInfrastructure::Output.open("/var/www/example.com")
+    o = SharedInfrastructure::Output.open("/var/www/example.com", "w")
     assert_equal "/tmp/var/www/example.com", o.path
     SharedInfrastructure::Output.fake_root(nil)
   end
 
   def test_fake_file_names_block
     SharedInfrastructure::Output.fake_root("/tmp") do
-      o = SharedInfrastructure::Output.new("/var/www/example.com")
+      o = SharedInfrastructure::Output.new("/var/www/example.com", "w")
       assert_equal "/tmp/var/www/example.com", o.path
     end
     o = SharedInfrastructure::Output.open("example.com")
     assert_equal "example.com", o.path
+  end
+
+  def tear_down
+    SharedInfrastructure::Output.fake_root(nil)
   end
 end

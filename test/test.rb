@@ -458,3 +458,17 @@ server {
     end
   end
 end
+
+def expected_rails_logrotate_conf
+  <<~LOGROTATE
+  compress
+
+  /var/www/example.com/log/production.log {
+    size 1M
+    rotate 4
+    copytruncate
+    missingok
+    notifempty
+  }
+  LOGROTATE
+end

@@ -20,6 +20,10 @@ module SharedInfrastructure
       @domain_name = domain_name
     end
 
+    def production_log
+      "/var/www/#{domain_name}/log/production.log"
+    end
+
     def secrets
       File.join(site_root, "secrets")
     end

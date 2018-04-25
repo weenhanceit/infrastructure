@@ -170,6 +170,19 @@ Finally, re-run this script to configure nginx for TLS.
                               ENV[var]
                             end
         end
+        SharedInfrastructure::Output.open(File.join("/etc/logrotate.d", "#{domain.domain_name}.conf"), "w") do |io|
+          io << <<~LOGROTATE
+            compress
+
+            #{domain.production_log} {
+              size 1M
+              rotate 4
+              copytruncate
+              missingok
+              notifempty
+            }
+          LOGROTATE
+        end &&
         File.open(SharedInfrastructure::Output.file_name(File.join(domain.site_root, "secrets")), "w", 0o600) do |io|
           io << env.map { |pair| "#{pair[0]}=#{pair[1]}\n" }.join
         end &&
