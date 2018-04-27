@@ -20,8 +20,8 @@ module SharedInfrastructure
       @domain_name = domain_name
     end
 
-    def production_log
-      "/var/www/#{domain_name}/log/production.log"
+    def rails_env_log(rails_env = "production")
+      "/var/www/#{domain_name}/log/#{rails_env}.log"
     end
 
     def secrets

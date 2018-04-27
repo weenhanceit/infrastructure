@@ -11,7 +11,7 @@ module Systemd
         "redis." + domain_name
       end
 
-      def write_unit_file(domain_name, domain)
+      def write_unit_file(domain_name, domain, rails_env = "production")
         # if ENV["SECRET_KEY_BASE"].nil? ||
         #    ENV["DATABASE_USERNAME"].nil? ||
         #    ENV["DATABASE_PASSWORD"].nil? ||
@@ -42,8 +42,8 @@ module Systemd
 
             # Helpful for debugging socket activation, etc.
             # Environment=PUMA_DEBUG=1
-            Environment=RACK_ENV=production
-            Environment=RAILS_ENV=production
+            Environment=RACK_ENV=#{rails_env}
+            Environment=RAILS_ENV=#{rails_env}
             # FIXME: The following is the wrong place
             EnvironmentFile=#{domain.secrets}
             Environment=REDIS_URL=unix:///tmp/#{redis_location(domain_name)}.sock
@@ -51,8 +51,8 @@ module Systemd
             # The command to start Puma
             # NOTE: TLS would be handled by Nginx
             ExecStart=#{Nginx.root_directory(domain_name)}/bin/puma -b #{puma_uri(domain_name)} \
-              --redirect-stdout=#{Nginx.root_directory(domain_name)}/log/puma-production.stdout.log \
-              --redirect-stderr=#{Nginx.root_directory(domain_name)}/log/puma-production.stderr.log
+              --redirect-stdout=#{Nginx.root_directory(domain_name)}/log/puma-#{rails_env}.stdout.log \
+              --redirect-stderr=#{Nginx.root_directory(domain_name)}/log/puma-#{rails_env}.stderr.log
             # ExecStart=/usr/local/bin/puma -b tcp://#{puma_uri(domain_name)}
 
             Restart=always

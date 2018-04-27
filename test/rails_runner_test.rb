@@ -62,8 +62,8 @@ class RailsRunnerTest < Test
         assert_equal expected_rails_http_server_block,
           File.open(Nginx.server_block_location("example.com"), "r", &:read)
         assert_equal 0o600, File.stat(SharedInfrastructure::Output.file_name("/var/www/example.com/html/secrets")).mode & 0o7777
-        assert_equal expected_unit_file("local"), File.open("/tmp/builder_test/lib/systemd/system/example.com.service", &:read)
         assert_equal expected_rails_logrotate_conf("local"), File.open(SharedInfrastructure::Output.file_name("/etc/logrotate.d/example.com.conf"), &:read)
+        assert_equal expected_unit_file("local"), File.open("/tmp/builder_test/lib/systemd/system/example.com.service", &:read)
       end
     end
   end

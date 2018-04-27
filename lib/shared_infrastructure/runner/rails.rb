@@ -25,8 +25,10 @@ module Runner
       user = options.delete(:user)
       certificate_domain = options.delete(:certificate_domain)
       accel_location = options.delete(:accel_location)
+      # FIXME: This is the wrong way to do this.
+      rails_env = options.delete(:rails_env) { "production" }
       domain = SharedInfrastructure::Domain.new(domain_name)
-      protocol_class.new(user, certificate_domain, accel_location: accel_location, domain: domain)
+      protocol_class.new(user, certificate_domain, accel_location: accel_location, domain: domain, rails_env: rails_env)
     end
   end
 end

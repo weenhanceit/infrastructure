@@ -157,6 +157,12 @@ Finally, re-run this script to configure nginx for TLS.
     end
 
     class Rails < Site
+      def initialize(user, *server_blocks, domain: nil, rails_env: "production")
+        @rails_env = rails_env
+        super user, *server_blocks, domain: domain
+      end
+      attr_reader :rails_env
+
       def save
         env = {}
         %w[SECRET_KEY_BASE
@@ -174,7 +180,7 @@ Finally, re-run this script to configure nginx for TLS.
           io << <<~LOGROTATE
             compress
 
-            #{domain.production_log} {
+            #{domain.rails_env_log(rails_env)} {
               size 1M
               rotate 4
               copytruncate
@@ -186,13 +192,13 @@ Finally, re-run this script to configure nginx for TLS.
         File.open(SharedInfrastructure::Output.file_name(File.join(domain.site_root, "secrets")), "w", 0o600) do |io|
           io << env.map { |pair| "#{pair[0]}=#{pair[1]}\n" }.join
         end &&
-          Systemd::Rails.write_unit_file(domain.domain_name, domain) &&
+          Systemd::Rails.write_unit_file(domain.domain_name, domain, rails_env) &&
           super
       end
     end
 
     class RailsHttp < Rails
-      def initialize(user, _certificate_domain = nil, accel_location: nil, domain: nil)
+      def initialize(user, _certificate_domain = nil, accel_location: nil, domain: nil, rails_env: "production")
         accel_location = Accel.new(accel_location, domain: domain) if accel_location
         super(user,
             Nginx::RailsServerBlock.new(
@@ -207,7 +213,8 @@ Finally, re-run this script to configure nginx for TLS.
               accel_location: accel_location,
               domain: domain
             ),
-            domain: domain
+            domain: domain,
+            rails_env: rails_env
           )
       end
     end
@@ -215,7 +222,7 @@ Finally, re-run this script to configure nginx for TLS.
     class RailsHttps < Rails
       include Https
 
-      def initialize(user, certificate_domain = nil, accel_location: nil, domain: nil)
+      def initialize(user, certificate_domain = nil, accel_location: nil, domain: nil, rails_env: "production")
         @certificate_domain = certificate_domain || domain.domain_name
         accel_location = Accel.new(accel_location, domain) if accel_location
         super(user,
@@ -232,7 +239,8 @@ Finally, re-run this script to configure nginx for TLS.
             domain: domain
           ),
           Nginx::TlsRedirectServerBlock.new(domain.domain_name),
-          domain: domain
+          domain: domain,
+          rails_env: rails_env
         )
       end
 
