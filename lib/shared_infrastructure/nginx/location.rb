@@ -28,7 +28,7 @@ module Nginx
     def to_s(level = 0)
       Lines.new("location #{accel.location} {",
         "  internal;",
-        "  alias #{accel.alias_string(domain ? domain.name : domain_name)};",
+        "  alias #{accel.alias_string};",
         "}").format(level)
     end
 
