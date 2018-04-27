@@ -28,11 +28,11 @@ class ReverseProxyRunnerTest < Test
       ARGV.concat(%w[-c example.com search.example.com http://10.0.0.1])
       runner = Runner::ReverseProxy.new.main
       assert runner.save, "Build failed"
-      assert_no_directory Nginx.root_directory("search.example.com")
-      assert_file Nginx.server_block_location("search.example.com")
-      assert_file Nginx.enabled_server_block_location("search.example.com")
+      assert_no_directory "/tmp/builder_test/var/www/search.example.com/html"
+      assert_file "/tmp/builder_test/etc/nginx/sites-available/search.example.com"
+      assert_file "/tmp/builder_test/etc/nginx/sites-enabled/search.example.com"
       assert_equal expected_reverse_proxy_http_server_block,
-        File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
+        File.open("/tmp/builder_test/etc/nginx/sites-available/search.example.com", "r", &:read)
     end
   end
 
@@ -43,13 +43,13 @@ class ReverseProxyRunnerTest < Test
       ARGV.concat(%w[-p HTTPS --dhparam 128 search.example.com http://10.0.0.1])
       runner = Runner::ReverseProxy.new.main
       assert runner.save, "Build failed"
-      assert_no_directory Nginx.root_directory("search.example.com")
-      assert_file Nginx.server_block_location("search.example.com")
-      assert_file Nginx.enabled_server_block_location("search.example.com")
-      assert_directory Nginx.certificate_directory("search.example.com")
-      assert_file File.join(Nginx.certificate_directory("search.example.com"), "dhparam.pem")
+      assert_no_directory "/tmp/builder_test/var/www/search.example.com/html"
+      assert_file "/tmp/builder_test/etc/nginx/sites-available/search.example.com"
+      assert_file "/tmp/builder_test/etc/nginx/sites-enabled/search.example.com"
+      assert_directory "/tmp/builder_test/etc/letsencrypt/live/search.example.com"
+      assert_file File.join("/tmp/builder_test/etc/letsencrypt/live/search.example.com", "dhparam.pem")
       assert_equal expected_reverse_proxy_https_server_block,
-        File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
+        File.open("/tmp/builder_test/etc/nginx/sites-available/search.example.com", "r", &:read)
     end
   end
 
@@ -57,22 +57,22 @@ class ReverseProxyRunnerTest < Test
     Nginx.chroot("/tmp/builder_test") do
       Nginx.prepare_fake_files("search.example.com")
 
-      key_file_list = [File.join(Nginx.certificate_directory("search.example.com"), "privkey.pem"),
-                       File.join(Nginx.certificate_directory("search.example.com"), "fullchain.pem"),
-                       File.join(Nginx.certificate_directory("search.example.com"), "chain.pem"),
-                       File.join(Nginx.certificate_directory("search.example.com"), "cert.pem")]
+      key_file_list = [File.join("/tmp/builder_test/etc/letsencrypt/live/search.example.com", "privkey.pem"),
+                       File.join("/tmp/builder_test/etc/letsencrypt/live/search.example.com", "fullchain.pem"),
+                       File.join("/tmp/builder_test/etc/letsencrypt/live/search.example.com", "chain.pem"),
+                       File.join("/tmp/builder_test/etc/letsencrypt/live/search.example.com", "cert.pem")]
       FileUtils.touch(key_file_list)
 
       ARGV.concat(%w[--dhparam 128 search.example.com http://10.0.0.1])
       runner = Runner::ReverseProxy.new.main
       assert runner.save, "Build failed"
-      assert_no_directory Nginx.root_directory("search.example.com")
-      assert_file Nginx.server_block_location("search.example.com")
-      assert_file Nginx.enabled_server_block_location("search.example.com")
-      assert_directory Nginx.certificate_directory("search.example.com")
-      assert_file File.join(Nginx.certificate_directory("search.example.com"), "dhparam.pem")
+      assert_no_directory "/tmp/builder_test/var/www/search.example.com/html"
+      assert_file "/tmp/builder_test/etc/nginx/sites-available/search.example.com"
+      assert_file "/tmp/builder_test/etc/nginx/sites-enabled/search.example.com"
+      assert_directory "/tmp/builder_test/etc/letsencrypt/live/search.example.com"
+      assert_file File.join("/tmp/builder_test/etc/letsencrypt/live/search.example.com", "dhparam.pem")
       assert_equal expected_reverse_proxy_https_server_block,
-        File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
+        File.open("/tmp/builder_test/etc/nginx/sites-available/search.example.com", "r", &:read)
     end
   end
 end

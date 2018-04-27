@@ -1,6 +1,13 @@
 # frozen_string_literal: true
 
 class Test < MiniTest::Test
+  def key_file_list(domain_name)
+    ["/tmp/builder_test/etc/letsencrypt/live/#{domain_name}/privkey.pem",
+     "/tmp/builder_test/etc/letsencrypt/live/#{domain_name}/fullchain.pem",
+     "/tmp/builder_test/etc/letsencrypt/live/#{domain_name}/chain.pem",
+     "/tmp/builder_test/etc/letsencrypt/live/#{domain_name}/cert.pem"]
+  end
+
   def expected_reverse_proxy_http_server_block
     %(server {
   server_name search.example.com www.search.example.com;

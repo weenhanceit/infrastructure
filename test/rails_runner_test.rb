@@ -37,7 +37,7 @@ class RailsRunnerTest < Test
         assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
 
         assert_equal expected_rails_http_server_block,
-          File.open(Nginx.server_block_location("example.com"), "r", &:read)
+          File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
         assert_equal expected_unit_file, File.open("/tmp/builder_test/lib/systemd/system/example.com.service", &:read)
         assert_equal expected_rails_logrotate_conf, File.open(SharedInfrastructure::Output.file_name("/etc/logrotate.d/example.com.conf"), &:read)
       end
@@ -60,7 +60,7 @@ class RailsRunnerTest < Test
         assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
 
         assert_equal expected_rails_http_server_block,
-          File.open(Nginx.server_block_location("example.com"), "r", &:read)
+          File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
         assert_equal expected_rails_logrotate_conf("local"), File.open(SharedInfrastructure::Output.file_name("/etc/logrotate.d/example.com.conf"), &:read)
         assert_equal expected_unit_file("local"), File.open("/tmp/builder_test/lib/systemd/system/example.com.service", &:read)
       end
@@ -109,7 +109,7 @@ class RailsRunnerTest < Test
         assert_file("/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem")
 
         assert_equal expected_rails_https_server_block,
-          File.open(Nginx.server_block_location("example.com"), "r", &:read)
+          File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
       end
     end
   end
@@ -121,11 +121,7 @@ class RailsRunnerTest < Test
         Nginx.prepare_fake_files("example.com")
         FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))
 
-        key_file_list = [File.join(Nginx.certificate_directory("example.com"), "privkey.pem"),
-                         File.join(Nginx.certificate_directory("example.com"), "fullchain.pem"),
-                         File.join(Nginx.certificate_directory("example.com"), "chain.pem"),
-                         File.join(Nginx.certificate_directory("example.com"), "cert.pem")]
-        FileUtils.touch(key_file_list)
+        FileUtils.touch(key_file_list("example.com"))
 
         ARGV.concat(%w[--dhparam 128 example.com])
         runner = Runner::Rails.new.main
@@ -138,7 +134,7 @@ class RailsRunnerTest < Test
         assert_file("/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem")
 
         assert_equal expected_rails_https_server_block,
-          File.open(Nginx.server_block_location("example.com"), "r", &:read)
+          File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
       end
     end
   end
@@ -163,7 +159,7 @@ class RailsRunnerTest < Test
         # assert_file("/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem")
 
         assert_equal expected_rails_https_server_block_certificate_domain,
-          File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
+          File.open("/tmp/builder_test/etc/nginx/sites-available/search.example.com", "r", &:read)
       end
     end
   end
@@ -175,11 +171,7 @@ class RailsRunnerTest < Test
         Nginx.prepare_fake_files("search.example.com", "example.com")
         FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))
 
-        key_file_list = [File.join(Nginx.certificate_directory("example.com"), "privkey.pem"),
-                         File.join(Nginx.certificate_directory("example.com"), "fullchain.pem"),
-                         File.join(Nginx.certificate_directory("example.com"), "chain.pem"),
-                         File.join(Nginx.certificate_directory("example.com"), "cert.pem")]
-        FileUtils.touch(key_file_list)
+        FileUtils.touch(key_file_list("example.com"))
 
         ARGV.concat(%w[--dhparam 128 -c example.com search.example.com])
         runner = Runner::Rails.new.main
@@ -194,7 +186,7 @@ class RailsRunnerTest < Test
         # assert_file("/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem")
 
         assert_equal expected_rails_https_server_block_certificate_domain,
-          File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
+          File.open("/tmp/builder_test/etc/nginx/sites-available/search.example.com", "r", &:read)
       end
     end
   end
@@ -215,7 +207,7 @@ class RailsRunnerTest < Test
         assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
 
         assert_equal expected_rails_http_x_accel_server_block,
-          File.open(Nginx.server_block_location("example.com"), "r", &:read)
+          File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
       end
     end
   end

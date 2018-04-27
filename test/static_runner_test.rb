@@ -32,10 +32,10 @@ class StaticRunnerTest < Test
         assert_directory "/tmp/builder_test/var/www/example.com"
         assert_no_directory "/tmp/builder_test/var/www/example.com/html"
 
-        assert_file Nginx.server_block_location("example.com")
-        assert_file Nginx.enabled_server_block_location("example.com")
+        assert_file "/tmp/builder_test/etc/nginx/sites-available/example.com"
+        assert_file "/tmp/builder_test/etc/nginx/sites-enabled/example.com"
         assert_equal expected_static_http_server_block,
-          File.open(Nginx.server_block_location("example.com"), "r", &:read)
+          File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
       end
     end
   end
@@ -52,12 +52,12 @@ class StaticRunnerTest < Test
         assert_directory "/tmp/builder_test/var/www/example.com"
         assert_no_directory "/tmp/builder_test/var/www/example.com/html"
 
-        assert_file Nginx.server_block_location("example.com")
-        assert_file Nginx.enabled_server_block_location("example.com")
-        assert_directory Nginx.certificate_directory("example.com")
-        assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
+        assert_file "/tmp/builder_test/etc/nginx/sites-available/example.com"
+        assert_file "/tmp/builder_test/etc/nginx/sites-enabled/example.com"
+        assert_directory "/tmp/builder_test/etc/letsencrypt/live/example.com"
+        assert_file "/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem"
         assert_equal expected_https_server_block,
-          File.open(Nginx.server_block_location("example.com"), "r", &:read)
+          File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
       end
     end
   end
@@ -67,10 +67,10 @@ class StaticRunnerTest < Test
       Nginx.chroot("/tmp/builder_test") do
         Nginx.prepare_fake_files("example.com")
 
-        key_file_list = [File.join(Nginx.certificate_directory("example.com"), "privkey.pem"),
-                         File.join(Nginx.certificate_directory("example.com"), "fullchain.pem"),
-                         File.join(Nginx.certificate_directory("example.com"), "chain.pem"),
-                         File.join(Nginx.certificate_directory("example.com"), "cert.pem")]
+        key_file_list = [File.join("/tmp/builder_test/etc/letsencrypt/live/example.com", "privkey.pem"),
+                         File.join("/tmp/builder_test/etc/letsencrypt/live/example.com", "fullchain.pem"),
+                         File.join("/tmp/builder_test/etc/letsencrypt/live/example.com", "chain.pem"),
+                         File.join("/tmp/builder_test/etc/letsencrypt/live/example.com", "cert.pem")]
         FileUtils.touch(key_file_list)
 
         ARGV.concat(%w[--dhparam 128 example.com])
@@ -80,12 +80,12 @@ class StaticRunnerTest < Test
         assert_directory "/tmp/builder_test/var/www/example.com"
         assert_no_directory "/tmp/builder_test/var/www/example.com/html"
 
-        assert_file Nginx.server_block_location("example.com")
-        assert_file Nginx.enabled_server_block_location("example.com")
-        assert_directory Nginx.certificate_directory("example.com")
-        assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
+        assert_file "/tmp/builder_test/etc/nginx/sites-available/example.com"
+        assert_file "/tmp/builder_test/etc/nginx/sites-enabled/example.com"
+        assert_directory "/tmp/builder_test/etc/letsencrypt/live/example.com"
+        assert_file "/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem"
         assert_equal expected_https_server_block,
-          File.open(Nginx.server_block_location("example.com"), "r", &:read)
+          File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
       end
     end
   end
@@ -102,12 +102,12 @@ class StaticRunnerTest < Test
         assert_directory "/tmp/builder_test/var/www/search.example.com"
         assert_no_directory "/tmp/builder_test/var/www/search.example.com/html"
 
-        assert_file Nginx.server_block_location("search.example.com")
-        assert_file Nginx.enabled_server_block_location("search.example.com")
-        assert_directory Nginx.certificate_directory("example.com")
-        assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
+        assert_file "/tmp/builder_test/etc/nginx/sites-available/search.example.com"
+        assert_file "/tmp/builder_test/etc/nginx/sites-enabled/search.example.com"
+        assert_directory "/tmp/builder_test/etc/letsencrypt/live/example.com"
+        assert_file "/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem"
         assert_equal expected_https_server_block_certificate_domain,
-          File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
+          File.open("/tmp/builder_test/etc/nginx/sites-available/search.example.com", "r", &:read)
       end
     end
   end
@@ -116,12 +116,12 @@ class StaticRunnerTest < Test
     SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
       Nginx.chroot("/tmp/builder_test") do
         Nginx.prepare_fake_files("search.example.com", "example.com")
-        FileUtils.mkdir_p Nginx.certificate_directory("example.com")
+        FileUtils.mkdir_p "/tmp/builder_test/etc/letsencrypt/live/example.com"
 
-        key_file_list = [File.join(Nginx.certificate_directory("example.com"), "privkey.pem"),
-                         File.join(Nginx.certificate_directory("example.com"), "fullchain.pem"),
-                         File.join(Nginx.certificate_directory("example.com"), "chain.pem"),
-                         File.join(Nginx.certificate_directory("example.com"), "cert.pem")]
+        key_file_list = [File.join("/tmp/builder_test/etc/letsencrypt/live/example.com", "privkey.pem"),
+                         File.join("/tmp/builder_test/etc/letsencrypt/live/example.com", "fullchain.pem"),
+                         File.join("/tmp/builder_test/etc/letsencrypt/live/example.com", "chain.pem"),
+                         File.join("/tmp/builder_test/etc/letsencrypt/live/example.com", "cert.pem")]
         FileUtils.touch(key_file_list)
 
         ARGV.concat(%w[--dhparam 128 -c example.com search.example.com])
@@ -131,12 +131,12 @@ class StaticRunnerTest < Test
         assert_directory "/tmp/builder_test/var/www/search.example.com"
         assert_no_directory "/tmp/builder_test/var/www/search.example.com/html"
 
-        assert_file Nginx.server_block_location("search.example.com")
-        assert_file Nginx.enabled_server_block_location("search.example.com")
-        assert_directory Nginx.certificate_directory("example.com")
-        assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
+        assert_file "/tmp/builder_test/etc/nginx/sites-available/search.example.com"
+        assert_file "/tmp/builder_test/etc/nginx/sites-enabled/search.example.com"
+        assert_directory "/tmp/builder_test/etc/letsencrypt/live/example.com"
+        assert_file "/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem"
         assert_equal expected_https_server_block_certificate_domain,
-          File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
+          File.open("/tmp/builder_test/etc/nginx/sites-available/search.example.com", "r", &:read)
       end
     end
   end
