@@ -465,63 +465,63 @@ server {
       ENV["DATABASE_PASSWORD"] = "my_DATABASE_PASSWORD"
       ENV["EMAIL_PASSWORD"] = "my_EMAIL_PASSWORD"
     end
-  end
-end
 
-def expected_rails_logrotate_conf(rails_env = "production")
-  <<~LOGROTATE
-    compress
+    def expected_rails_logrotate_conf(rails_env = "production")
+      <<~LOGROTATE
+        compress
 
-    /var/www/example.com/log/#{rails_env}.log {
-      size 1M
-      rotate 4
-      copytruncate
-      missingok
-      notifempty
-    }
-  LOGROTATE
-end
+        /var/www/example.com/log/#{rails_env}.log {
+          size 1M
+          rotate 4
+          copytruncate
+          missingok
+          notifempty
+        }
+      LOGROTATE
+    end
 
-def expected_unit_file(rails_env = "production")
-  <<~UNIT_FILE
-    [Unit]
-    Description=Puma HTTP Server for example.com
-    After=network.target
+    def expected_unit_file(rails_env = "production")
+      <<~UNIT_FILE
+        [Unit]
+        Description=Puma HTTP Server for example.com
+        After=network.target
 
-    # Uncomment for socket activation (see below)
-    # Requires=example.com.socket
+        # Uncomment for socket activation (see below)
+        # Requires=example.com.socket
 
-    [Service]
-    # Foreground process (do not use --daemon in ExecStart or config.rb)
-    Type=simple
+        [Service]
+        # Foreground process (do not use --daemon in ExecStart or config.rb)
+        Type=simple
 
-    User=nobody
-    Group=www-data
+        User=nobody
+        Group=www-data
 
-    # Specify the path to the Rails application root
-    WorkingDirectory=/tmp/builder_test/var/www/example.com/html
+        # Specify the path to the Rails application root
+        WorkingDirectory=/tmp/builder_test/var/www/example.com/html
 
-    # Helpful for debugging socket activation, etc.
-    # Environment=PUMA_DEBUG=1
-    Environment=RACK_ENV=#{rails_env}
-    Environment=RAILS_ENV=#{rails_env}
-    # FIXME: The following is the wrong place
-    Environment=SECRET_KEY_BASE=my_SECRET_KEY_BASE
-    Environment=DATABASE_USERNAME=my_DATABASE_USERNAME
-    Environment=DATABASE_PASSWORD=my_DATABASE_PASSWORD
-    Environment=EMAIL_PASSWORD=my_EMAIL_PASSWORD
-    Environment=REDIS_URL=unix:///tmp/redis.example.com.sock
+        # Helpful for debugging socket activation, etc.
+        # Environment=PUMA_DEBUG=1
+        Environment=RACK_ENV=#{rails_env}
+        Environment=RAILS_ENV=#{rails_env}
+        # FIXME: The following is the wrong place
+        Environment=SECRET_KEY_BASE=my_SECRET_KEY_BASE
+        Environment=DATABASE_USERNAME=my_DATABASE_USERNAME
+        Environment=DATABASE_PASSWORD=my_DATABASE_PASSWORD
+        Environment=EMAIL_PASSWORD=my_EMAIL_PASSWORD
+        Environment=REDIS_URL=unix:///tmp/redis.example.com.sock
 
-    # The command to start Puma
-    # NOTE: TLS would be handled by Nginx
-    ExecStart=/tmp/builder_test/var/www/example.com/html/bin/puma -b unix:///tmp/example.com.sock \
+        # The command to start Puma
+        # NOTE: TLS would be handled by Nginx
+        ExecStart=/tmp/builder_test/var/www/example.com/html/bin/puma -b unix:///tmp/example.com.sock \
               --redirect-stdout=/tmp/builder_test/var/www/example.com/html/log/puma-#{rails_env}.stdout.log \
               --redirect-stderr=/tmp/builder_test/var/www/example.com/html/log/puma-#{rails_env}.stderr.log
-    # ExecStart=/usr/local/bin/puma -b tcp://unix:///tmp/example.com.sock
+        # ExecStart=/usr/local/bin/puma -b tcp://unix:///tmp/example.com.sock
 
-    Restart=always
+        Restart=always
 
-    [Install]
-    WantedBy=multi-user.target
-  UNIT_FILE
+        [Install]
+        WantedBy=multi-user.target
+        UNIT_FILE
+    end
+  end
 end
