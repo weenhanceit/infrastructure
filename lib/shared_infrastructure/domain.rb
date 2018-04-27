@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SharedInfrastructure
   class Domain
     def available_site
@@ -24,12 +26,17 @@ module SharedInfrastructure
       "/var/www/#{domain_name}/log/#{rails_env}.log"
     end
 
+    def root
+      "/var/www/#{domain_name}"
+    end
+
+    # TODO: Remove this if not needed.
     def secrets
       File.join(site_root, "secrets")
     end
 
     def site_root
-      "/var/www/#{domain_name}/html"
+      File.join(root, "html")
     end
 
     attr_reader :domain_name

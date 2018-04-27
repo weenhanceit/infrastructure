@@ -32,7 +32,7 @@ class RailsRunnerTest < Test
         assert runner.save, "Build failed"
 
         assert_directory("/tmp/builder_test/var/www/example.com")
-        # assert_no_directory("/tmp/builder_test/var/www/example.com/html")
+        assert_no_directory("/tmp/builder_test/var/www/example.com/html")
         assert_file("/tmp/builder_test/etc/nginx/sites-available/example.com")
         assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
 
@@ -102,7 +102,7 @@ class RailsRunnerTest < Test
         assert runner.save, "Build failed"
 
         assert_directory("/tmp/builder_test/var/www/example.com")
-        # assert_no_directory("/tmp/builder_test/var/www/example.com/html")
+        assert_no_directory("/tmp/builder_test/var/www/example.com/html")
         assert_file("/tmp/builder_test/etc/nginx/sites-available/example.com")
         assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
         assert_directory("/tmp/builder_test/etc/letsencrypt/live/example.com")

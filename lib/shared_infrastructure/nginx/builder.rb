@@ -105,7 +105,7 @@ Finally, re-run this script to configure nginx for TLS.
       end
 
       def save
-        FileUtils.mkdir_p(Nginx.root_directory(domain.domain_name))
+        FileUtils.mkdir_p(SharedInfrastructure::Output.file_name(domain.root))
         if Process.uid.zero?
           FileUtils.chown(user,
             "www-data",

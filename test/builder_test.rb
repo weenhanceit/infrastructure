@@ -24,11 +24,12 @@ class BuilderTest < Test
         builder = Nginx::Builder::RailsHttp.new(Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
 
         assert builder.save, "Failed to save server block"
-        assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
-        assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
-        assert_file Nginx.server_block_location("example.com")
-        assert_file Nginx.enabled_server_block_location("example.com")
-        assert_directory Nginx.root_directory("example.com")
+
+        assert_directory("/tmp/builder_test/var/www/example.com")
+        assert_no_directory("/tmp/builder_test/var/www/example.com/html")
+        assert_file("/tmp/builder_test/etc/nginx/sites-available/example.com")
+        assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
+
         assert_equal expected_rails_http_server_block, builder.to_s
         assert_file Systemd.unit_file("example.com")
       end
@@ -47,13 +48,14 @@ class BuilderTest < Test
         builder = Nginx::Builder::RailsHttps.new(Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
 
         assert builder.save, "Failed to save server block"
-        assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
-        assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
-        assert_file Nginx.server_block_location("example.com")
-        assert_file Nginx.enabled_server_block_location("example.com")
-        assert_directory Nginx.root_directory("example.com")
-        assert_directory Nginx.certificate_directory("example.com")
-        assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
+
+        assert_directory("/tmp/builder_test/var/www/example.com")
+        assert_no_directory("/tmp/builder_test/var/www/example.com/html")
+        assert_file("/tmp/builder_test/etc/nginx/sites-available/example.com")
+        assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
+        assert_directory("/tmp/builder_test/etc/letsencrypt/live/example.com")
+        assert_file("/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem")
+
         assert_equal expected_rails_https_server_block, builder.to_s
         assert_file Systemd.unit_file("example.com")
       end
@@ -61,87 +63,101 @@ class BuilderTest < Test
   end
 
   def test_save_reverse_proxy_http
-    Nginx.chroot("/tmp/test_builder") do
-      Nginx.prepare_fake_files("search.example.com")
+    SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
+      Nginx.chroot("/tmp/test_builder") do
+        Nginx.prepare_fake_files("search.example.com")
 
-      builder = Nginx::Builder::Base.new(
-        Nginx::ServerBlock.new(
-          server: Nginx::Server.new(domain: SharedInfrastructure::Domain.new("search.example.com")),
-          listen: Nginx::ListenHttp.new,
-          location: [
-            Nginx::AcmeLocation.new("example.com"),
-            Nginx::ReverseProxyLocation.new("http://10.0.0.1")
-          ]
-        ),
-        domain: SharedInfrastructure::Domain.new("search.example.com")
-      )
+        builder = Nginx::Builder::Base.new(
+          Nginx::ServerBlock.new(
+            server: Nginx::Server.new(domain: SharedInfrastructure::Domain.new("search.example.com")),
+            listen: Nginx::ListenHttp.new,
+            location: [
+              Nginx::AcmeLocation.new("example.com"),
+              Nginx::ReverseProxyLocation.new("http://10.0.0.1")
+            ]
+          ),
+          domain: SharedInfrastructure::Domain.new("search.example.com")
+        )
 
-      assert builder.save, "Failed to save server block"
-      assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
-      assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
-      assert_file Nginx.server_block_location("search.example.com")
-      assert_file Nginx.enabled_server_block_location("search.example.com")
-      assert_equal expected_reverse_proxy_http_server_block,
-        File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
-      assert_no_directory Nginx.root_directory("search.example.com")
+        assert builder.save, "Failed to save server block"
+        assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
+        assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
+        assert_file Nginx.server_block_location("search.example.com")
+        assert_file Nginx.enabled_server_block_location("search.example.com")
+        assert_equal expected_reverse_proxy_http_server_block,
+          File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
+        assert_no_directory Nginx.root_directory("search.example.com")
+      end
     end
   end
 
   def test_save_reverse_proxy_https
-    Nginx.chroot("/tmp/test_builder") do
-      Nginx.dhparam = 128
-      Nginx.prepare_fake_files("search.example.com")
+    SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
+      Nginx.chroot("/tmp/test_builder") do
+        Nginx.dhparam = 128
+        Nginx.prepare_fake_files("search.example.com")
 
-      builder = Nginx::Builder::ReverseProxyHttps.new(
-        "http://10.0.0.1",
-        domain: SharedInfrastructure::Domain.new("search.example.com")
-      )
+        builder = Nginx::Builder::ReverseProxyHttps.new(
+          "http://10.0.0.1",
+          domain: SharedInfrastructure::Domain.new("search.example.com")
+        )
 
-      assert builder.save, "Failed to save server block"
-      assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
-      assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
-      assert_file Nginx.server_block_location("search.example.com")
-      assert_file Nginx.enabled_server_block_location("search.example.com")
-      assert_directory Nginx.certificate_directory("search.example.com")
-      assert_file File.join(Nginx.certificate_directory("search.example.com"), "dhparam.pem")
-      assert_equal expected_reverse_proxy_https_server_block,
-        File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
-      assert_no_directory Nginx.root_directory("search.example.com")
+        assert builder.save, "Failed to save server block"
+        assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
+        assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
+        assert_file Nginx.server_block_location("search.example.com")
+        assert_file Nginx.enabled_server_block_location("search.example.com")
+        assert_directory Nginx.certificate_directory("search.example.com")
+        assert_file File.join(Nginx.certificate_directory("search.example.com"), "dhparam.pem")
+        assert_equal expected_reverse_proxy_https_server_block,
+          File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
+        assert_no_directory Nginx.root_directory("search.example.com")
+      end
     end
   end
 
   def test_save_static_http
-    Nginx.chroot("/tmp/builder_test") do
-      Nginx.prepare_fake_files("example.com")
+    SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
+      Nginx.chroot("/tmp/builder_test") do
+        Nginx.prepare_fake_files("example.com")
 
-      builder = Nginx::Builder::SiteHttp.new(Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
+        builder = Nginx::Builder::SiteHttp.new(Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
 
-      assert builder.save, "Failed to save server block"
-      assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
-      assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
-      assert_file Nginx.server_block_location("example.com")
-      assert_file Nginx.enabled_server_block_location("example.com")
-      assert_directory Nginx.root_directory("example.com")
-      assert_equal expected_static_http_server_block, builder.to_s
+        assert builder.save, "Failed to save server block"
+        assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
+        assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
+        assert_file Nginx.server_block_location("example.com")
+        assert_file Nginx.enabled_server_block_location("example.com")
+
+        assert_directory "/tmp/builder_test/var/www/example.com"
+        assert_no_directory "/tmp/builder_test/var/www/example.com/html"
+
+        assert_equal expected_static_http_server_block, builder.to_s
+      end
     end
   end
 
   def test_save_static_https
-    Nginx.chroot("/tmp/builder_test") do
-      Nginx.prepare_fake_files("example.com")
-      Nginx.dhparam = 128
+    SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
+      Nginx.chroot("/tmp/builder_test") do
+        Nginx.prepare_fake_files("example.com")
+        Nginx.dhparam = 128
 
-      builder = Nginx::Builder::SiteHttps.new(Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
+        builder = Nginx::Builder::SiteHttps.new(Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
 
-      assert builder.save, "Failed to save server block"
-      assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
-      assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
-      assert_file Nginx.server_block_location("example.com")
-      assert_file Nginx.enabled_server_block_location("example.com")
-      assert_directory Nginx.root_directory("example.com")
-      assert_directory Nginx.certificate_directory("example.com")
-      assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
-      assert_equal expected_https_server_block, builder.to_s
+        assert builder.save, "Failed to save server block"
+        assert_directory File.join(Nginx.root, "/etc/nginx/sites-available")
+        assert_directory File.join(Nginx.root, "/etc/nginx/sites-enabled")
+        assert_file Nginx.server_block_location("example.com")
+        assert_file Nginx.enabled_server_block_location("example.com")
+
+        assert_directory "/tmp/builder_test/var/www/example.com"
+        assert_no_directory "/tmp/builder_test/var/www/example.com/html"
+
+        assert_directory Nginx.certificate_directory("example.com")
+        assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
+        assert_equal expected_https_server_block, builder.to_s
+      end
     end
   end
 end
