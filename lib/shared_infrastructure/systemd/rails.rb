@@ -44,11 +44,8 @@ module Systemd
             # Environment=PUMA_DEBUG=1
             Environment=RACK_ENV=production
             Environment=RAILS_ENV=production
+            # FIXME: The following is the wrong place
             EnvironmentFile=#{domain.secrets}
-            Environment=SECRET_KEY_BASE=#{ENV['SECRET_KEY_BASE']}
-            Environment=DATABASE_USERNAME=#{ENV['DATABASE_USERNAME']}
-            Environment=DATABASE_PASSWORD=#{ENV['DATABASE_PASSWORD']}
-            Environment=EMAIL_PASSWORD=#{ENV['EMAIL_PASSWORD']}
             Environment=REDIS_URL=unix:///tmp/#{redis_location(domain_name)}.sock
 
             # The command to start Puma

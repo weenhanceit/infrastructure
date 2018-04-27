@@ -56,6 +56,10 @@ module Runner
           Runner.debug = true
         end
 
+        opts.on("-d RAILS_ENV", "--rails-env RAILS_ENV", "Build files for the specified RAILS_ENV") do |rails_env|
+          options[:rails_env] = rails_env
+        end
+
         opts.on("-P PROTOCOL",
           "--protocol PROTOCOL",
           "HTTP|HTTPS. Default: HTTPS if key files exist, else HTTP.") do |protocol|

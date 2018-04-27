@@ -30,13 +30,40 @@ class RailsRunnerTest < Test
         ARGV.concat(%w[example.com])
         runner = Runner::Rails.new.main
         assert runner.save, "Build failed"
-        assert_directory Nginx.root_directory("example.com")
-        assert_file Nginx.server_block_location("example.com")
-        assert_file Nginx.enabled_server_block_location("example.com")
+
+        assert_directory("/tmp/builder_test/var/www/example.com")
+        assert_file("/tmp/builder_test/etc/nginx/sites-available/example.com")
+        assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
+
         assert_equal expected_rails_http_server_block,
           File.open(Nginx.server_block_location("example.com"), "r", &:read)
         assert_equal 0o600, File.stat(SharedInfrastructure::Output.file_name("/var/www/example.com/html/secrets")).mode & 0o7777
+        assert_equal expected_unit_file, File.open("/tmp/builder_test/lib/systemd/system/example.com.service", &:read)
         assert_equal expected_rails_logrotate_conf, File.open(SharedInfrastructure::Output.file_name("/etc/logrotate.d/example.com.conf"), &:read)
+      end
+    end
+  end
+
+  def test_rails_env_local
+    fake_env
+    SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
+      Nginx.chroot("/tmp/builder_test") do
+        Nginx.prepare_fake_files("example.com")
+        FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))
+
+        ARGV.concat(%w[--rails-env local example.com])
+        runner = Runner::Rails.new.main
+        assert runner.save, "Build failed"
+
+        assert_directory("/tmp/builder_test/var/www/example.com")
+        assert_file("/tmp/builder_test/etc/nginx/sites-available/example.com")
+        assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
+
+        assert_equal expected_rails_http_server_block,
+          File.open(Nginx.server_block_location("example.com"), "r", &:read)
+        assert_equal 0o600, File.stat(SharedInfrastructure::Output.file_name("/var/www/example.com/html/secrets")).mode & 0o7777
+        assert_equal expected_unit_file("local"), File.open("/tmp/builder_test/lib/systemd/system/example.com.service", &:read)
+        assert_equal expected_rails_logrotate_conf("local"), File.open(SharedInfrastructure::Output.file_name("/etc/logrotate.d/example.com.conf"), &:read)
       end
     end
   end
@@ -80,11 +107,13 @@ class RailsRunnerTest < Test
         ARGV.concat(%w[-p HTTPS --dhparam 128 example.com])
         runner = Runner::Rails.new.main
         assert runner.save, "Build failed"
-        assert_directory Nginx.root_directory("example.com")
-        assert_file Nginx.server_block_location("example.com")
-        assert_file Nginx.enabled_server_block_location("example.com")
-        assert_directory Nginx.certificate_directory("example.com")
-        assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
+
+        assert_directory("/tmp/builder_test/var/www/example.com")
+        assert_file("/tmp/builder_test/etc/nginx/sites-available/example.com")
+        assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
+        assert_directory("/tmp/builder_test/etc/letsencrypt/live/example.com")
+        assert_file("/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem")
+
         assert_equal expected_rails_https_server_block,
           File.open(Nginx.server_block_location("example.com"), "r", &:read)
         assert_equal 0o600, File.stat(SharedInfrastructure::Output.file_name("/var/www/example.com/html/secrets")).mode & 0o7777
@@ -108,11 +137,13 @@ class RailsRunnerTest < Test
         ARGV.concat(%w[--dhparam 128 example.com])
         runner = Runner::Rails.new.main
         assert runner.save, "Build failed"
-        assert_directory Nginx.root_directory("example.com")
-        assert_file Nginx.server_block_location("example.com")
-        assert_file Nginx.enabled_server_block_location("example.com")
-        assert_directory Nginx.certificate_directory("example.com")
-        assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
+
+        assert_directory("/tmp/builder_test/var/www/example.com")
+        assert_file("/tmp/builder_test/etc/nginx/sites-available/example.com")
+        assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
+        assert_directory("/tmp/builder_test/etc/letsencrypt/live/example.com")
+        assert_file("/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem")
+
         assert_equal expected_rails_https_server_block,
           File.open(Nginx.server_block_location("example.com"), "r", &:read)
         assert_equal 0o600, File.stat(SharedInfrastructure::Output.file_name("/var/www/example.com/html/secrets")).mode & 0o7777
@@ -130,13 +161,15 @@ class RailsRunnerTest < Test
         ARGV.concat(%w[-p HTTPS --dhparam 128 -c example.com search.example.com])
         runner = Runner::Rails.new.main
         assert runner.save, "Build failed"
-        assert_directory Nginx.root_directory("search.example.com")
-        assert_file Nginx.server_block_location("search.example.com")
-        assert_file Nginx.enabled_server_block_location("search.example.com")
-        assert_directory Nginx.certificate_directory("example.com")
+
+        assert_directory("/tmp/builder_test/var/www/search.example.com")
+        assert_file("/tmp/builder_test/etc/nginx/sites-available/search.example.com")
+        assert_file("/tmp/builder_test/etc/nginx/sites-enabled/search.example.com")
+        assert_directory("/tmp/builder_test/etc/letsencrypt/live/example.com")
         # Since the idea here is that the certificate is already generated,
         # don't check for the `dhparam.pem` file here
-        # assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
+        # assert_file("/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem")
+
         assert_equal expected_rails_https_server_block_certificate_domain,
           File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
         assert_equal 0o600, File.stat(SharedInfrastructure::Output.file_name("/var/www/search.example.com/html/secrets")).mode & 0o7777
@@ -160,13 +193,15 @@ class RailsRunnerTest < Test
         ARGV.concat(%w[--dhparam 128 -c example.com search.example.com])
         runner = Runner::Rails.new.main
         assert runner.save, "Build failed"
-        assert_directory Nginx.root_directory("search.example.com")
-        assert_file Nginx.server_block_location("search.example.com")
-        assert_file Nginx.enabled_server_block_location("search.example.com")
-        assert_directory Nginx.certificate_directory("example.com")
+
+        assert_directory("/tmp/builder_test/var/www/search.example.com")
+        assert_file("/tmp/builder_test/etc/nginx/sites-available/search.example.com")
+        assert_file("/tmp/builder_test/etc/nginx/sites-enabled/search.example.com")
+        assert_directory("/tmp/builder_test/etc/letsencrypt/live/example.com")
         # Since the idea here is that the certificate is already generated,
         # don't check for the `dhparam.pem` file here
-        # assert_file File.join(Nginx.certificate_directory("example.com"), "dhparam.pem")
+        # assert_file("/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem")
+
         assert_equal expected_rails_https_server_block_certificate_domain,
           File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
         assert_equal 0o600, File.stat(SharedInfrastructure::Output.file_name("/var/www/search.example.com/html/secrets")).mode & 0o7777
@@ -184,9 +219,11 @@ class RailsRunnerTest < Test
         ARGV.concat(%w[--accel /private example.com])
         runner = Runner::Rails.new.main
         assert runner.save, "Build failed"
-        assert_directory Nginx.root_directory("example.com")
-        assert_file Nginx.server_block_location("example.com")
-        assert_file Nginx.enabled_server_block_location("example.com")
+
+        assert_directory("/tmp/builder_test/var/www/example.com")
+        assert_file("/tmp/builder_test/etc/nginx/sites-available/example.com")
+        assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
+
         assert_equal expected_rails_http_x_accel_server_block,
           File.open(Nginx.server_block_location("example.com"), "r", &:read)
         assert_equal 0o600, File.stat(SharedInfrastructure::Output.file_name("/var/www/example.com/html/secrets")).mode & 0o7777
