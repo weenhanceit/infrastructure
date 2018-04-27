@@ -32,12 +32,12 @@ class RailsRunnerTest < Test
         assert runner.save, "Build failed"
 
         assert_directory("/tmp/builder_test/var/www/example.com")
+        # assert_no_directory("/tmp/builder_test/var/www/example.com/html")
         assert_file("/tmp/builder_test/etc/nginx/sites-available/example.com")
         assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
 
         assert_equal expected_rails_http_server_block,
           File.open(Nginx.server_block_location("example.com"), "r", &:read)
-        assert_equal 0o600, File.stat(SharedInfrastructure::Output.file_name("/var/www/example.com/html/secrets")).mode & 0o7777
         assert_equal expected_unit_file, File.open("/tmp/builder_test/lib/systemd/system/example.com.service", &:read)
         assert_equal expected_rails_logrotate_conf, File.open(SharedInfrastructure::Output.file_name("/etc/logrotate.d/example.com.conf"), &:read)
       end
@@ -61,7 +61,6 @@ class RailsRunnerTest < Test
 
         assert_equal expected_rails_http_server_block,
           File.open(Nginx.server_block_location("example.com"), "r", &:read)
-        assert_equal 0o600, File.stat(SharedInfrastructure::Output.file_name("/var/www/example.com/html/secrets")).mode & 0o7777
         assert_equal expected_rails_logrotate_conf("local"), File.open(SharedInfrastructure::Output.file_name("/etc/logrotate.d/example.com.conf"), &:read)
         assert_equal expected_unit_file("local"), File.open("/tmp/builder_test/lib/systemd/system/example.com.service", &:read)
       end
@@ -87,12 +86,6 @@ class RailsRunnerTest < Test
                                "my_EMAIL_PASSWORD\n"
         assert runner.save, "Build failed"
         $stdin = STDIN
-        assert_equal 0o600, File.stat(SharedInfrastructure::Output.file_name("/var/www/example.com/html/secrets")).mode & 0o7777
-        expected = "SECRET_KEY_BASE=my_SECRET_KEY_BASE\n" \
-                   "DATABASE_USERNAME=my_DATABASE_USERNAME\n" \
-                   "DATABASE_PASSWORD=my_DATABASE_PASSWORD\n" \
-                   "EMAIL_PASSWORD=my_EMAIL_PASSWORD\n"
-        assert_equal expected, File.open(SharedInfrastructure::Output.file_name("/var/www/example.com/html/secrets")).read
       end
     end
   end
@@ -109,6 +102,7 @@ class RailsRunnerTest < Test
         assert runner.save, "Build failed"
 
         assert_directory("/tmp/builder_test/var/www/example.com")
+        # assert_no_directory("/tmp/builder_test/var/www/example.com/html")
         assert_file("/tmp/builder_test/etc/nginx/sites-available/example.com")
         assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
         assert_directory("/tmp/builder_test/etc/letsencrypt/live/example.com")
@@ -116,7 +110,6 @@ class RailsRunnerTest < Test
 
         assert_equal expected_rails_https_server_block,
           File.open(Nginx.server_block_location("example.com"), "r", &:read)
-        assert_equal 0o600, File.stat(SharedInfrastructure::Output.file_name("/var/www/example.com/html/secrets")).mode & 0o7777
       end
     end
   end
@@ -146,7 +139,6 @@ class RailsRunnerTest < Test
 
         assert_equal expected_rails_https_server_block,
           File.open(Nginx.server_block_location("example.com"), "r", &:read)
-        assert_equal 0o600, File.stat(SharedInfrastructure::Output.file_name("/var/www/example.com/html/secrets")).mode & 0o7777
       end
     end
   end
@@ -172,7 +164,6 @@ class RailsRunnerTest < Test
 
         assert_equal expected_rails_https_server_block_certificate_domain,
           File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
-        assert_equal 0o600, File.stat(SharedInfrastructure::Output.file_name("/var/www/search.example.com/html/secrets")).mode & 0o7777
       end
     end
   end
@@ -204,7 +195,6 @@ class RailsRunnerTest < Test
 
         assert_equal expected_rails_https_server_block_certificate_domain,
           File.open(Nginx.server_block_location("search.example.com"), "r", &:read)
-        assert_equal 0o600, File.stat(SharedInfrastructure::Output.file_name("/var/www/search.example.com/html/secrets")).mode & 0o7777
       end
     end
   end
@@ -226,7 +216,6 @@ class RailsRunnerTest < Test
 
         assert_equal expected_rails_http_x_accel_server_block,
           File.open(Nginx.server_block_location("example.com"), "r", &:read)
-        assert_equal 0o600, File.stat(SharedInfrastructure::Output.file_name("/var/www/example.com/html/secrets")).mode & 0o7777
       end
     end
   end

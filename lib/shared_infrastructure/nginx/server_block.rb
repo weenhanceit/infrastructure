@@ -42,31 +42,6 @@ SERVER_BLOCK
     attr_reader :accel_location, :domain, :listen, :location, :server, :upstream
   end
 
-  class SiteServerBlock < ServerBlock
-    def make_root_directory(root_directory)
-      FileUtils.mkdir_p(server.root_directory)
-      if Process.uid.zero?
-        FileUtils.chown(server.user,
-          "www-data",
-          server.root_directory)
-      end
-    end
-
-    def save
-      make_root_directory(root_directory)
-      super
-    end
-  end
-
-  class RailsServerBlock < SiteServerBlock
-    def root_directory
-      File.join(domain.site_root, "/public")
-    end
-  end
-
-  class StaticServerBlock < SiteServerBlock
-  end
-
   class TlsRedirectServerBlock < ServerBlock
     def initialize(domain_name)
       super(

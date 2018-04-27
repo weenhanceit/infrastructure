@@ -23,7 +23,7 @@ class ServerBlockTest < Test
 
   def test_reverse_proxy_https
     builder = Nginx::Builder::Base.new(
-      Nginx::StaticServerBlock.new(
+      Nginx::ServerBlock.new(
         server: Nginx::Server.new(domain: SharedInfrastructure::Domain.new("search.example.com")),
         listen: Nginx::ListenHttps.new("search.example.com"),
         location: Nginx::ReverseProxyLocation.new("http://10.0.0.1")
@@ -34,7 +34,7 @@ class ServerBlockTest < Test
   end
 
   def test_static_http
-    server_block = Nginx::StaticServerBlock.new(
+    server_block = Nginx::ServerBlock.new(
       server: Nginx::StaticServer.new(domain: SharedInfrastructure::Domain.new("example.com")),
       listen: Nginx::ListenHttp.new,
       location: Nginx::Location.new("/")
@@ -45,7 +45,7 @@ class ServerBlockTest < Test
   def test_static_https
     builder = Nginx::Builder::Site.new(
       Etc.getlogin,
-      Nginx::StaticServerBlock.new(
+      Nginx::ServerBlock.new(
         server: Nginx::StaticServer.new(domain: SharedInfrastructure::Domain.new("example.com")),
         listen: Nginx::ListenHttps.new("example.com"),
         location: Nginx::Location.new
