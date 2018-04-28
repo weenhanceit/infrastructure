@@ -23,7 +23,7 @@ sudo nginx -s reload
 
 Then run the following command:
 
-sudo certbot certonly --webroot -w #{Nginx.root_directory(domain.domain_name)} #{Nginx.certbot_domain_names(domain.domain_name)}
+sudo certbot certonly --webroot -w #{Nginx.root_directory(domain.domain_name)} #{domain.certbot_domain_names}
 
 You can test renewal with:
 
