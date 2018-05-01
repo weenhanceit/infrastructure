@@ -41,7 +41,7 @@ module Runner
         # FIXME: This is only applicable to Rails apps.
         opts.on("-a LOCATION",
           "--accel LOCATION",
-          "Location to serve when app responds with 'X-Accel'") do |accel_location|
+          "Location below application root to serve when app responds with 'X-Accel'") do |accel_location|
           options[:accel_location] = accel_location
         end
 

@@ -108,7 +108,7 @@ This sets up:
 receiving requests on the same domain socket.
 
 ### Set the Rails Environment Variables
-The Rails instance expects certain environment variables to be set. `create-rails-app` will prompt you for them and create a secrets file in a useful location.
+The Rails instance probably needs secrets. Typically they can be in environment variables (e.g. a Heroku deployment), or in a `secrets.yml` that's put on the server manaully (e.g. Capistrano deployments). For the environment option, `create-rails-app`  will use environment variables if they're set, or prompt you for them if not.
 
 For the following, you get the "secret-key-base" by doing `rails secret`.
 [TODO: `rails secret` assumes you have an application set up, which you might not have at this point.]
@@ -129,7 +129,7 @@ If the application uses uses `send_file` to ask Nginx to send private files, add
 ```
 sudo -E create-rails-app -a location domain-name
 ```
-Where `location` is the directory below `Rails.root` in which the private documents are kept (e.g. `/private`).
+Where `location` is the `Rails.root` directory. Note that if you have symlinks in the path to `Rails.root`, `Rails.root` contains the real directories. Therefore, in a typical Capistrano deployment, the location is `releases`, not `current`. Nginx won't serve unauthorized files, because it's up to the application to return on file locations that Nginx should serve.
 
 If you're passing the secrets in environment variables, don't forget the `-E` to `sudo`. It causes the environment variables to be passed to the script. It's optional if you just type the variables in.
 If you forget to use the `-a` flag,

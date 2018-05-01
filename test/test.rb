@@ -181,7 +181,7 @@ server {
   listen [::]:80;
 
   proxy_set_header X-Sendfile-Type X-Accel-Redirect;
-  proxy_set_header X-Accel-Mapping /var/www/example.com/html/private/=/private/;
+  proxy_set_header X-Accel-Mapping /var/www/example.com/releases/=/__x_accel/;
 
   location @example.com {
     # A Rails app should force "SSL" so that it generates redirects to HTTPS,
@@ -197,9 +197,9 @@ server {
     proxy_redirect off;
   }
 
-  location /private {
+  location /__x_accel {
     internal;
-    alias /var/www/example.com/html/private;
+    alias /var/www/example.com/releases;
   }
 
   location /cable {

@@ -198,7 +198,7 @@ class RailsRunnerTest < Test
         Nginx.prepare_fake_files("example.com")
         FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))
 
-        ARGV.concat(%w[--accel /private example.com])
+        ARGV.concat(%w[--accel releases example.com])
         runner = Runner::Rails.new.main
         assert runner.save, "Build failed"
 

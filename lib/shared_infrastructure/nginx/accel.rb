@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# Matt's post was very helpful: https://mattbrictson.com/accelerated-rails-downloads
+
 module Nginx
   class Accel
     def initialize(location_directory, domain: nil)
@@ -10,11 +12,11 @@ module Nginx
     attr_reader :domain, :location_directory
 
     def alias_string
-      File.join(domain.site_root, location_directory).to_s
+      File.join(domain.root, location_directory).to_s
     end
 
     def location
-      "/#{location_directory}"
+      "/__x_accel"
     end
 
     def proxy_set_header(domain_name)
