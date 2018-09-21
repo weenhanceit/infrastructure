@@ -159,6 +159,21 @@ since the database doesn't exist.
 You have to manually do `rails db:setup`
 after getting the application code to the server.
 
+(And if you're using Capistrano for the deploy, then you need to manually create the user and database:
+```
+psql -h <DB host name> -U <master user> -d postgres
+create role <user name for application>
+  with createdb
+  login password '<password for application user>';
+grant rds_superuser to <user name for application>;
+\q
+psql -h <DB host name> -U <user name for application> -d postgres
+<enter password for application user>
+create database <database for application>;
+\q
+```
+)
+
 Once deployed, remember to reload the Nginx configuration:
 ```
 sudo nginx -s reload
