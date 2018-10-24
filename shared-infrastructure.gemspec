@@ -2,8 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name        = "shared-infrastructure"
-  s.version     = "0.0.18"
-  s.date        = "2018-05-01"
+  s.version     = SharedInfrastructure::VERSION
   s.summary     = "Configure nginx, systemd, and/or Puma"
   s.description = %(For static sites, Rails apps, and reverse proxies.
 )
@@ -28,10 +27,12 @@ Gem::Specification.new do |s|
     "lib/shared_infrastructure/runner/rails.rb",
     "lib/shared_infrastructure/systemd/systemd.rb",
     "lib/shared_infrastructure/systemd/rails.rb",
+    "lib/shared_infrastructure/version.rb",
     "bin/create-rails-app",
     "bin/create-reverse-proxy",
     "bin/create-server-block"
   ]
+  s.add_development_dependency "chandler"
   s.executables.concat(%w[
                          create-server-block
                          create-rails-app
