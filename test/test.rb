@@ -493,7 +493,7 @@ server {
         # Foreground process (do not use --daemon in ExecStart or config.rb)
         Type=simple
 
-        User=nobody
+        User=ubuntu
         Group=www-data
 
         # Specify the path to the Rails application root

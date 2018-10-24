@@ -30,7 +30,7 @@ class StaticRunnerTest < Test
         assert runner.save, "Build failed"
 
         assert_directory "/tmp/builder_test/var/www/example.com"
-        puts "DOMAIN ROOT STAT: #{File.stat('/tmp/builder_test/var/www/example.com').mode.to_s(8)}"
+        # puts "DOMAIN ROOT STAT: #{File.stat('/tmp/builder_test/var/www/example.com').mode.to_s(8)}"
         assert_equal 0o2000, File.stat("/tmp/builder_test/var/www/example.com").mode & 0o2000
         assert_no_directory "/tmp/builder_test/var/www/example.com/html"
 

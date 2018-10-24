@@ -117,7 +117,9 @@ Finally, re-run this script to configure nginx for TLS.
         super
       end
 
-      attr_reader :user
+      def user
+        @user ||= Etc.getlogin
+      end
     end
 
     class SiteHttp < Site
@@ -190,7 +192,7 @@ Finally, re-run this script to configure nginx for TLS.
             }
           LOGROTATE
         end &&
-          Systemd::Rails.write_unit_file(domain.domain_name, domain, rails_env) &&
+          Systemd::Rails.write_unit_file(domain.domain_name, domain, rails_env, user) &&
           super
       end
     end

@@ -11,7 +11,7 @@ module Systemd
         "redis." + domain_name
       end
 
-      def write_unit_file(domain_name, domain, rails_env = "production")
+      def write_unit_file(domain_name, domain, rails_env = "production", user)
         # if ENV["SECRET_KEY_BASE"].nil? ||
         #    ENV["DATABASE_USERNAME"].nil? ||
         #    ENV["DATABASE_PASSWORD"].nil? ||
@@ -34,7 +34,7 @@ module Systemd
             # Foreground process (do not use --daemon in ExecStart or config.rb)
             Type=simple
 
-            User=nobody
+            User=#{user}
             Group=www-data
 
             # Specify the path to the Rails application root
