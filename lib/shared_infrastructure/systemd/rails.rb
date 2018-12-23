@@ -12,13 +12,6 @@ module Systemd
       end
 
       def write_unit_file(domain_name, domain, rails_env = "production", user)
-        # if ENV["SECRET_KEY_BASE"].nil? ||
-        #    ENV["DATABASE_USERNAME"].nil? ||
-        #    ENV["DATABASE_PASSWORD"].nil? ||
-        #    ENV["EMAIL_PASSWORD"].nil?
-        #   raise "Missing environment variable"
-        # end
-        #
         puts "writing unit file (domain_name): #{Systemd.unit_file(domain_name)} (#{domain_name})" if Runner.debug
 
         result = File.open(Systemd.unit_file(domain_name), "w") do |f|
@@ -44,11 +37,6 @@ module Systemd
             # Environment=PUMA_DEBUG=1
             Environment=RACK_ENV=#{rails_env}
             Environment=RAILS_ENV=#{rails_env}
-            # FIXME: The following is the wrong place
-            Environment=SECRET_KEY_BASE=#{ENV['SECRET_KEY_BASE']}
-            Environment=DATABASE_USERNAME=#{ENV['DATABASE_USERNAME']}
-            Environment=DATABASE_PASSWORD=#{ENV['DATABASE_PASSWORD']}
-            Environment=EMAIL_PASSWORD=#{ENV['EMAIL_PASSWORD']}
             Environment=REDIS_URL=unix:///tmp/#{redis_location(domain_name)}.sock
 
             # The command to start Puma

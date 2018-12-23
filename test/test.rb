@@ -459,13 +459,6 @@ server {
 )
     end
 
-    def fake_env
-      ENV["SECRET_KEY_BASE"] = "my_SECRET_KEY_BASE"
-      ENV["DATABASE_USERNAME"] = "my_DATABASE_USERNAME"
-      ENV["DATABASE_PASSWORD"] = "my_DATABASE_PASSWORD"
-      ENV["EMAIL_PASSWORD"] = "my_EMAIL_PASSWORD"
-    end
-
     def expected_rails_logrotate_conf(rails_env = "production")
       <<~LOGROTATE
         compress
@@ -503,11 +496,6 @@ server {
         # Environment=PUMA_DEBUG=1
         Environment=RACK_ENV=#{rails_env}
         Environment=RAILS_ENV=#{rails_env}
-        # FIXME: The following is the wrong place
-        Environment=SECRET_KEY_BASE=my_SECRET_KEY_BASE
-        Environment=DATABASE_USERNAME=my_DATABASE_USERNAME
-        Environment=DATABASE_PASSWORD=my_DATABASE_PASSWORD
-        Environment=EMAIL_PASSWORD=my_EMAIL_PASSWORD
         Environment=REDIS_URL=unix:///tmp/redis.example.com.sock
 
         # The command to start Puma

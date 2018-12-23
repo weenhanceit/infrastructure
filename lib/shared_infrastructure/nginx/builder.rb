@@ -169,16 +169,6 @@ Finally, re-run this script to configure nginx for TLS.
       attr_reader :rails_env
 
       def save
-        env = {}
-        %w[SECRET_KEY_BASE
-           DATABASE_USERNAME
-           DATABASE_PASSWORD
-           EMAIL_PASSWORD].each do |var|
-          if ENV[var].nil?
-            puts "Enter #{var}: "
-            ENV[var] = $stdin.gets.strip
-          end
-        end
         SharedInfrastructure::Output.open(File.join("/etc/logrotate.d", "#{domain.domain_name}.conf"), "w") do |io|
           io << <<~LOGROTATE
             compress

@@ -19,8 +19,6 @@ class BuilderTest < Test
         Nginx.prepare_fake_files("example.com")
         FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))
 
-        fake_env
-
         builder = Nginx::Builder::RailsHttp.new(Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
 
         assert builder.save, "Failed to save server block"
@@ -42,8 +40,6 @@ class BuilderTest < Test
         Nginx.dhparam = 128
         Nginx.prepare_fake_files("example.com")
         FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))
-
-        fake_env
 
         builder = Nginx::Builder::RailsHttps.new(Etc.getlogin, domain: SharedInfrastructure::Domain.new("example.com"))
 

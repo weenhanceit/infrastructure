@@ -21,7 +21,6 @@ class RailsRunnerTest < Test
   end
 
   def test_rails_http
-    fake_env
     SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
       Nginx.chroot("/tmp/builder_test") do
         Nginx.prepare_fake_files("example.com")
@@ -45,7 +44,6 @@ class RailsRunnerTest < Test
   end
 
   def test_rails_env_local
-    fake_env
     SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
       Nginx.chroot("/tmp/builder_test") do
         Nginx.prepare_fake_files("example.com")
@@ -67,31 +65,7 @@ class RailsRunnerTest < Test
     end
   end
 
-  def test_rails_http_secrets_from_stdin
-    ENV.delete("SECRET_KEY_BASE")
-    ENV.delete("DATABASE_USERNAME")
-    ENV.delete("DATABASE_PASSWORD")
-    ENV.delete("EMAIL_PASSWORD")
-
-    SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
-      Nginx.chroot("/tmp/builder_test") do
-        Nginx.prepare_fake_files("example.com")
-        FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.com")))
-
-        ARGV.concat(%w[example.com])
-        runner = Runner::Rails.new.main
-        $stdin = StringIO.open "my_SECRET_KEY_BASE\n" \
-                               "my_DATABASE_USERNAME\n" \
-                               "my_DATABASE_PASSWORD\n" \
-                               "my_EMAIL_PASSWORD\n"
-        assert runner.save, "Build failed"
-        $stdin = STDIN
-      end
-    end
-  end
-
   def test_rails_https
-    fake_env
     SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
       Nginx.chroot("/tmp/builder_test") do
         Nginx.prepare_fake_files("example.com")
@@ -115,7 +89,6 @@ class RailsRunnerTest < Test
   end
 
   def test_rails_https_when_files_exist
-    fake_env
     SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
       Nginx.chroot("/tmp/builder_test") do
         Nginx.prepare_fake_files("example.com")
@@ -140,7 +113,6 @@ class RailsRunnerTest < Test
   end
 
   def test_rails_https_with_certificate_directory_arg
-    fake_env
     SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
       Nginx.chroot("/tmp/builder_test") do
         Nginx.prepare_fake_files("search.example.com")
@@ -165,7 +137,6 @@ class RailsRunnerTest < Test
   end
 
   def test_rails_https_when_files_exist_with_certificate_directory_arg
-    fake_env
     SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
       Nginx.chroot("/tmp/builder_test") do
         Nginx.prepare_fake_files("search.example.com", "example.com")
@@ -192,7 +163,6 @@ class RailsRunnerTest < Test
   end
 
   def test_rails_http_x_accel
-    fake_env
     SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
       Nginx.chroot("/tmp/builder_test") do
         Nginx.prepare_fake_files("example.com")
