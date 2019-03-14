@@ -39,19 +39,17 @@ or a Rails application.
 ```
     unzip master.zip
 ```
-4. Change to the scripts directory to save some typing:
-```
-    cd infrastructure-master/basic-app-server
-```
 
 ## One-Time Server Set-Up
 This step is only necessary after you first set up the server.
 It installs additional software needed on the server.
+
 ```
-./build.sh
+infrastructure-master/basic-app-server/build.sh
 ```
 
 Also install the gem:
+
 ```
 sudo gem install shared-infrastructure --no-document
 ```
@@ -60,7 +58,7 @@ sudo gem install shared-infrastructure --no-document
 Here's how to create named users with sudo privileges on the server.
 These instructions work if your desktop is running Ubuntu.
 
-1. Create a key pair if you don't already have one. Accept the defaults,
+1. Create a key pair on your local workstation if you don't already have one. Accept the defaults,
 and don't enter a pass phrase:
 ```
     mkdir ~/.ssh
@@ -70,19 +68,29 @@ and don't enter a pass phrase:
   This leaves a key pair in `~/.ssh/id_rsa` (the private key)
   and `~/.ssh/id_rsa.pub` (the public key).
 
-2. Obtain a copy of the user creation script:
+2. Log into the new (remote) server:
 ```
-    wget https://github.com/weenhanceit/infrastructure/raw/master/basic-app-server/create-user.sh
+    ssh -i ~/.ssh/weita.pem ubuntu@URL-of-server
 ```
-3. Run the user creation script:
+3.  Create the new user. You have to enter a password here:
 ```
-    ./create-user -k existing-user-key-file username ~/.ssh/id_rsa.pub ubuntu@ec2-server-address
+    sudo adduser --gecos "" new-user-name
+    sudo adduser new-user-name sudo
 ```
-  It's important to understand which key file is which.
-  `existing-user-key-file` is the private key that you obtained
-  from Amazon when you created the instance.
-  `~/.ssh/id_rsa.pub` is the *public* key file
-  from the key pair you just generated.
+4. On the local workstation again, upload your public key to allow login to the remote server without a password:
+```
+    ssh-copy-id new-user-name@URL-of-server
+```
+5. Test that the login works without a password:
+```
+    ssh new-user-name@URL-of-server
+```
+6. If login is working without a password, go back to the remote server, and disallow logins with password,
+and clean out the history so as not to possibly leak any information about users:
+```
+sudo passwd -l new-user-name
+history -c && history -w
+```
 
 ## Creating a Static Web Site
 This sets up an Nginx server block for a given domain name.
@@ -113,15 +121,15 @@ Earlier versions of this gem initialized some environment variables in the `syst
 ### Create the Rails Application
 If the application does *not* use `send_file` to ask Nginx to send private files:
 ```
-sudo create-rails-app domain-name
+sudo create-rails-app -u deploy-run-user-name domain-name
 ```
 If the application uses uses `send_file` to ask Nginx to send private files, add the `-a` flag:
 ```
-sudo create-rails-app -a location domain-name
+sudo create-rails-app -u deploy-run-user-name -a location domain-name
 ```
-Where `location` is the `Rails.root` directory. Note that if you have symlinks in the path to `Rails.root`, `Rails.root` contains the real directories. Therefore, in a typical Capistrano deployment, the location is `releases`, not `current`. Nginx won't serve unauthorized files, because it's up to the application to return on file locations that Nginx should serve.
+Where `location` is the name of the directory under `Rails.root` where the private files are found (typically `/private`).
 
-If you forget to use the `-a` flag,
+If you forget to use the `-a` or `-u` flags,
 you can safely re-run this script later with the flag.
 
 The above will tell you how to get a certificate for the site,
@@ -141,10 +149,18 @@ The root directory of the Rails application is `/var/www/domain-name/html`.
 Now you can deploy the Rails app.
 Note that before you deploy,
 you have to do `bundle binstubs puma`
-in your Rails app, and then commit the `bin` directory to Github. [TODO: How to deploy.]
+in your Rails app, and then commit the `bin` directory to Github (or another accessible repository).
 
-NOTE: Currently the first deploy will fail,
-since the database doesn't exist.
+Assuming the Rails application has been prepared for deploy via Capistrano, try to deploy it now:
+```
+cap production deploy
+```
+The first deploy will fail, since neither the credentials nor the database exist.
+After the first deploy has failed, copy the `master.key` file to the appropriate place on the server.
+Go to the root directory of the Rails application on your workstation and type:
+```
+rsync config/master.key URL-of-server:/var/www/domain/shared/config
+```
 You have to manually do `rails db:setup`
 after getting the application code to the server.
 
@@ -176,6 +192,8 @@ If it's not running, try to restart it with:
 ```
 sudo systemctl restart domain-name
 ```
+If Puma isn't running, `/var/log/syslog` is a good place to look for hints as to what's wrong.
+Note that `systemd` tries several times to start the application, so you will likely see the same set of messages repeated near the end of `/var/log/syslog`.
 
 ### Set Up Redis for a Rails Application
 The [One Time Server Setup](one-time-server-setup) installs Redis
