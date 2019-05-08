@@ -28,8 +28,8 @@ module Runner
     end
 
     def process_args(opts = nil)
-      raise MissingArgument.new("domain required", opts) unless ARGV.size == 1
-      { domain_name: ARGV[0] }
+      raise MissingArgument.new("domain required", opts) if ARGV.size == 0
+      { domain_name: ARGV }
     end
 
     def process_options(http_builder_class = Nginx::Builder::SiteHttp,
@@ -106,7 +106,7 @@ module Runner
         options[:protocol]
       else
         certificate_directory = Nginx.certificate_directory(
-          options[:certificate_domain] || options[:domain_name]
+          options[:certificate_domain] || options[:domain_name].first # FIXME:
         )
         if File.exist?(File.join(certificate_directory, "privkey.pem")) &&
            File.exist?(File.join(certificate_directory, "fullchain.pem")) &&

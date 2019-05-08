@@ -212,18 +212,20 @@ server {
 )
     end
 
-    def expected_rails_http_server_block
-      %(upstream example.com {
-  server unix:///tmp/example.com.sock fail_timeout=0;
+    def expected_rails_http_server_block(*domains)
+      domains = %w[example.com] if domains.empty?
+
+      %(upstream #{domains.first} {
+  server unix:///tmp/#{domains.first}.sock fail_timeout=0;
 }
 
 server {
-  server_name example.com www.example.com;
+  server_name #{domains.map { |domain| "#{domain} www.#{domain}" }.join(' ')};
 
   # http://stackoverflow.com/a/11313241/3109926 said the following
   # is what serves from public directly without hitting Puma
-  root /var/www/example.com/html/public;
-  try_files $uri/index.html $uri @example.com;
+  root /var/www/#{domains.first}/html/public;
+  try_files $uri/index.html $uri @#{domains.first};
   error_page 500 502 503 504 /500.html;
   client_max_body_size 4G;
   keepalive_timeout 10;
@@ -231,14 +233,14 @@ server {
   listen 80;
   listen [::]:80;
 
-  location @example.com {
+  location @#{domains.first} {
     # A Rails app should force "SSL" so that it generates redirects to HTTPS,
     # among other things.
     # However, you want Nginx to handle the workload of TLS.
     # The trick to proxying to a Rails app, therefore, is to proxy pass to HTTP,
     # but set the header to HTTPS
     # Next two lines.
-    proxy_pass http://example.com;
+    proxy_pass http://#{domains.first};
     proxy_set_header X-Forwarded-Proto $scheme; # $scheme says http or https
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header Host $http_host;
@@ -246,7 +248,7 @@ server {
   }
 
   location /cable {
-    proxy_pass http://example.com;
+    proxy_pass http://#{domains.first};
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";
@@ -459,11 +461,11 @@ server {
 )
     end
 
-    def expected_rails_logrotate_conf(rails_env = "production")
+    def expected_rails_logrotate_conf(rails_env = "production", domain: "example.com")
       <<~LOGROTATE
         compress
 
-        /var/www/example.com/log/#{rails_env}.log {
+        /var/www/#{domain}/log/#{rails_env}.log {
           size 1M
           rotate 4
           copytruncate
@@ -473,14 +475,14 @@ server {
       LOGROTATE
     end
 
-    def expected_unit_file(rails_env = "production")
+    def expected_unit_file(rails_env = "production", domain: "example.com")
       <<~UNIT_FILE
         [Unit]
-        Description=Puma HTTP Server for example.com
+        Description=Puma HTTP Server for #{domain}
         After=network.target
 
         # Uncomment for socket activation (see below)
-        # Requires=example.com.socket
+        # Requires=#{domain}.socket
 
         [Service]
         # Foreground process (do not use --daemon in ExecStart or config.rb)
@@ -490,26 +492,26 @@ server {
         Group=www-data
 
         # Specify the path to the Rails application root
-        WorkingDirectory=/tmp/builder_test/var/www/example.com/html
+        WorkingDirectory=/tmp/builder_test/var/www/#{domain}/html
 
         # Helpful for debugging socket activation, etc.
         # Environment=PUMA_DEBUG=1
         Environment=RACK_ENV=#{rails_env}
         Environment=RAILS_ENV=#{rails_env}
-        Environment=REDIS_URL=unix:///tmp/redis.example.com.sock
+        Environment=REDIS_URL=unix:///tmp/redis.#{domain}.sock
 
         # The command to start Puma
         # NOTE: TLS would be handled by Nginx
-        ExecStart=/tmp/builder_test/var/www/example.com/html/bin/puma -b unix:///tmp/example.com.sock \
-              --redirect-stdout=/tmp/builder_test/var/www/example.com/html/log/puma-#{rails_env}.stdout.log \
-              --redirect-stderr=/tmp/builder_test/var/www/example.com/html/log/puma-#{rails_env}.stderr.log
-        # ExecStart=/usr/local/bin/puma -b tcp://unix:///tmp/example.com.sock
+        ExecStart=/tmp/builder_test/var/www/#{domain}/html/bin/puma -b unix:///tmp/#{domain}.sock \
+              --redirect-stdout=/tmp/builder_test/var/www/#{domain}/html/log/puma-#{rails_env}.stdout.log \
+              --redirect-stderr=/tmp/builder_test/var/www/#{domain}/html/log/puma-#{rails_env}.stderr.log
+        # ExecStart=/usr/local/bin/puma -b tcp://unix:///tmp/#{domain}.sock
 
         Restart=always
 
         [Install]
         WantedBy=multi-user.target
-        UNIT_FILE
+      UNIT_FILE
     end
   end
 end

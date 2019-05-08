@@ -11,7 +11,7 @@ module Runner
     def process_args(opts = nil)
       raise MissingArgument.new("domain and target url required", opts) unless ARGV.size == 2
       {
-        domain_name: ARGV[0],
+        domain_name: [ARGV.first],
         proxy_url: ARGV[1]
       }
     end

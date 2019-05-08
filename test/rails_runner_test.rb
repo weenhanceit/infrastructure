@@ -43,6 +43,29 @@ class RailsRunnerTest < Test
     end
   end
 
+  def test_rails_http_two_domains
+    SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
+      Nginx.chroot("/tmp/builder_test") do
+        Nginx.prepare_fake_files("example.ca")
+        FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.ca")))
+
+        ARGV.concat(%w[example.ca example.com])
+        runner = Runner::Rails.new.main
+        assert runner.save, "Build failed"
+
+        assert_directory("/tmp/builder_test/var/www/example.ca")
+        assert_no_directory("/tmp/builder_test/var/www/example.ca/html")
+        assert_file("/tmp/builder_test/etc/nginx/sites-available/example.ca")
+        assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.ca")
+
+        assert_equal expected_rails_http_server_block("example.ca", "example.com"),
+          File.open("/tmp/builder_test/etc/nginx/sites-available/example.ca", "r", &:read)
+        assert_equal expected_unit_file(domain: "example.ca"), File.open("/tmp/builder_test/lib/systemd/system/example.ca.service", &:read)
+        assert_equal expected_rails_logrotate_conf(domain: "example.ca"), File.open(SharedInfrastructure::Output.file_name("/etc/logrotate.d/example.ca.conf"), &:read)
+      end
+    end
+  end
+
   def test_rails_env_local
     SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
       Nginx.chroot("/tmp/builder_test") do
