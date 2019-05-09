@@ -1,4 +1,4 @@
-## [Pending Release][2.1.0]
+## [Pending Release][2.2.0]
 
 ### Breaking changes
 
@@ -11,6 +11,12 @@
 ### Bugfixes
 
 * Your contribution here!
+
+## [2.1.0][] (2019-05-09)
+
+### Bugfixes
+
+* Build nginx configuration for multiple domain names for the same site.
 
 ## [2.0.0][] (2018-12-23)
 
@@ -25,5 +31,6 @@
 * The Puma instances now run as the deployment user, rather than `nobody`.
 * There is now a `CHANGELOG.md`.
 
-[Pending Release]: https://github.com/weenhanceit/infrastructure/compare/v2.0.0...HEAD
+[Pending Release]: https://github.com/weenhanceit/infrastructure/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/weenhanceit/infrastructure/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/weenhanceit/infrastructure/compare/v1.2.0...v2.0.0
