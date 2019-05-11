@@ -111,6 +111,29 @@ class RailsRunnerTest < Test
     end
   end
 
+  def test_rails_https_two_domains
+    SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
+      Nginx.chroot("/tmp/builder_test") do
+        Nginx.prepare_fake_files("example.ca")
+        FileUtils.mkdir_p(File.dirname(Systemd.unit_file("example.ca")))
+
+        ARGV.concat(%w[-p HTTPS --dhparam 128 example.ca example.com])
+        runner = Runner::Rails.new.main
+        assert runner.save, "Build failed"
+
+        assert_directory("/tmp/builder_test/var/www/example.ca")
+        assert_no_directory("/tmp/builder_test/var/www/example.ca/html")
+        assert_file("/tmp/builder_test/etc/nginx/sites-available/example.ca")
+        assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.ca")
+        assert_directory("/tmp/builder_test/etc/letsencrypt/live/example.ca")
+        assert_file("/tmp/builder_test/etc/letsencrypt/live/example.ca/dhparam.pem")
+
+        assert_equal expected_rails_https_server_block("example.ca", "example.com"),
+          File.open("/tmp/builder_test/etc/nginx/sites-available/example.ca", "r", &:read)
+      end
+    end
+  end
+
   def test_rails_https_when_files_exist
     SharedInfrastructure::Output.fake_root("/tmp/builder_test") do
       Nginx.chroot("/tmp/builder_test") do

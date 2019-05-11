@@ -90,7 +90,7 @@ Finally, re-run this script to configure nginx for TLS.
           listen: Nginx::ListenHttps.new(domain.domain_name, certificate_domain),
           location: Nginx::ReverseProxyLocation.new(proxy_url)
         ),
-          Nginx::TlsRedirectServerBlock.new(domain.domain_name),
+          Nginx::TlsRedirectServerBlock.new(domain.domain_names),
           domain: domain
         )
       end
@@ -153,7 +153,7 @@ Finally, re-run this script to configure nginx for TLS.
             listen: Nginx::ListenHttps.new(domain.domain_name, certificate_domain),
             location: Nginx::Location.new
           ),
-          Nginx::TlsRedirectServerBlock.new(domain.domain_name),
+          Nginx::TlsRedirectServerBlock.new(domain.domain_names),
           domain: domain
         )
       end
@@ -228,7 +228,7 @@ Finally, re-run this script to configure nginx for TLS.
             accel_location: accel_location,
             domain: domain
           ),
-          Nginx::TlsRedirectServerBlock.new(domain.domain_name),
+          Nginx::TlsRedirectServerBlock.new(domain.domain_names),
           domain: domain,
           rails_env: rails_env
         )

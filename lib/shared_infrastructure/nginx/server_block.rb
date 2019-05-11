@@ -43,9 +43,9 @@ SERVER_BLOCK
   end
 
   class TlsRedirectServerBlock < ServerBlock
-    def initialize(domain_name)
+    def initialize(*domain_names)
       super(
-        server: Server.new(domain: SharedInfrastructure::Domain.new(domain_name)),
+        server: Server.new(domain: SharedInfrastructure::Domain.new(*domain_names)),
         listen: ListenHttp.new,
         location: RedirectLocation.new
       )
