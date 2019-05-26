@@ -208,6 +208,12 @@ Finally, re-run this script to configure nginx for TLS.
             rails_env: rails_env
           )
       end
+
+      def save
+        result = super
+        https_reminder_message
+        result
+      end
     end
 
     class RailsHttps < Rails
