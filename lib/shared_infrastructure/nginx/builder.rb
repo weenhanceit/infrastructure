@@ -9,7 +9,8 @@ module Nginx
       def save
         pem_file = "#{Nginx.certificate_directory(certificate_domain)}/dhparam.pem"
         FileUtils.mkdir_p File.dirname(pem_file)
-        `openssl dhparam #{Nginx.dhparam} -out #{pem_file}`
+        puts "openssl dhparam -out #{pem_file} #{Nginx.dhparam}" if Runner.debug
+        `openssl dhparam -out #{pem_file} #{Nginx.dhparam}`
         super
       end
     end
