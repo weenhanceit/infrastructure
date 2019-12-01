@@ -73,6 +73,12 @@ sed \
   -e "/^# unixsocketperm/s/^# //" \
   $original_conf_file >$redis_conf
 
+# find the Redis server and cli
+redis_server=/usr/bin/redis-server
+[ -f $redis_server ] || redis_server=/usr/local/bin/redis-server
+redis_cli=/usr/bin/redis-cli
+[ -f $redis_cli ] || redis_cli=/usr/local/bin/redis-cli
+
 # Redis Service
 # Assumes server build created redis user
 cat >$service_file <<EOF
@@ -84,8 +90,8 @@ After=network.target
 User=$user
 Group=www-data
 
-ExecStart=/usr/local/bin/redis-server $redis_conf
-ExecStop=/usr/local/bin/redis-cli -s $redis_socket shutdown
+ExecStart=$redis_server $redis_conf
+ExecStop=$redis_cli -s $redis_socket shutdown
 Restart=always
 
 [Install]
