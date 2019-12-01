@@ -63,12 +63,15 @@ sudo chmod 770 $redis_dir
 # And the following isn't needed to log to syslog
 # -e "/^logfile/s;\"\";\"/var/log/redis/$redis.log\";" \
 # TODO: Confirm that Redis is journalling changes so jobs are persistent.
+# It looks like 16.04 had `/etc/redis.conf`, but 18.04 has `/etc/redis/redis.conf`
+original_conf_file=/etc/redis/redis.conf
+[ -f $original_conf_file ] || original_conf_file=/etc/redis.conf
 sed \
   -e "/^dir/s;.*;dir $redis_dir;" \
   -e "/^port 6379/s//port 0/" \
   -e "/^# unixsocket /s;.*;unixsocket $redis_socket;" \
   -e "/^# unixsocketperm/s/^# //" \
-  /etc/redis.conf >$redis_conf
+  $original_conf_file >$redis_conf
 
 # Redis Service
 # Assumes server build created redis user
