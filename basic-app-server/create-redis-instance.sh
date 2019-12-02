@@ -88,8 +88,8 @@ Description=Redis In-Memory Data Store for $domain_name
 After=network.target
 
 [Service]
-User=$user
-Group=www-data
+User=redis
+Group=redis
 
 ExecStart=$redis_server $redis_conf
 ExecStop=$redis_cli -s $redis_socket shutdown
