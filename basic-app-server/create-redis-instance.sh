@@ -54,7 +54,7 @@ if [[ $debug || $fake_root ]]; then
 fi
 
 sudo mkdir $redis_dir
-sudo chown $user:www-data $redis_dir
+sudo chown $user:$user $redis_dir
 sudo chmod 770 $redis_dir
 
 # Redis Config File
