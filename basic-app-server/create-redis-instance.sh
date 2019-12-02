@@ -71,6 +71,7 @@ sed \
   -e "/^port 6379/s//port 0/" \
   -e "/^# unixsocket /s;.*;unixsocket $redis_socket;" \
   -e "/^# unixsocketperm/s/^# //" \
+  -e "/^logfile /s/redis-server.log/${redis}-server.log" \
   $original_conf_file >$redis_conf
 
 # find the Redis server and cli
