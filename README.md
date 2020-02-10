@@ -430,14 +430,14 @@ including redirecting HTTP requests to HTTPS.
 Rails:
 
 ```bash
-sudo -E ./create-rails-app.sh <domain-name>...
+sudo create-rails-app -u <deploy-run-user-name> <domain-name>
 sudo nginx -s reload
 ```
 
 Static site:
 
 ```bash
-sudo -E ./create-server-block.sh <domain-name>...
+sudo create-server-block -u <deploy-run-user-name> <domain-name>
 sudo nginx -s reload
 ```
 
