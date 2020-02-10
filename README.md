@@ -126,7 +126,7 @@ In all the examples that follow,
 replace `domain-name` with your domain name.
 
 ```bash
-sudo bundle exec create-server-block <domain-name>
+sudo create-server-block -u <deploy-run-user-name> <domain-name>
 ```
 
 The root directory of the static web site files is `/var/www/<domain-name>/html`.
