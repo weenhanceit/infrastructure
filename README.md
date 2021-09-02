@@ -51,6 +51,7 @@ or a Rails application.
 3. Unzip it:
 
 ```bash
+    sudo apt install unzip
     unzip master.zip
 ```
 
