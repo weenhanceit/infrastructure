@@ -183,7 +183,7 @@ but you can't do that yet.
 You need to deploy the application the first time,
 so the directories get created.
 
-Finally, set up the database. The following is what you need for an AWS RDS database:
+Before deploying the application, however, you need to set up the database. The following is what you need for an AWS RDS database:
 
 ```bash
 psql -h <DB host name> -U <master user> -d postgres
@@ -198,7 +198,22 @@ create database <database for application>;
 \q
 ```
 
-The last step above will ask you for the password for the `root` user in the Postgres database.
+The first step above will ask you for the password for the `root` user in the Postgres database.
+
+For a self-hosted Postgres database set up with a `postgres` user, and local database access authenticated by Linux user:
+
+```bash
+sudo -iu postgres psql -h <DB host name> -d postgres
+create role <user name for application>
+  with createdb
+  login password '<password for application user>';
+alter user <user name for application> with superuser;
+\q
+psql -h <DB host name> -U <user name for application> -d postgres
+<enter password for application user>
+create database <database for application>;
+\q
+```
 
 The root directory of the Rails application is `/var/www/<domain-name>/html`.
 
