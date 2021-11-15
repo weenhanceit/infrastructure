@@ -28,7 +28,8 @@ module Runner
     end
 
     def process_args(opts = nil)
-      raise MissingArgument.new("domain required", opts) if ARGV.size == 0
+      raise MissingArgument.new("domain required", opts) if ARGV.size.zero?
+
       { domain_name: ARGV }
     end
 
@@ -40,14 +41,14 @@ module Runner
 
         # FIXME: This is only applicable to Rails apps.
         opts.on("-a LOCATION",
-          "--accel LOCATION",
-          "Location below application root to serve when app responds with 'X-Accel'") do |accel_location|
+                "--accel LOCATION",
+                "Location below application root to serve when app responds with 'X-Accel'") do |accel_location|
           options[:accel_location] = accel_location
         end
 
         opts.on("-c DOMAIN",
-          "--certificate-domain DOMAIN",
-          "Use the certificate for DOMAIN.") do |certificate_domain|
+                "--certificate-domain DOMAIN",
+                "Use the certificate for DOMAIN.") do |certificate_domain|
           options[:certificate_domain] = certificate_domain
         end
 
@@ -61,8 +62,8 @@ module Runner
         end
 
         opts.on("-P PROTOCOL",
-          "--protocol PROTOCOL",
-          "HTTP|HTTPS. Default: HTTPS if key files exist, else HTTP.") do |protocol|
+                "--protocol PROTOCOL",
+                "HTTP|HTTPS. Default: HTTPS if key files exist, else HTTP.") do |protocol|
           options[:protocol] = case protocol.upcase
                                when "HTTP"
                                  http_builder_class
@@ -74,20 +75,20 @@ module Runner
         end
 
         opts.on("-r DIRECTORY",
-          "--root DIRECTORY",
-          "DIRECTORY. Set a root for files. This options is for debugging.") do |directory|
+                "--root DIRECTORY",
+                "DIRECTORY. Set a root for files. This options is for debugging.") do |directory|
           Nginx.chroot(directory)
           SharedInfrastructure::Output.fake_root(directory)
         end
 
         opts.on("-u USER",
-          "--user USER",
-          "User to be the owner of certain files. Default: the current user.") do |user|
+                "--user USER",
+                "User to be the owner of certain files. Default: the current user.") do |user|
           options[:user] = user
         end
 
         opts.on("--dhparam KEYSIZE",
-          "KEYSIZE. Default: 2048 should be used. This option is for testing.") do |keysize|
+                "KEYSIZE. Default: 2048 should be used. This option is for testing.") do |keysize|
           Nginx.dhparam = keysize
         end
 
@@ -125,7 +126,6 @@ module Runner
       @opts = opts
       super msg
     end
-    attr_reader :msg
-    attr_reader :opts
+    attr_reader :msg, :opts
   end
 end

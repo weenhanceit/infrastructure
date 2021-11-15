@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Nginx
   ##
   # A class to format lines nicely in a file.

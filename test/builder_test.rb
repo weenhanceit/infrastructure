@@ -81,7 +81,7 @@ class BuilderTest < Test
         assert_file "/tmp/builder_test/etc/nginx/sites-available/search.example.com"
         assert_file "/tmp/builder_test/etc/nginx/sites-enabled/search.example.com"
         assert_equal expected_reverse_proxy_http_server_block,
-          File.open("/tmp/builder_test/etc/nginx/sites-available/search.example.com", "r", &:read)
+                     File.open("/tmp/builder_test/etc/nginx/sites-available/search.example.com", "r", &:read)
         assert_no_directory "/tmp/builder_test/var/www/search.example.com/html"
       end
     end
@@ -106,7 +106,7 @@ class BuilderTest < Test
         assert_directory "/tmp/builder_test/etc/letsencrypt/live/search.example.com"
         assert_file "/tmp/builder_test/etc/letsencrypt/live/search.example.com/dhparam.pem"
         assert_equal expected_reverse_proxy_https_server_block,
-          File.open("/tmp/builder_test/etc/nginx/sites-enabled/search.example.com", "r", &:read)
+                     File.open("/tmp/builder_test/etc/nginx/sites-enabled/search.example.com", "r", &:read)
         assert_no_directory "/tmp/builder_test/var/www/search.example.com/html"
       end
     end

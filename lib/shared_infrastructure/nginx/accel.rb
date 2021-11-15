@@ -19,7 +19,7 @@ module Nginx
       "/__x_accel"
     end
 
-    def proxy_set_header(domain_name)
+    def proxy_set_header(_domain_name)
       [
         "  proxy_set_header X-Sendfile-Type X-Accel-Redirect;",
         "  proxy_set_header X-Accel-Mapping #{alias_string}/=#{location}/;"

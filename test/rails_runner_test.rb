@@ -36,9 +36,10 @@ class RailsRunnerTest < Test
         assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
 
         assert_equal expected_rails_http_server_block,
-          File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
+                     File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
         assert_equal expected_unit_file, File.open("/tmp/builder_test/lib/systemd/system/example.com.service", &:read)
-        assert_equal expected_rails_logrotate_conf, File.open(SharedInfrastructure::Output.file_name("/etc/logrotate.d/example.com.conf"), &:read)
+        assert_equal expected_rails_logrotate_conf,
+                     File.open(SharedInfrastructure::Output.file_name("/etc/logrotate.d/example.com.conf"), &:read)
       end
     end
   end
@@ -59,9 +60,11 @@ class RailsRunnerTest < Test
         assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.ca")
 
         assert_equal expected_rails_http_server_block("example.ca", "example.com"),
-          File.open("/tmp/builder_test/etc/nginx/sites-available/example.ca", "r", &:read)
-        assert_equal expected_unit_file(domain: "example.ca"), File.open("/tmp/builder_test/lib/systemd/system/example.ca.service", &:read)
-        assert_equal expected_rails_logrotate_conf(domain: "example.ca"), File.open(SharedInfrastructure::Output.file_name("/etc/logrotate.d/example.ca.conf"), &:read)
+                     File.open("/tmp/builder_test/etc/nginx/sites-available/example.ca", "r", &:read)
+        assert_equal expected_unit_file(domain: "example.ca"),
+                     File.open("/tmp/builder_test/lib/systemd/system/example.ca.service", &:read)
+        assert_equal expected_rails_logrotate_conf(domain: "example.ca"),
+                     File.open(SharedInfrastructure::Output.file_name("/etc/logrotate.d/example.ca.conf"), &:read)
       end
     end
   end
@@ -81,8 +84,9 @@ class RailsRunnerTest < Test
         assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
 
         assert_equal expected_rails_http_server_block,
-          File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
-        assert_equal expected_rails_logrotate_conf("local"), File.open(SharedInfrastructure::Output.file_name("/etc/logrotate.d/example.com.conf"), &:read)
+                     File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
+        assert_equal expected_rails_logrotate_conf("local"),
+                     File.open(SharedInfrastructure::Output.file_name("/etc/logrotate.d/example.com.conf"), &:read)
         assert_equal expected_unit_file("local"), File.open("/tmp/builder_test/lib/systemd/system/example.com.service", &:read)
       end
     end
@@ -106,7 +110,7 @@ class RailsRunnerTest < Test
         assert_file("/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem")
 
         assert_equal expected_rails_https_server_block,
-          File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
+                     File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
       end
     end
   end
@@ -129,7 +133,7 @@ class RailsRunnerTest < Test
         assert_file("/tmp/builder_test/etc/letsencrypt/live/example.ca/dhparam.pem")
 
         assert_equal expected_rails_https_server_block("example.ca", "example.com"),
-          File.open("/tmp/builder_test/etc/nginx/sites-available/example.ca", "r", &:read)
+                     File.open("/tmp/builder_test/etc/nginx/sites-available/example.ca", "r", &:read)
       end
     end
   end
@@ -153,7 +157,7 @@ class RailsRunnerTest < Test
         assert_file("/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem")
 
         assert_equal expected_rails_https_server_block,
-          File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
+                     File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
       end
     end
   end
@@ -177,7 +181,7 @@ class RailsRunnerTest < Test
         # assert_file("/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem")
 
         assert_equal expected_rails_https_server_block_certificate_domain,
-          File.open("/tmp/builder_test/etc/nginx/sites-available/search.example.com", "r", &:read)
+                     File.open("/tmp/builder_test/etc/nginx/sites-available/search.example.com", "r", &:read)
       end
     end
   end
@@ -203,7 +207,7 @@ class RailsRunnerTest < Test
         # assert_file("/tmp/builder_test/etc/letsencrypt/live/example.com/dhparam.pem")
 
         assert_equal expected_rails_https_server_block_certificate_domain,
-          File.open("/tmp/builder_test/etc/nginx/sites-available/search.example.com", "r", &:read)
+                     File.open("/tmp/builder_test/etc/nginx/sites-available/search.example.com", "r", &:read)
       end
     end
   end
@@ -223,7 +227,7 @@ class RailsRunnerTest < Test
         assert_file("/tmp/builder_test/etc/nginx/sites-enabled/example.com")
 
         assert_equal expected_rails_http_x_accel_server_block,
-          File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
+                     File.open("/tmp/builder_test/etc/nginx/sites-available/example.com", "r", &:read)
       end
     end
   end

@@ -40,6 +40,7 @@ module SharedInfrastructure
 
       def file_name(file_name)
         return file_name unless Output.root
+
         file_name = File.join(Output.root, file_name)
         FileUtils.mkdir_p(File.dirname(file_name))
         file_name

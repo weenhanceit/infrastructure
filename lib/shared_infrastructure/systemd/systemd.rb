@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Systemd
   class Configuration
     def initialize
@@ -5,7 +7,7 @@ module Systemd
     end
 
     def unit_file(domain_name)
-      File.join(unit_file_path, domain_name + ".service")
+      File.join(unit_file_path, "#{domain_name}.service")
     end
 
     attr_accessor :unit_file_path

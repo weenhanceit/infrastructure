@@ -32,7 +32,7 @@ module Nginx
           @location&.map { |l| l.to_s(1) }
         ].compact.join("\n\n")}
         }
-SERVER_BLOCK
+      SERVER_BLOCK
     end
 
     def upstream_string

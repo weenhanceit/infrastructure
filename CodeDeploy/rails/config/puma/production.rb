@@ -1,6 +1,7 @@
+# frozen_string_literal: true
 # Template Puma configuration
 
-#!/usr/bin/env puma
+# !/usr/bin/env puma
 
 # The directory to operate out of.
 #

@@ -110,8 +110,8 @@ Finally, re-run this script to configure nginx for TLS.
         FileUtils.mkdir_p(domain_root)
         if Process.uid.zero?
           FileUtils.chown(user,
-            "www-data",
-            domain_root)
+                          "www-data",
+                          domain_root)
         end
         # Set the directory gid bit, so files created inside inherit the group.
         File.chmod(File.stat(domain_root).mode | 0o2000, domain_root)

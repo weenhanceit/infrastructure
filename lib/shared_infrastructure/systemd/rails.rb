@@ -8,10 +8,10 @@ module Systemd
       end
 
       def redis_location(domain_name)
-        "redis." + domain_name
+        "redis.#{domain_name}"
       end
 
-      def write_unit_file(domain_name, domain, rails_env = "production", user)
+      def write_unit_file(domain_name, _domain, rails_env = "production", user)
         puts "writing unit file (domain_name): #{Systemd.unit_file(domain_name)} (#{domain_name})" if Runner.debug
 
         result = File.open(Systemd.unit_file(domain_name), "w") do |f|

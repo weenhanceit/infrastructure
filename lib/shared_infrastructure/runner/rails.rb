@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Runner
   class Rails < Base
     def main
