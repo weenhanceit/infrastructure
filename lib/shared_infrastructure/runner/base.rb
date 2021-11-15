@@ -87,6 +87,13 @@ module Runner
           options[:user] = user
         end
 
+        opts.on("-v",
+                "--version",
+                "Prints the version of this program and exits.") do
+          puts SharedInfrastructure::VERSION
+          exit(0)
+        end
+
         opts.on("--dhparam KEYSIZE",
                 "KEYSIZE. Default: 2048 should be used. This option is for testing.") do |keysize|
           Nginx.dhparam = keysize
