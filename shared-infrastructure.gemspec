@@ -37,7 +37,6 @@ Gem::Specification.new do |s|
     "bin/create-reverse-proxy",
     "bin/create-server-block"
   ]
-  s.add_development_dependency "chandler"
   s.executables.concat(%w[
                          create-server-block
                          create-rails-app

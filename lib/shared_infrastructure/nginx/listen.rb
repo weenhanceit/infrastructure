@@ -43,7 +43,7 @@ module Nginx
         "# Optimize TLS, from: https://www.bjornjohansen.no/optimizing-https-nginx, steps 1-3",
         "ssl_session_cache shared:SSL:1m; # Enough for 4,000 sessions.",
         "ssl_session_timeout 180m;",
-        "ssl_protocols TLSv1 TLSv1.1 TLSv1.2;",
+        "ssl_protocols TLSv1.3 TLSv1.2;",
         "ssl_prefer_server_ciphers on;",
         "ssl_ciphers ECDH+AESGCM:ECDH+AES256:ECDH+AES128:DH+3DES:!ADH:!AECDH:!MD5;",
         "# Step 4",
