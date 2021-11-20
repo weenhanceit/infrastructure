@@ -45,7 +45,7 @@ or a Rails application.
 2. Get the set-up scripts:
 
 ```bash
-    wget https://github.com/weenhanceit/infrastructure/archive/master.zip
+    wget https://github.com/lcreid/rails-5-jade/raw/master/build/build.sh
 ```
 
 3. Unzip it:
@@ -55,14 +55,20 @@ or a Rails application.
     unzip master.zip
 ```
 
+(The legacy way for step 2, pre 20.04, was `    wget https://github.com/weenhanceit/infrastructure/archive/master.zip`.)
+
 ## One-Time Server Set-Up
 
 This step is only necessary after you first set up the server.
 It installs additional software needed on the server.
 
 ```bash
-infrastructure-master/basic-app-server/build.sh
+sudo ./build.sh -ncst server -r 6.1
 ```
+
+You can do `./build.sh --help` to see what all those parameters mean.
+
+(The legacy was for the above, pre 20.04, was `infrastructure-master/basic-app-server/build.sh`.)
 
 Also install the gem:
 
