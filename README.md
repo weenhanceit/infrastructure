@@ -122,7 +122,7 @@ and don't enter a pass phrase:
 and clean out the history so as not to possibly leak any information about users:
 
 ```bash
-    sudo passwd -l <new-user-name>
+    # TODO: disable SSH login with password.
     history -c && history -w
 ```
 
