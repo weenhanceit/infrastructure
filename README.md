@@ -122,10 +122,12 @@ and don't enter a pass phrase:
 and clean out the history so as not to possibly leak any information about users:
 
 ```bash
-    # TODO: disable SSH login with password.
+    # See, for example: https://www.cyberciti.biz/faq/how-to-disable-ssh-password-login-on-linux/
     history -c && history -w
 ```
 
+Note that you don't want to expire the user's password as some on the internet suggest, because that prevents the user from doing `sudo`.
+    
 ## Creating a Static Web Site
 
 This sets up an Nginx server block for a given domain name.
