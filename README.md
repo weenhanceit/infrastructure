@@ -5,7 +5,7 @@ Set up infrastructure for Weenhanceit projects. It covers one-time tasks that ne
 This document does not cover:
 
 - How to create an AWS server (or any other kind of server)
-- How to set up a DNS entry to point at the server. In order for users to access a web site that is set up according to this documentation, you need to have a DNS somewhere that associations the domain name with the IP address of the server.
+- How to set up a DNS entry to point at the server. In order for users to access a web site that is set up according to this documentation, you need to have a DNS somewhere that associates the domain name with the IP address of the server.
 
 ## Architecture
 
