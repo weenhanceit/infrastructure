@@ -139,6 +139,7 @@ sudo create-server-block -u <deploy-run-user-name> <domain-name>
 ```
 
 The root directory of the static web site files is `/var/www/<domain-name>/html`.
+Note that the script doesn't seem to create the `html` directory, so you have to do that yourself.
 
 Now you can deploy the static web site. [TODO: How to deploy.]
 
