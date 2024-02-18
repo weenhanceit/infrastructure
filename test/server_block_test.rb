@@ -8,6 +8,7 @@ require "etc"
 class ServerBlockTest < Test
   include TestHelpers
   include Nginx
+  include Etc
 
   def test_reverse_proxy_http
     server_block = Nginx::ServerBlock.new(

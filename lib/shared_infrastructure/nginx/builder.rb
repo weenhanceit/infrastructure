@@ -100,6 +100,8 @@ Finally, re-run this script to configure nginx for TLS.
     end
 
     class Site < Base
+      include Etc
+
       def initialize(user, *server_blocks, domain: nil)
         super(*server_blocks, domain: domain)
         @user = user
