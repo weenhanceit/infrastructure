@@ -44,5 +44,6 @@ Vagrantfile
 .bash_history
 # For Alpine images
 .ash_history
+.rdbg_history
 
 vendor/bundle

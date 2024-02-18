@@ -8,6 +8,7 @@ require "etc"
 class BuilderTest < Test
   include TestHelpers
   include Nginx
+  include Etc
 
   def setup
     FileUtils.rm_rf "/tmp/builder_test", secure: true

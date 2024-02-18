@@ -14,9 +14,7 @@ class RailsRunnerTest < Test
 
   def test_one_arg
     assert_raises Runner::MissingArgument do
-      assert_output "", "domain required\n" do
         Runner::Rails.new.main
-      end
     end
   end
 
