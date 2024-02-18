@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Test < MiniTest::Test
+class Test < Minitest::Test
   def key_file_list(domain_name)
     ["/tmp/builder_test/etc/letsencrypt/live/#{domain_name}/privkey.pem",
      "/tmp/builder_test/etc/letsencrypt/live/#{domain_name}/fullchain.pem",
