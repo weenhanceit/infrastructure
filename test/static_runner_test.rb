@@ -14,9 +14,7 @@ class StaticRunnerTest < Test
 
   def test_one_arg
     assert_raises Runner::MissingArgument do
-      assert_output "", "domain required\n" do
-        Runner::StaticSite.new.main
-      end
+      Runner::StaticSite.new.main
     end
   end
 
